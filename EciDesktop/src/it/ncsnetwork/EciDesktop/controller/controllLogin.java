@@ -8,7 +8,9 @@ package it.ncsnetwork.EciDesktop.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-
+import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition;
+import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition1;
+import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -53,7 +55,7 @@ public class controllLogin  {
      * @param url
      * @param rb
      */
-    /*public void initialize(URL url, ResourceBundle rb) {
+    public void initialize(URL url, ResourceBundle rb) {
         Platform.runLater(() -> {
             new FadeInRightTransition(lblUserLogin).play();
             new FadeInLeftTransition(lblWelcome).play();
@@ -69,7 +71,7 @@ public class controllLogin  {
         });
         // TODO
     }    
-*/
+
     @FXML
     private void aksiLogin(ActionEvent event) {
         if (txtUsername.getText().equals("herudi") && txtPassword.getText().equals("herudi")) {
