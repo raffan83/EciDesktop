@@ -26,16 +26,17 @@ public class SplashScreenWin8 extends Application {
     //	String imgLocation = "/image/walpaper_top.jpg";
 	//	URL imageURL = GeneralGUI.class.getResource(imgLocation);
 		
-        Parent root = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/splash.fxml"));
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.show();
+   //     Parent root = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/splash.fxml"));
+    //    Scene scene = new Scene(root);
+    //    stage.setScene(scene);
+   //     stage.initStyle(StageStyle.UNDECORATED);
+     //   stage.show();
         
       //  Thread.sleep(2000);
-     ///  Parent login = FXMLLoader.load(getClass().getResource("/herudi/view/login.fxml"));
-      //  Scene sceneLogin = new Scene(login);
-      //  stage.setScene(sceneLogin);
+        Parent login = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/login.fxml"));
+        Scene sceneLogin = new Scene(login);
+        stage.setScene(sceneLogin);
+        stage.show();
     }
 
     /**

@@ -69,15 +69,15 @@ public class controllLogin  {
         });
         // TODO
     }    
-
+*/
     @FXML
     private void aksiLogin(ActionEvent event) {
         if (txtUsername.getText().equals("herudi") && txtPassword.getText().equals("herudi")) {
-            config2 c = new config2();
-            c.newStage(stage, lblClose, "/herudi/view/formMenu.fxml", "Test App", true, StageStyle.UNDECORATED, false);
+        //    config2 c = new config2();
+      //      c.newStage(stage, lblClose, "/herudi/view/formMenu.fxml", "Test App", true, StageStyle.UNDECORATED, false);
         }else{
-            config2.dialog(Alert.AlertType.ERROR, "Error Login, Please Chek Username And Password");
+          //  config2.dialog(Alert.AlertType.ERROR, "Error Login, Please Chek Username And Password");
         }
-    }*/
+    }
     
 }
