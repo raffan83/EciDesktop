@@ -30,7 +30,7 @@ import javafx.stage.StageStyle;
  *
  * @author Herudi
  */
-public class controllLogin  {
+public class controllLogin implements Initializable {
     @FXML
     private TextField txtUsername;
     @FXML
