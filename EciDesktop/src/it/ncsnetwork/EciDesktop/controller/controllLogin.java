@@ -8,6 +8,7 @@ package it.ncsnetwork.EciDesktop.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition;
 import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition1;
 import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
@@ -78,8 +79,8 @@ public class controllLogin implements Initializable {
     @FXML
     private void aksiLogin(ActionEvent event) {
         if (txtUsername.getText().equals("herudi") && txtPassword.getText().equals("herudi")) {
-        //    config2 c = new config2();
-      //      c.newStage(stage, lblClose, "/herudi/view/formMenu.fxml", "Test App", true, StageStyle.UNDECORATED, false);
+            config c = new config();
+            c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/formMenu.fxml", "Test App", true, StageStyle.UNDECORATED, false);
         }else{
           //  config2.dialog(Alert.AlertType.ERROR, "Error Login, Please Chek Username And Password");
         }

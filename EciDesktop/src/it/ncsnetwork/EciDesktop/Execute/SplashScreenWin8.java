@@ -32,28 +32,13 @@ public class SplashScreenWin8 extends Application {
         stage.setScene(scene);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.show();
-      Parent login = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/login.fxml"));
-      Scene sceneLogin = new Scene(login);
+     
         
-        
-        long mTime = System.currentTimeMillis();
-        long end = mTime + 5000; // 5 seconds 
-
-//        while (System.currentTimeMillis() > end) 
-//        {
-            PauseTransition delay = new PauseTransition(Duration.seconds(5));
-            delay.setOnFinished( event -> stage.setScene(sceneLogin) );
-            delay.play();
-           // stage.show();
- //      } 
-        
-
-      
-        //Thread.sleep(5000);
-//        Parent login = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/login.fxml"));
-//        Scene sceneLogin = new Scene(login);
-//        stage.setScene(sceneLogin);
-//        stage.show();
+        Parent login = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/login.fxml"));
+        Scene sceneLogin = new Scene(login);
+        PauseTransition delay = new PauseTransition(Duration.seconds(5));
+        delay.setOnFinished( event -> stage.setScene(sceneLogin) );
+        delay.play();
 
     }
 
