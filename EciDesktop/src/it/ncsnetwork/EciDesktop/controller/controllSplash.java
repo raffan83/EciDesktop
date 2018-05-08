@@ -8,7 +8,7 @@ package it.ncsnetwork.EciDesktop.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import it.ncsnetwork.EciDesktop.Execute.SplashScreenWin8;
+import it.ncsnetwork.EciDesktop.Execute.MainApp;
 import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition;
 import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
 import it.ncsnetwork.EciDesktop.animations.FadeInTransition;

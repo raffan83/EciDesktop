@@ -18,7 +18,7 @@ import javafx.util.Duration;
  *
  * @author Herudi
  */
-public class SplashScreenWin8 extends Application {
+public class MainApp extends Application {
     
 	public static Stage primaryStage;
 
