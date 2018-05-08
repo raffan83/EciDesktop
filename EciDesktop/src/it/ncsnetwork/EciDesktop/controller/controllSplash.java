@@ -31,7 +31,7 @@ import javafx.stage.StageStyle;
  *
  * @author Herudi
  */
-public class controllSplash  {
+public class controllSplash implements Initializable  {
     @FXML
     private Text lblWelcome;
     @FXML
@@ -51,14 +51,6 @@ public class controllSplash  {
    
     public controllSplash() 
     {
-      	 new FadeInLeftTransition(lblWelcome).play();
-         new FadeInRightTransition(lblRudy).play();
-         new FadeInTransition(vboxBottom).play();
-         lblClose.setOnMouseClicked((MouseEvent event) -> {
-            Platform.exit();
-            System.exit(0);
-        });
-        // TODO
     }
    /* public void initialize(URL url, ResourceBundle rb) {
    //     longStart();
@@ -101,4 +93,15 @@ public class controllSplash  {
             
    //     });
     } */
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		 new FadeInLeftTransition(lblWelcome).play();
+         new FadeInRightTransition(lblRudy).play();
+         new FadeInTransition(vboxBottom).play();
+        lblClose.setOnMouseClicked((MouseEvent event) -> {
+            Platform.exit();
+            System.exit(0);
+        });
+		
+	}
 }
