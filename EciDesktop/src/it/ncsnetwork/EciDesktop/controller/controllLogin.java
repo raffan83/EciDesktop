@@ -30,7 +30,7 @@ import javafx.stage.StageStyle;
  *
  * @author Herudi
  */
-public class controllLogin  {
+public class controllLogin implements Initializable {
     @FXML
     private TextField txtUsername;
     @FXML
@@ -55,6 +55,9 @@ public class controllLogin  {
      * @param url
      * @param rb
      */
+    
+    public controllLogin() {}
+    
     public void initialize(URL url, ResourceBundle rb) {
         Platform.runLater(() -> {
             new FadeInRightTransition(lblUserLogin).play();

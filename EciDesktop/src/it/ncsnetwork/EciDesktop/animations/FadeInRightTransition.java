@@ -16,13 +16,15 @@ import javafx.util.Duration;
     Author     : herudi-pc
 */
 
+@SuppressWarnings("deprecation")
 public class FadeInRightTransition extends configAnimasi {
     /**
      * Create new FadeInUpTransition
      * 
      * @param node The node to affect
      */
-    public FadeInRightTransition(final Node node) {
+   
+	public FadeInRightTransition(final Node node) {
         super(
             node,
             TimelineBuilder.create()

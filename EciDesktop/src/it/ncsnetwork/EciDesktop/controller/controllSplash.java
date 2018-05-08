@@ -8,6 +8,7 @@ package it.ncsnetwork.EciDesktop.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.ncsnetwork.EciDesktop.Execute.SplashScreenWin8;
 import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition;
 import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
 import it.ncsnetwork.EciDesktop.animations.FadeInTransition;
@@ -16,7 +17,10 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -103,5 +107,17 @@ public class controllSplash implements Initializable  {
             System.exit(0);
         });
 		
+        try {
+			Thread.sleep(2000);
+		//	 Parent login = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/login.fxml"));
+		//        Scene sceneLogin = new Scene(login);
+		 //       SplashScreenWin8.primaryStage.setScene(sceneLogin);
+		 //       SplashScreenWin8.primaryStage.show();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+       
+
 	}
 }
