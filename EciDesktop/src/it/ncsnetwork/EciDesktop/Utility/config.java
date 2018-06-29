@@ -5,7 +5,9 @@
  */
 package it.ncsnetwork.EciDesktop.Utility;
 
+import java.awt.event.ActionEvent;
 import java.io.IOException;
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -24,11 +26,9 @@ import javafx.stage.StageStyle;
  * @author Herudi
  */
 public class config {
-
-    public config() 
-    {
-   
-    }
+	
+	public config() {
+	}
     
     public static void dialog(Alert.AlertType alertType,String s){
         Alert alert = new Alert(alertType,s);
@@ -72,6 +72,33 @@ public class config {
         } 
     }
     
+    public void newStageReport(String load, String title){
+    	try {
+    		Stage stage = new Stage();
+    		Parent root = FXMLLoader.load(getClass().getResource(load));
+    		Scene scene = new Scene (root);	
+            stage.setScene(scene);
+            stage.initStyle(StageStyle.DECORATED);
+            stage.setTitle(title);
+            stage.show();
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+     }
+    
+    public void changeScreenButtonPushed(ActionEvent event, String url) throws IOException
+    {
+        Parent tableViewParent = FXMLLoader.load(getClass().getResource(url));
+        Scene tableViewScene = new Scene(tableViewParent);
+        
+        //This line gets the Stage information
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        
+        window.setScene(tableViewScene);
+        window.show();
+    }
+    
+
     public void loadAnchorPane(AnchorPane ap, String a){
         try {
             AnchorPane p = FXMLLoader.load(getClass().getResource("/herudi/view/"+a));
