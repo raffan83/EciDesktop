@@ -5,11 +5,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
-
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -27,6 +23,7 @@ import javafx.scene.control.Control;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class InterventionController {
@@ -71,13 +68,14 @@ public class InterventionController {
 		//idCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.05));
 		sedeCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.5));
 		dataCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
-		statoCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
-		codCategoriaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
+		//statoCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.12));
+		codCategoriaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.088));
 		codVerificaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
-		detailCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
+		//detailCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
 
 		
 		for (Object item: interventionTable.getItems()) {
+			//if (((Intervention) item).getStato() == "In lavorazione") setStyle("-fx-text-fill: YELLOW");
 			((Intervention) item).getDetailBtn().setOnAction(new EventHandler<ActionEvent>() {
 				@Override public void handle(ActionEvent e) {
                     int intervId = ((Intervention) item).getId();
@@ -95,6 +93,7 @@ public class InterventionController {
 					        controller.initData((Intervention) item);
 							
 					        Stage window = (Stage)((Node)e.getSource()).getScene().getWindow();
+					        //window.setFullScreen(true);
 					        window.setWidth(Control.USE_COMPUTED_SIZE);
 					        window.setHeight(Control.USE_COMPUTED_SIZE);
 					        window.setTitle("Verbali");
