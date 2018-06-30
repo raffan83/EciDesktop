@@ -12,7 +12,7 @@ public class InterventionDAO {
 	public static ObservableList<Intervention> searchInterventions() throws SQLException, ClassNotFoundException {
 
 		int userId = User.getUserId();
-        String selectStmt = "SELECT * FROM intervention"; // WHERE user_id = "+userId;
+        String selectStmt = "SELECT * FROM intervention WHERE user_id = "+userId;
  
         try {
             ResultSet rsInt = DBUtil.dbExecuteQuery(selectStmt);
@@ -37,20 +37,13 @@ public class InterventionDAO {
             interv.setDescrCategoria(rs.getString("descrizione_categoria"));
             interv.setCodVerifica(rs.getString("codice_verifica"));
             interv.setDescrVerifica(rs.getString("descrizione_verifica"));
+            interv.setNote(rs.getString("note"));
       
             intervList.add(interv);
         }
         return intervList;
     }
     
-    /*public static void changeState() throws ClassNotFoundException, SQLException {
-    	System.out.println(getReportStateList());
-    	//int intervId = Intervention.getIntervId();
-    	//String stmt = "UPDATE intervention SET stato = " + s + " WHERE id = " + intervId;
-       // DBUtil.dbExecuteUpdate(stmt);
-    }*/
-    
-
 	public static void setState() throws SQLException, ClassNotFoundException {
 		int userId = User.getUserId();
         String selectIntervId = "SELECT id FROM intervention WHERE user_id = "+userId;
@@ -84,6 +77,15 @@ public class InterventionDAO {
 			}
 		}
 	}
-
+	
+	public static void saveNote(int intervId, String note) throws ClassNotFoundException, SQLException {
+		String stmt = "UPDATE intervention SET note = '" + note + "' WHERE id = " + intervId;
+		try {
+			DBUtil.dbExecuteUpdate(stmt);
+		} catch (SQLException e) {
+			System.out.println("SQL select operation has been failed: " + e);
+			throw e;
+		}
+	}
 	
 }

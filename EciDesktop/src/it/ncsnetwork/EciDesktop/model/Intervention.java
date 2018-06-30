@@ -15,6 +15,7 @@ public class Intervention {
 	private SimpleStringProperty descrCategoria;
 	private SimpleStringProperty codVerifica;
 	private SimpleStringProperty descrVerifica;
+	private SimpleStringProperty note;
 	private Button detailBtn;
 	
 	static int intervId;
@@ -28,6 +29,7 @@ public class Intervention {
         this.descrCategoria = new SimpleStringProperty();
         this.codVerifica = new SimpleStringProperty();
         this.descrVerifica = new SimpleStringProperty();
+        this.note = new SimpleStringProperty();
         this.detailBtn = new Button("Dettagli");
 	}
 	
@@ -130,6 +132,19 @@ public class Intervention {
 	
 	public StringProperty descrVerificaProperty() {
 		return descrVerifica;
+	}
+	
+    //note
+	public String getNote() {
+		return note.get();
+	}
+	
+	public void setNote(String n) {
+		this.note.set(n);
+	}
+	
+	public StringProperty noteProperty() {
+		return note;
 	}
 
     //dettagliButton

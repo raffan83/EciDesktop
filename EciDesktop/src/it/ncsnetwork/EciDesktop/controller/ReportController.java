@@ -17,8 +17,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class ReportController {
@@ -32,6 +34,8 @@ public class ReportController {
 	@FXML private TableColumn<Report, String> dateCol;
 	@FXML private TableColumn<Report, String> completeCol;
 	@FXML private Label sedeLabel, dataLabel, codVerLabel, descrVerLabel, codCatLabel, descrCatLabel;
+	@FXML private Text note;
+	@FXML private TextArea modNote;
 	
     public void initData(Intervention interv){
         selectedInterv = interv;
@@ -41,14 +45,30 @@ public class ReportController {
         descrVerLabel.setText(selectedInterv.getDescrVerifica());
         codCatLabel.setText(selectedInterv.getCodCategoria());
         descrCatLabel.setText(selectedInterv.getDescrCategoria());
+        note.setText(selectedInterv.getNote());
     }
     
+    // apre dialog note
+    public void modNote(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/it/ncsnetwork/EciDesktop/view/template/note.fxml"));
+    	Stage st = new Stage();
+    	Parent root = loader.load();
+        Scene scene = new Scene(root);
+        NoteController controller = loader.getController();
+        controller.initData(selectedInterv);
+        st.setTitle("Note");
+        st.setScene(scene);
+        st.show();
+        
+    }
+
 	@FXML
     public void goBack(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/it/ncsnetwork/EciDesktop/view/intervention.fxml"));
         Parent tableViewParent = loader.load();
-        Scene tableViewScene = new Scene(tableViewParent);
+        Scene tableViewScene = new Scene(tableViewParent);   
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setTitle("Interventi");
         window.setScene(tableViewScene);
@@ -89,11 +109,16 @@ public class ReportController {
 						
 	                    int repId = ((Report) item).getIdRep();
 	                    Report.setReportId(repId);
-	                    
-						Parent tableViewParent;
+
 							try {
-								tableViewParent = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/questionnaire.fxml"));
-								Scene tableViewScene = new Scene(tableViewParent);
+						        FXMLLoader loader = new FXMLLoader();
+						        loader.setLocation(getClass().getResource("/it/ncsnetwork/EciDesktop/view/questionnaire.fxml"));
+						        Parent tableViewParent = loader.load();
+						        Scene tableViewScene = new Scene(tableViewParent);
+						        
+						        QuestionnaireController controller = loader.getController();
+						        controller.setData(selectedInterv);
+						        
 						        Stage window = (Stage)((Node)e.getSource()).getScene().getWindow();
 						        window.setTitle("Questionario");
 						        window.setScene(tableViewScene);
@@ -137,6 +162,6 @@ public class ReportController {
     private void populateReports (ObservableList<Report> reportData) throws ClassNotFoundException {
     	reportTable.setItems(reportData);
     }
-	
+
 }
 

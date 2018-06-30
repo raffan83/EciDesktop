@@ -88,12 +88,11 @@ public class InterventionController {
 					        
 					        Scene tableViewScene = new Scene(tableViewParent);
 					        
-					        //access the controller and call a method
+					        //invio i dettagli dell'intervento alla pagina verbali
 					        ReportController controller = loader.getController();
 					        controller.initData((Intervention) item);
 							
 					        Stage window = (Stage)((Node)e.getSource()).getScene().getWindow();
-					        //window.setFullScreen(true);
 					        window.setWidth(Control.USE_COMPUTED_SIZE);
 					        window.setHeight(Control.USE_COMPUTED_SIZE);
 					        window.setTitle("Verbali");
@@ -156,29 +155,6 @@ public class InterventionController {
             Date d = new Date(data);
             DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
             String dataString = df.format(d);
-            
-            System.out.println(data);
-            System.out.println(d.toString());
-            System.out.println(dataString);
-
-
-
-            
-            
-            //JSONObject interv = (JSONObject) interventi.get("16");
-            
-
-            //String sede = (String) interv.get("nome_sede");
-           // String idCommessa = (String) interv.get("idCommessa");
-            //JSONArray companyList = (JSONArray) jsonObject.get("Company List");
- 
-          //  System.out.println("Sede: " + sede);
-          //  System.out.println("idCommessa: " + idCommessa);
-           /* System.out.println("\nCompany List:");
-            Iterator<String> iterator = companyList.iterator();
-            while (iterator.hasNext()) {
-                System.out.println(iterator.next());
-            }*/
 
         } catch (Exception e) {
             e.printStackTrace();

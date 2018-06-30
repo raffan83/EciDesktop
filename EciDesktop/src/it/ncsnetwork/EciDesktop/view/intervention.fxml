@@ -4,6 +4,8 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.ncsnetwork.EciDesktop.controller.InterventionController">
@@ -12,7 +14,14 @@
         <items>
           <AnchorPane maxHeight="40.0" minHeight="40.0" minWidth="0.0">
                <children>
-                  <Button layoutX="26.0" layoutY="13.0" mnemonicParsing="false" onAction="#downloadInterventions" styleClass="btn" text="Scarica nuovi interventi" AnchorPane.bottomAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                  <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#downloadInterventions" styleClass="btn" text="Scarica nuovi interventi" AnchorPane.bottomAnchor="6.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="6.0">
+                     <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../img/download.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
                </children></AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0">
                <children>

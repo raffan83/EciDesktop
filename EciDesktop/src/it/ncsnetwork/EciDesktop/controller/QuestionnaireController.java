@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import it.ncsnetwork.EciDesktop.model.Intervention;
-import it.ncsnetwork.EciDesktop.model.InterventionDAO;
 import it.ncsnetwork.EciDesktop.model.Questionnaire;
 import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
@@ -18,7 +17,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
@@ -30,6 +28,8 @@ import javafx.stage.Stage;
 
 public class QuestionnaireController {
 	
+	Intervention selectedInterv;
+	
 	@FXML private Label reportId;
 	@FXML VBox reportBox;
 	
@@ -39,10 +39,20 @@ public class QuestionnaireController {
         loader.setLocation(getClass().getResource("/it/ncsnetwork/EciDesktop/view/report.fxml"));
         Parent tableViewParent = loader.load();
         Scene tableViewScene = new Scene(tableViewParent);
+        
+        //ricarica le info dell'intervento sulla pagina verbali
+        ReportController controller = loader.getController();
+        controller.initData(selectedInterv);
+        
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setTitle("Verbali");
         window.setScene(tableViewScene);
         window.show();
+    }
+	
+	//salva le info dell'intervento per rimetterle sulla pagina verbali
+    public void setData(Intervention interv) {
+    	selectedInterv = interv;
     }
 		
 	public void loadFxml (String template) throws IOException  {
@@ -67,10 +77,10 @@ public class QuestionnaireController {
 		ReportDAO.changeState(1);
 	}
 	
-	public void completeReport() throws IOException, ClassNotFoundException, SQLException {
+	public void completeReport(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
 		System.out.print(getQuestionnaire());
 		ReportDAO.changeState(2);
-		goBack(null);
+		goBack(event);
 	}
 	
 	

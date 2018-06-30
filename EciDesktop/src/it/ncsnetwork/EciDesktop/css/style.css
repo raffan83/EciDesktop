@@ -26,3 +26,13 @@
   -fx-background-color: black;
   -fx-text-fill: white;
 }
+
+/*******************************************************************************
+ *                                                                             *
+ * Dettgli interventi sulla pagina della lista verbali                         *
+ *                                                                             *
+ ******************************************************************************/
+.intDetail {
+	-fx-font-weight: bold;
+}
+
