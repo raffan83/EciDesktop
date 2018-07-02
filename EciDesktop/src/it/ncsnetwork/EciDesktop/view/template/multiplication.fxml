@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="0.0" prefWidth="560.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.ncsnetwork.EciDesktop.controller.TemplateController">
+   <children>
+      <VBox fx:id="multVBox" prefHeight="0.0" prefWidth="560.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Text fx:id="quest" strokeType="OUTSIDE" strokeWidth="0.0" text="Domanda" />
+            <HBox>
+               <children>
+                  <TextField fx:id="input1" onKeyReleased="#doMultiplication" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" minHeight="26.0" minWidth="26.0" text="X" />
+                  <TextField fx:id="input2" onKeyReleased="#doMultiplication" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" minHeight="26.0" minWidth="26.0" text="=" />
+                  <TextField fx:id="output" editable="false" />
+               </children>
+            </HBox>
+            <Label fx:id="opErr" textFill="RED" />
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets left="15.0" right="15.0" top="10.0" />
+   </padding>
+</AnchorPane>

@@ -20,12 +20,14 @@ import javafx.stage.StageStyle;
  */
 public class menu extends Application {
     
+	public static String parameters;
+	
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(PivotView.class.getResource("formMenu.fxml"));
+        Parent root = FXMLLoader.load(PivotView.class.getResource("intervention.fxml"));//("questionnaire.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initStyle(StageStyle.DECORATED);
         stage.show();
     }
 

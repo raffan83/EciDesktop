@@ -39,9 +39,6 @@ public class MainApp extends Application {
         delay.play();
 
     }
-
-	
-		
     /*
      * @param args the command line arguments
      */

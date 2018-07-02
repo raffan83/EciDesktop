@@ -44,6 +44,9 @@ public class configAnimasi extends Transition {
      * @param useCache When true the node is cached as image during the animation
      */
     public configAnimasi(final Node node, final Timeline timeline, final boolean useCache) {
+
+
+    	
         this.node = node;
         this.timeline = timeline;
         this.useCache = useCache;

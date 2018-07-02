@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.ncsnetwork.EciDesktop.controller.ReportController">
+   <children>
+      <SplitPane dividerPositions="0.26755852842809363" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <AnchorPane minHeight="50.0" minWidth="0.0" prefHeight="600.0" prefWidth="898.0">
+               <children>
+                  <Button layoutY="5.0" mnemonicParsing="false" onAction="#goBack" styleClass="btn" prefHeight="40.0" prefWidth="40.0" AnchorPane.leftAnchor="5.0">
+                     <graphic>
+                        <ImageView fitHeight="16.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../img/arrowLeft.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <VBox prefHeight="107.0" prefWidth="598.0" spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <padding>
+                        <Insets bottom="10.0" top="10.0" />
+                     </padding>
+                     <children>
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <Label text="Sede:" />
+                              <Label fx:id="sedeLabel" styleClass="intDetail" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <Label text="Data creazione:" />
+                              <Label fx:id="dataLabel" styleClass="intDetail" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <Label text="Tipo verifica:" />
+                              <Label fx:id="codVerLabel" styleClass="intDetail" />
+                              <Label text="-" />
+                              <Label fx:id="descrVerLabel" styleClass="intDetail" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <Label text="Categoria verifica:" />
+                              <Label fx:id="codCatLabel" styleClass="intDetail" />
+                              <Label text="-" />
+                              <Label fx:id="descrCatLabel" styleClass="intDetail" />
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+                           <children>
+                              <Label text="Note:" />
+                              <Text fx:id="note" strokeType="OUTSIDE" strokeWidth="0.0" />
+                              <Button mnemonicParsing="false" onAction="#modNote" styleClass="btn" style="-fx-background-color: transparent;">
+                                 <graphic>
+                                    <ImageView fitHeight="20.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../img/completa.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic></Button>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="543.0" prefWidth="898.0">
+               <children>
+                  <TableView fx:id="reportTable" prefHeight="340.0" prefWidth="598.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columns>
+                      <TableColumn fx:id="idCol" prefWidth="60.0" text="ID" />
+                      <TableColumn fx:id="nameCol" prefWidth="225.0" text="Verbale" />
+                        <TableColumn fx:id="stateCol" prefWidth="55.0" text="Stato" />
+                        <TableColumn fx:id="dateCol" prefWidth="162.0" text="Data Completamento" />
+                        <TableColumn fx:id="completeCol" prefWidth="94.0" />
+                    </columns>
+                  </TableView>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>
