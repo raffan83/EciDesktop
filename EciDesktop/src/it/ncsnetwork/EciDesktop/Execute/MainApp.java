@@ -24,9 +24,7 @@ public class MainApp extends Application {
 
 	@Override
     public void start(Stage stage) throws Exception {
-//    	String imgLocation = "/image/walpaper_top.jpg";
-//		URL imageURL = GeneralGUI.class.getResource(imgLocation);
-		
+
         Parent root = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/splash.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
