@@ -12,57 +12,57 @@ public class User {
 	static int userId;
 
 	public User() {
-        this.id = new SimpleIntegerProperty();
-        this.username = new SimpleStringProperty();
-        this.password = new SimpleStringProperty();
+		this.id = new SimpleIntegerProperty();
+		this.username = new SimpleStringProperty();
+		this.password = new SimpleStringProperty();
 	}
-	
-	//id
+
+	// id
 	public int getId() {
 		return id.get();
 	}
-	
+
 	public void setId(int i) {
 		this.id.set(i);
 	}
-	
+
 	public IntegerProperty idProperty() {
 		return id;
 	}
 
-	//username
+	// username
 	public String getUsername() {
 		return username.get();
 	}
-	
+
 	public void setUsername(String u) {
 		this.username.set(u);
 	}
-	
+
 	public StringProperty usernameProperty() {
 		return username;
 	}
 
-	//password
+	// password
 	public String getPassword() {
 		return password.get();
 	}
-	
+
 	public void setType(String p) {
 		this.password.set(p);
 	}
-	
+
 	public StringProperty passwordProperty() {
 		return password;
 	}
-	
+
 	// userId
-    public static int getUserId() {
-    	return userId;
-    }
-    
-    public static void setUserId(int i) {
-    	userId = i;
-    }
+	public static int getUserId() {
+		return userId;
+	}
+
+	public static void setUserId(int i) {
+		userId = i;
+	}
 
 }

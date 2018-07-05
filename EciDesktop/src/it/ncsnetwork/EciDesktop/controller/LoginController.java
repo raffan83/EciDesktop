@@ -33,60 +33,64 @@ import javafx.stage.StageStyle;
  * @author Herudi
  */
 public class LoginController implements Initializable {
-	
-    @FXML
-    private TextField txtUsername;
-    @FXML
-    private PasswordField txtPassword;
-    @FXML
-    private Text lblWelcome;
-    @FXML
-    private Text lblUserLogin;
-    @FXML
-    private Text lblUsername;
-    @FXML
-    private Text lblPassword;
-    @FXML
-    private Button btnLogin;
-    @FXML
-    private Text lblRudyCom;
-    @FXML 
-    private Label lblClose;
+
+	@FXML
+	private TextField txtUsername;
+	@FXML
+	private PasswordField txtPassword;
+	@FXML
+	private Text lblWelcome;
+	@FXML
+	private Text lblUserLogin;
+	@FXML
+	private Text lblUsername;
+	@FXML
+	private Text lblPassword;
+	@FXML
+	private Button btnLogin;
+	@FXML
+	private Text lblRudyCom;
+	@FXML
+	private Label lblClose;
 	@FXML
 	private Label errLogin;
-	
-    Stage stage;
-    /**
-     * Initializes the controller class.
-     * @param url
-     * @param rb
-     */
-    
-    public LoginController() {}
-    
-    public void initialize(URL url, ResourceBundle rb) {
 
-        Platform.runLater(() -> {
-            new FadeInRightTransition(lblUserLogin).play();
-            new FadeInLeftTransition(lblWelcome).play();
-            new FadeInLeftTransition1(lblPassword).play();
-            new FadeInLeftTransition1(lblUsername).play();
-            new FadeInLeftTransition1(txtUsername).play();
-            new FadeInLeftTransition1(txtPassword).play();
-            new FadeInRightTransition(btnLogin).play();
-            lblClose.setOnMouseClicked((MouseEvent event) -> {
-                Platform.exit();
-                System.exit(0);
-            });
-        });
-        // TODO
-    }
-    
-    public void Login (ActionEvent event) throws ClassNotFoundException {
-    	try {
+	Stage stage;
+
+	/**
+	 * Initializes the controller class.
+	 * 
+	 * @param url
+	 * @param rb
+	 */
+
+	public LoginController() {
+	}
+
+	public void initialize(URL url, ResourceBundle rb) {
+
+		Platform.runLater(() -> {
+			new FadeInRightTransition(lblUserLogin).play();
+			new FadeInLeftTransition(lblWelcome).play();
+			new FadeInLeftTransition1(lblPassword).play();
+			new FadeInLeftTransition1(lblUsername).play();
+			new FadeInLeftTransition1(txtUsername).play();
+			new FadeInLeftTransition1(txtPassword).play();
+			new FadeInRightTransition(btnLogin).play();
+			lblClose.setOnMouseClicked((MouseEvent event) -> {
+				Platform.exit();
+				System.exit(0);
+			});
+		});
+		// TODO
+	}
+
+	public void Login(ActionEvent event) throws ClassNotFoundException {
+		try {
 			if (LoginDAO.isLogin(txtUsername.getText(), txtPassword.getText())) {
 				config c = new config();
-	            c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml", "Interventi", true, StageStyle.DECORATED, false);
+				c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml", "Interventi", true,
+						StageStyle.DECORATED, false);
 			} else {
 				errLogin.setText("Username o password errati!");
 			}
@@ -94,18 +98,16 @@ public class LoginController implements Initializable {
 			errLogin.setText("Username o password errati!");
 			e.printStackTrace();
 		}
-    }
+	}
 
+	/*
+	 * private void aksiLogin(ActionEvent event) { if
+	 * (txtUsername.getText().equals("herudi") &&
+	 * txtPassword.getText().equals("herudi")) { config c = new config();
+	 * c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/formMenu.fxml",
+	 * "Test App", true, StageStyle.UNDECORATED, false); }else{ //
+	 * config2.dialog(Alert.AlertType.ERROR,
+	 * "Error Login, Please Chek Username And Password"); } }
+	 */
 
-  /*  
-    private void aksiLogin(ActionEvent event) {
-        if (txtUsername.getText().equals("herudi") && txtPassword.getText().equals("herudi")) {
-            config c = new config();
-            c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/formMenu.fxml", "Test App", true, StageStyle.UNDECORATED, false);
-        }else{
-          //  config2.dialog(Alert.AlertType.ERROR, "Error Login, Please Chek Username And Password");
-        }
-    }*/
-    
-    
 }

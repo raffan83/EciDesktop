@@ -8,76 +8,67 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class InterventionDAO {
-		
+
+	static int userId = User.getUserId();
+	
 	public static ObservableList<Intervention> searchInterventions() throws SQLException, ClassNotFoundException {
 
-		int userId = User.getUserId();
-        String selectStmt = "SELECT * FROM intervention WHERE user_id = "+userId;
- 
-        try {
-            ResultSet rsInt = DBUtil.dbExecuteQuery(selectStmt);
-            ObservableList<Intervention> intervList = getInterventionList(rsInt);
-            return intervList;
-        } catch (SQLException e) {
-            System.out.println("SQL select operation has been failed: " + e);
-            throw e;
-        }
+		String selectStmt = "SELECT * FROM intervention WHERE user_id = "+ userId;
+
+		try {
+			ResultSet rsInt = DBUtil.dbExecuteQuery(selectStmt);
+			ObservableList<Intervention> intervList = getInterventionList(rsInt);
+			return intervList;
+		} catch (SQLException e) {
+			System.out.println("SQL select operation has been failed: " + e);
+			throw e;
+		}
 	}
 
-    private static ObservableList<Intervention> getInterventionList(ResultSet rs) throws SQLException, ClassNotFoundException {
-        ObservableList<Intervention> intervList = FXCollections.observableArrayList();
- 
-        while (rs.next()) {
-            Intervention interv = new Intervention();
-            interv.setId(rs.getInt("id"));
-            interv.setSede(rs.getString("sede"));
-            interv.setDataCreazione(rs.getString("data_creazione"));
-            interv.setStato(rs.getInt("stato"));
-            interv.setCodCategoria(rs.getString("codice_categoria"));
-            interv.setDescrCategoria(rs.getString("descrizione_categoria"));
-            interv.setCodVerifica(rs.getString("codice_verifica"));
-            interv.setDescrVerifica(rs.getString("descrizione_verifica"));
-            interv.setNote(rs.getString("note"));
-      
-            intervList.add(interv);
-        }
-        return intervList;
-    }
-    
-	public static void setState() throws SQLException, ClassNotFoundException {
-		int userId = User.getUserId();
-        String selectIntervId = "SELECT id FROM intervention WHERE user_id = "+userId;
-        ObservableList<Integer> idList = FXCollections.observableArrayList();
-        ResultSet rs1 = DBUtil.dbExecuteQuery(selectIntervId);
-		while (rs1.next()) {     
-            idList.add(rs1.getInt("id"));
+	private static ObservableList<Intervention> getInterventionList(ResultSet rs)
+			throws SQLException, ClassNotFoundException {
+		ObservableList<Intervention> intervList = FXCollections.observableArrayList();
+
+		while (rs.next()) {
+			Intervention interv = new Intervention();
+			interv.setId(rs.getInt("id"));
+			interv.setSede(rs.getString("sede"));
+			interv.setDataCreazione(rs.getString("data_creazione"));
+			interv.setStato(rs.getInt("stato"));
+			interv.setCodCategoria(rs.getString("codice_categoria"));
+			interv.setDescrCategoria(rs.getString("descrizione_categoria"));
+			interv.setCodVerifica(rs.getString("codice_verifica"));
+			interv.setDescrVerifica(rs.getString("descrizione_verifica"));
+			interv.setNote(rs.getString("note"));
+
+			intervList.add(interv);
 		}
-		for (int id: idList) {
-	        String selectReportState= "SELECT state FROM report WHERE intervention_id = "+id;
-			ObservableList<Integer> stateList = FXCollections.observableArrayList();
-			ResultSet rs2 = DBUtil.dbExecuteQuery(selectReportState);
-			while (rs2.next()) {     
-	            stateList.add(rs2.getInt("state"));
-			}
-			boolean isComplete = true;
-			for (int state: stateList) {
-				if (state == 1) {
-			    	String stmt = "UPDATE intervention SET stato = 1 WHERE id = " + id;
-				    DBUtil.dbExecuteUpdate(stmt);
-				    isComplete = false;
-				    break;		
-				}
-				if (state != 1 && state != 2 ) {
-					isComplete = false;
-				}
-			}
-			if (isComplete) {
-				String stmt = "UPDATE intervention SET stato = 2 WHERE id = " + id;
-			    DBUtil.dbExecuteUpdate(stmt);
-			}
-		}
+		return intervList;
 	}
-	
+
+	//cambia lo stato dell'intervento
+	public static void setState() throws SQLException, ClassNotFoundException {
+		int id = Intervention.getIntervId();
+		String selectReportState = "SELECT state FROM report WHERE intervention_id = " + id;
+		ObservableList<Integer> stateList = FXCollections.observableArrayList();
+		ResultSet rs2 = DBUtil.dbExecuteQuery(selectReportState);
+		while (rs2.next()) {
+			stateList.add(rs2.getInt("state"));
+		}
+		int newState = 1;
+		int state0 = 0, state2 = 0;
+		for (int state : stateList) {
+			if (state == 1) break;
+			else if (state == 2) state2++;
+			else if (state == 0) state0++;
+		}
+		if(state0 == stateList.size()) newState = 0;
+		else if (state2 == stateList.size()) newState = 2;
+		
+		String stmt = "UPDATE intervention SET stato = " + newState + " WHERE id = " + id;
+		DBUtil.dbExecuteUpdate(stmt);
+	}
+
 	public static void saveNote(int intervId, String note) throws ClassNotFoundException, SQLException {
 		String stmt = "UPDATE intervention SET note = '" + note + "' WHERE id = " + intervId;
 		try {
@@ -87,5 +78,32 @@ public class InterventionDAO {
 			throw e;
 		}
 	}
+
+	// filtra interventi per stato
+	public static ObservableList<Intervention> searchIntervention(int stato) throws SQLException, ClassNotFoundException {
+		
+		String selectStmt = "SELECT * FROM intervention WHERE user_id = " + userId;
+		
+		if (stato != 3) {		
+			selectStmt = "SELECT * FROM intervention WHERE stato = " + stato + " AND user_id = " + userId;
+		}	
+		try {
+			ResultSet rsInt = DBUtil.dbExecuteQuery(selectStmt);
+			ObservableList<Intervention> intervList = getInterventionList(rsInt);
+			return intervList;
+		} catch (SQLException e) {
+			throw e;
+		}
+	}
 	
+	// salva sul db gli interventi dal JSON
+	public static void saveJSON(Intervention i) throws ClassNotFoundException, SQLException {
+		String stmt = "INSERT INTO intervention "
+				+ "(data_creazione, sede, codice_categoria, codice_verifica, descrizione_categoria, descrizione_verifica, user_id) VALUES"
+				+ " ('" + i.getDataCreazione()+"','"+i.getSede()+"','"+i.getCodCategoria()+"','"+i.getCodVerifica()+"','"+i.getDescrCategoria()+"','"+i.getDescrVerifica()+"',1)";
+		
+		DBUtil.dbExecuteUpdate(stmt);
+	}
+
+		
 }
