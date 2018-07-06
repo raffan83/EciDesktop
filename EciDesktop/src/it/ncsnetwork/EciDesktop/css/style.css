@@ -12,20 +12,37 @@
  * Button Scarica nuovi interventi                                             *
  *                                                                             *
  ******************************************************************************/
-.btn {
+.btn{
     -fx-border-color : transparent;
     -fx-background-color: #299bb4;
     -fx-text-fill: white;
 }
 
-.btn:hover {
+.btn:hover{
     -fx-background-color: #699ca7;
     -fx-cursor: hand;
+      -fx-text-fill: white;
 }
-.btn:pressed, .btn:default:hover:pressed {
+.btn:pressed, .btn:default:hover:pressed{
   -fx-background-color: black;
   -fx-text-fill: white;
 }
+.dettagli{
+    -fx-border-color : transparent;
+    -fx-background-color: #299bb4;
+    -fx-text-fill: white;
+}
+
+.dettagli:hover{
+    -fx-background-color: #699ca7;
+    -fx-cursor: hand;
+      -fx-text-fill: white;
+}
+.dettagli:pressed, .dettagli:default:hover:pressed{
+  -fx-background-color: black;
+  -fx-text-fill: white;
+}
+
 
 /*******************************************************************************
  *                                                                             *
@@ -35,4 +52,29 @@
 .intDetail {
 	-fx-font-weight: bold;
 }
+
+
+/*******************************************************************************
+ *                                                                             *
+ * Combo box per filtro stato          										   *
+ *                                                                             *
+ ******************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

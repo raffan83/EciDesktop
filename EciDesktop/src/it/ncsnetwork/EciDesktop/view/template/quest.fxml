@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="0.0" prefWidth="560.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox layoutX="35.0" layoutY="-33.0" prefHeight="200.0" prefWidth="600.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Text fx:id="quest" strokeType="OUTSIDE" strokeWidth="0.0" text="Domanda" />
+            <HBox fx:id="choiceHBox" prefHeight="100.0" prefWidth="200.0" spacing="20.0" />
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="15.0" right="15.0" top="10.0" />
+   </padding>
+</AnchorPane>

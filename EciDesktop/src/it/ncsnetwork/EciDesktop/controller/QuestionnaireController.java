@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -32,10 +33,11 @@ public class QuestionnaireController {
 	private Intervention selectedInterv;
 	private int selectedState;
 
-	@FXML
-	private Label reportId;
-	@FXML
-	VBox reportBox;
+	List<String> list = new ArrayList<>();
+	
+	
+	@FXML private Label reportId;
+	@FXML VBox reportBox;
 
 	@FXML
 	public void goBack(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
@@ -72,13 +74,20 @@ public class QuestionnaireController {
 	public void initialize() throws IOException {
 		String id = String.valueOf(Report.getReportId());
 		reportId.setText(id);
+		
+		list.add("ciao");
+		list.add("ciao2");
+		list.add("ciao3");
+		list.add("ciao4");
+		
+		TemplateController tc = new TemplateController();
+		tc.getRadioButton(list);
 
 		loadFxml(Questionnaire.openQuestion);
 		loadFxml(Questionnaire.oneChoice);
 		loadFxml(Questionnaire.multiChoice);
 		loadFxml(Questionnaire.multiplication);
-		loadFxml(Questionnaire.multiplication);
-		loadFxml(Questionnaire.openQuestion);
+
 	}
 
 	public void saveReport() throws IOException, ClassNotFoundException, SQLException {

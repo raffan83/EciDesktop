@@ -13,7 +13,7 @@ public class InterventionDAO {
 	
 	public static ObservableList<Intervention> searchInterventions() throws SQLException, ClassNotFoundException {
 
-		String selectStmt = "SELECT * FROM intervention WHERE user_id = "+ userId;
+		String selectStmt = "SELECT * FROM intervention";// WHERE user_id = "+ userId;
 
 		try {
 			ResultSet rsInt = DBUtil.dbExecuteQuery(selectStmt);

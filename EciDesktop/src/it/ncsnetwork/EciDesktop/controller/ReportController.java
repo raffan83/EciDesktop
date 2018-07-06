@@ -38,6 +38,11 @@ public class ReportController {
 	@FXML private Label sedeLabel, dataLabel, codVerLabel, descrVerLabel, codCatLabel, descrCatLabel;
 	@FXML private Text note;
 	
+	
+	public ReportController() {
+		
+	}
+	
 	public void initData(Intervention interv, int state) {
 		selectedInterv = interv;
 		sedeLabel.setText(selectedInterv.getSede());
@@ -103,6 +108,7 @@ public class ReportController {
 
 		for (Object item : reportTable.getItems()) {
 			if (((Report) item).getCompleteRep() instanceof Button) {
+				((Report) item).getCompleteRep().getStyleClass().add("dettagli");
 				((Report) item).getCompleteRep().setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent e) {
@@ -138,6 +144,5 @@ public class ReportController {
 	private void populateReports(ObservableList<Report> reportData) throws ClassNotFoundException {
 		reportTable.setItems(reportData);
 	}
-	
 	
 }

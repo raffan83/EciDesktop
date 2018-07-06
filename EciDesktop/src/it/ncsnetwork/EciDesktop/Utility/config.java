@@ -8,6 +8,11 @@ package it.ncsnetwork.EciDesktop.Utility;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -110,4 +115,17 @@ public class config {
 	public static void setModelColumn(TableColumn tb, String a) {
 		tb.setCellValueFactory(new PropertyValueFactory(a));
 	}
+	
+	public void testGet() {  //192.168.1.11:8080/PortalECI/rest/intervento
+        Client client = ClientBuilder.newClient();
+        WebTarget target = client.target("http://192.168.1.11:8080/PortalECI/rest/intervento");
+         
+        Response response = target.request().get();
+        System.out.println("Response code: " + response.getStatus());
+        
+        String s = response.readEntity(String.class);
+        System.out.println(s);
+
+	}
+	
 }
