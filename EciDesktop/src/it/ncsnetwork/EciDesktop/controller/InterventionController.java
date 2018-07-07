@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -17,6 +19,7 @@ import org.json.simple.parser.JSONParser;
 
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -31,7 +34,10 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -47,6 +53,7 @@ public class InterventionController {
 	@FXML private TableColumn<Intervention, String> codVerificaCol;
 	@FXML private TableColumn<Intervention, String> detailCol;
 	@FXML private ComboBox comboBox;
+	@FXML private ImageView imgDownload;
 
 	@FXML
 	private void searchInterventions() throws SQLException, ClassNotFoundException {
@@ -58,6 +65,28 @@ public class InterventionController {
 			throw e;
 		}
 	}
+
+	// imposta il testo a capo nelle righe della tabella
+	public void setCellHeight () {
+		List<TableColumn<Intervention, String>> list = new ArrayList<>();
+		list.add(sedeCol);list.add(codVerificaCol);list.add(codCategoriaCol);
+		for(TableColumn<Intervention, String> col : list) {
+		   col.setCellFactory(new Callback<TableColumn<Intervention, String>, TableCell<Intervention, String>>() {
+		        @Override
+		        public TableCell<Intervention, String> call(
+		                TableColumn<Intervention, String> param) {
+		            TableCell<Intervention, String> cell = new TableCell<>();
+		            Text text = new Text();
+		            cell.setGraphic(text);
+		            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+		            text.wrappingWidthProperty().bind(cell.widthProperty());
+		            text.textProperty().bind(cell.itemProperty());
+		            return cell ;
+		        }
+		    });
+		}
+	}
+	
 	
 	//imposta il colore allo stato
 	public void setStateColor() {
@@ -69,8 +98,7 @@ public class InterventionController {
                 public void updateItem(String item, boolean empty) {
                     super.updateItem(item, empty);
                     if (!isEmpty()) {
-                       //this.setTextFill(Color.RED);
-                        // Get fancy and change color based on data
+                    	this.setTextFill(Color.BLACK);
                         if(item.contains("In lavorazione")) 
                             this.setTextFill(Color.ORANGE);
                         else if(item.contains("Completo")) 
@@ -121,7 +149,9 @@ public class InterventionController {
 	// Initializing the controller class.
 	@FXML
 	public void initialize() throws ClassNotFoundException, SQLException {
-
+		
+		//interventionTable.setCell
+		
 		sedeCol.setCellValueFactory(cellData -> cellData.getValue().sedeProperty());
 		dataCol.setCellValueFactory(cellData -> cellData.getValue().dataCreazioneProperty());
 		statoCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("stato"));
@@ -137,9 +167,10 @@ public class InterventionController {
 		// popola la tabella
 		searchInterventions();
 	
-		// imposta il button dettagli cliccabile e il colore allo stato
+		// imposta il button dettagli cliccabile e il colore allo stato e l'altezza righe
 		setDetail();
 		setStateColor();
+		setCellHeight();
 	
         //configura la select per filtrare lo stato
         comboBox.getItems().addAll("Tutti","Da compilare","In lavorazione","Completo");
@@ -170,6 +201,7 @@ public class InterventionController {
 			populateInterventions(intervData);
 			setDetail();
 			setStateColor();
+			setCellHeight();
 	        String str = "Tutti";
 	        if (selectedState == 0) str = "Da compilare";
 	        else if (selectedState == 1) str = "In lavorazione";
@@ -183,8 +215,13 @@ public class InterventionController {
 	
 	@FXML
 	private void downloadInterventions() {
+		// imposta la gif di caricamento
+		new Thread(() -> {
+		    Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/load.gif")));	
+		
+		//chiamata get
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://192.168.1.11:8080/PortalECI/rest/intervento?username=xxx&password=macrosolution");
+        WebTarget target = client.target("http://192.168.1.16:8080/PortalECI/rest/intervento?username=xxx&password=macrosolution");
          
         Response response = target.request().get();
         System.out.println("Response code: " + response.getStatus());
@@ -199,89 +236,79 @@ public class InterventionController {
         	JSONObject jsonObject = (JSONObject) obj;
         	
         	JSONArray interventi = (JSONArray) jsonObject.get("listaInterventi");
-        	 for (Object intervento : interventi) {
-        	JSONObject interv = (JSONObject) intervento;
         	
-        	// id
-        	Long id = (Long) interv.get("id");
-        	// data creazione
-        	Long data = (Long) interv.get("dataCreazione");
-			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-			String dataCreazione = df.format(data);
-			// sede
-			String sede = (String) interv.get("nome_sede");
-			
-			System.out.println(id + " " + dataCreazione + " " + sede);
-			
-        	 }
-        	
-        } catch (Exception e) {
-			e.printStackTrace();
-		}
-        
-	}
-	
-	
-	
+        	for (Object intervento : interventi) {
 
-	@FXML
-	private void downloadInterventions2() {
-
-		JSONParser parser = new JSONParser();
-
-		try {
-
-			Object obj = parser.parse(new FileReader("interventi.txt"));
-			JSONObject jsonObject = (JSONObject) obj;
-			
-            JSONArray interventi = (JSONArray) jsonObject.get("listaInterventi");
-
-            for (Object intervento : interventi) {
             	JSONObject interv = (JSONObject) intervento;
+            	
             	// id
             	Long id = (Long) interv.get("id");
+            	
             	// data creazione
             	Long data = (Long) interv.get("dataCreazione");
     			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
     			String dataCreazione = df.format(data);
+    			
     			// sede
     			String sede = (String) interv.get("nome_sede");
+    			
     			// id commessa
     			String idCommessa = (String) interv.get("idCommessa");
-    			// tecnico verificatore
-    			JSONObject tecnico = (JSONObject) interv.get("tecnico_verificatore");
-    			Long idTecnico = (Long) tecnico.get("id");
+
     			// tipo verifica
-    			JSONObject tipoVerifica = (JSONObject) interv.get("tipo_verifica");
-    			String descrizioneTipo = (String) tipoVerifica.get("descrizione");
-    			String codiceTipo = (String) tipoVerifica.get("codice");
-    			// categoria verifica
-    			JSONObject catVerifica = (JSONObject) interv.get("tipo_verifica");
-    			String descrizioneCat = (String) catVerifica.get("descrizione");
-    			String codiceCat = (String) catVerifica.get("codice");
+    			JSONArray tipoVerifica = (JSONArray) interv.get("tipo_verifica");
+    			String descrizioneTipo="", codiceTipo="", descrizioneCat="", codiceCat="";
+    			int count=0;
+    			for (Object tv : tipoVerifica) {
+                	JSONObject tipoVer = (JSONObject) tv;
+	    			String descrTipo = (String) tipoVer.get("descrizione");	    			
+	    			String codTipo = (String) tipoVer.get("codice");
+	    			//categoria
+	    			JSONObject catVer = (JSONObject) tipoVer.get("categoria");
+	    			String descrCat = (String) catVer.get("descrizione");
+	    			String codCat = (String) catVer.get("codice");
+	    			
+	    			if (count == 0) {
+		    			descrizioneTipo = descrTipo;
+		    			codiceTipo = codTipo;
+		    			descrizioneCat = descrCat;
+		    			codiceCat = codCat;
+	    			}else {
+		    			descrizioneTipo += ", " + descrTipo;
+		    			codiceTipo += ", " + codTipo;
+		    			descrizioneCat += ", " + descrCat;
+		    			codiceCat += ", " + codCat;
+	    			} 
+	    			count++;
+        	 }
     			
-    			Intervention i = new Intervention();
-    			i.setIdIntervPortale(id);
-    			i.setDataCreazione(dataCreazione);
-    			i.setSede(sede);
-    			i.setDescrVerifica(descrizioneTipo);
-    			i.setCodVerifica(codiceTipo);
-    			i.setDescrCategoria(descrizioneCat);
-    			i.setCodCategoria(codiceCat);
-    			InterventionDAO.saveJSON(i);
-            }
-            
-    		// ripopola la tabella
-    		searchInterventions();
-    		
-    		// imposta button dettgli cliccabile e il colore allo stato
-    		setDetail();
-    		setStateColor();
-
-		} catch (Exception e) {
+			//salva sul db i nuovi interventi
+			Intervention i = new Intervention();
+			i.setIdIntervPortale(id);
+			i.setDataCreazione(dataCreazione);
+			i.setSede(sede);
+			i.setDescrVerifica(descrizioneTipo);
+			i.setCodVerifica(codiceTipo);
+			i.setDescrCategoria(descrizioneCat);
+			i.setCodCategoria(codiceCat);
+			InterventionDAO.saveJSON(i);
+			
+        }
+		// ripopola la tabella
+		searchInterventions();
+		
+		// imposta il button dettagli cliccabile e l'altezza righe
+		setDetail();
+		setCellHeight(); 	
+        	
+        } catch (Exception e) {
 			e.printStackTrace();
-		}
-
+		}     
+        
+        // ripristina l'immagine di default
+        Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/download.png")));
+		}).start();
+        
 	}
 	
 

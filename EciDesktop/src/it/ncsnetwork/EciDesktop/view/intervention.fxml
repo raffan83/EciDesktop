@@ -18,7 +18,7 @@
                <children>
                   <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#downloadInterventions" styleClass="btn" text="Scarica nuovi interventi" AnchorPane.bottomAnchor="6.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="6.0">
                      <graphic>
-                        <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="imgDownload" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../img/download.png" />
                            </image>

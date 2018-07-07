@@ -13,7 +13,7 @@ public class InterventionDAO {
 	
 	public static ObservableList<Intervention> searchInterventions() throws SQLException, ClassNotFoundException {
 
-		String selectStmt = "SELECT * FROM intervention";// WHERE user_id = "+ userId;
+		String selectStmt = "SELECT * FROM intervention WHERE user_id = "+ userId;
 
 		try {
 			ResultSet rsInt = DBUtil.dbExecuteQuery(selectStmt);
@@ -100,7 +100,8 @@ public class InterventionDAO {
 	public static void saveJSON(Intervention i) throws ClassNotFoundException, SQLException {
 		String stmt = "INSERT INTO intervention "
 				+ "(data_creazione, sede, codice_categoria, codice_verifica, descrizione_categoria, descrizione_verifica, user_id) VALUES"
-				+ " ('" + i.getDataCreazione()+"','"+i.getSede()+"','"+i.getCodCategoria()+"','"+i.getCodVerifica()+"','"+i.getDescrCategoria()+"','"+i.getDescrVerifica()+"',1)";
+				+ " ('" + i.getDataCreazione()+"','"+i.getSede()+"','"+i.getCodCategoria()+"','"+i.getCodVerifica()+"','"+i.getDescrCategoria()+"','"
+				+i.getDescrVerifica()+"','"+userId+"')";
 		
 		DBUtil.dbExecuteUpdate(stmt);
 	}
