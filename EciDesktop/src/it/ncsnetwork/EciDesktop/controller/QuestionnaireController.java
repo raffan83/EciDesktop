@@ -1,6 +1,7 @@
 package it.ncsnetwork.EciDesktop.controller;
 
 import javafx.event.ActionEvent;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,6 +25,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -35,9 +39,13 @@ public class QuestionnaireController {
 
 	List<String> list = new ArrayList<>();
 	
-	
 	@FXML private Label reportId;
 	@FXML VBox reportBox;
+	@FXML TextField input1, input2, output;
+	@FXML Label opErr;
+	@FXML Text quest;
+	@FXML TextField answer;
+	@FXML HBox choiceHBox;
 
 	@FXML
 	public void goBack(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
@@ -70,23 +78,115 @@ public class QuestionnaireController {
 		Pane newLoadedPane = FXMLLoader.load(getClass().getResource(template));
 		reportBox.getChildren().add(newLoadedPane);
 	}
+	
+	public VBox createTemplateQuestion() {
+		reportBox.setPadding(new Insets (20, 50, 20, 50));
+		Pane pane = new Pane();
+		pane.setPadding(new Insets (10, 15, 10, 15));
+		reportBox.getChildren().add(pane);
+		VBox vb = new VBox();
+		vb.setSpacing(10);
+		pane.getChildren().add(vb);
+		
+		return vb;
+	}
+	public void loadOpenQuestion(String question) {
+		Text t = new Text();
+		t.setText(question);
+		t.setId("question");
+		createTemplateQuestion().getChildren().add(t);
+		TextArea ta = new TextArea();
+		ta.setPrefHeight(40);
+		createTemplateQuestion().getChildren().add(ta);
+	}
+	
+	public void loadOperation(String question) {
+		Text t = new Text();
+		t.setText(question);
+		t.setId("question");
+		createTemplateQuestion().getChildren().add(t);
+		HBox hb = new HBox();
+		hb.setSpacing(20);
+		Label opErr = new Label();
+		createTemplateQuestion().getChildren().add(hb);
+		createTemplateQuestion().getChildren().add(opErr);
+		TextField input1 = new TextField();
+		TextField input2 = new TextField();
+		TextField output = new TextField();
+		
+		hb.getChildren().add(input1);
+		hb.getChildren().add(input2);
+		hb.getChildren().add(output);
 
+		if (input1.getText().isEmpty() || input2.getText().isEmpty()) {
+			output.setText("");
+		} else {
+			try {
+				double out = Double.parseDouble(input1.getText()) * Double.parseDouble(input2.getText());
+				String outs = Double.toString(out);
+				opErr.setText("");
+				output.setText(outs);
+			} catch (Exception e) {
+				output.setText("err");
+				opErr.setText("Inserisci valori numerici!");
+			}
+		}
+	}
+	
+	public void loadRadioButton(String question, List<String> list) throws IOException {
+		Text t = new Text();
+		t.setText(question);
+		t.setId("question");
+		createTemplateQuestion().getChildren().add(t);
+		
+		HBox hb = new HBox();
+		hb.setSpacing(20);
+		createTemplateQuestion().getChildren().add(hb);
+		
+		ToggleGroup group = new ToggleGroup();	
+		for (int i = 0; i < list.size(); i++) {
+			RadioButton rb = new RadioButton(list.get(i));
+			rb.setToggleGroup(group);
+			hb.getChildren().add(rb);
+		}
+	}
+	
+	public void loadCheckBox(String question, List<String> list) throws IOException {
+		Text t = new Text();
+		t.setText(question);
+		t.setId("question");
+		createTemplateQuestion().getChildren().add(t);
+		HBox hb = new HBox();
+		hb.setSpacing(20);
+		createTemplateQuestion().getChildren().add(hb);
+	
+		for (int i = 0; i < list.size(); i++) {
+			CheckBox cb = new CheckBox(list.get(i));
+			hb.getChildren().add(cb);
+		}
+	}
+
+	public void createQuest() throws IOException {
+		loadFxml(Questionnaire.openQuestion);
+		loadFxml(Questionnaire.oneChoice);
+		loadFxml(Questionnaire.multiChoice);
+		loadFxml("/it/ncsnetwork/EciDesktop/view/template/quest.fxml");
+		loadFxml(Questionnaire.multiplication);
+		loadRadioButton("Domanda", list);
+		loadRadioButton("Domanda", list);
+		loadCheckBox("Domanda", list);
+		loadOpenQuestion("Domanda");
+		
+	}
+	
 	public void initialize() throws IOException {
-		String id = String.valueOf(Report.getReportId());
-		reportId.setText(id);
+		//String id = String.valueOf(Report.getReportId());
+		//reportId.setText(id);
 		
 		list.add("ciao");
 		list.add("ciao2");
 		list.add("ciao3");
 		list.add("ciao4");
-		
-		TemplateController tc = new TemplateController();
-		tc.getRadioButton(list);
-
-		loadFxml(Questionnaire.openQuestion);
-		loadFxml(Questionnaire.oneChoice);
-		loadFxml(Questionnaire.multiChoice);
-		loadFxml(Questionnaire.multiplication);
 
 	}
 
@@ -198,6 +298,30 @@ public class QuestionnaireController {
 			nodes.add(node);
 			if (node instanceof Parent)
 				addAllDescendents((Parent) node, nodes);
+		}
+	}
+	
+	public void doMultiplication() {
+		if (input1.getText().isEmpty() || input2.getText().isEmpty()) {
+			output.setText("");
+		} else {
+			try {
+				double out = Double.parseDouble(input1.getText()) * Double.parseDouble(input2.getText());
+				String outs = Double.toString(out);
+				opErr.setText("");
+				output.setText(outs);
+			} catch (Exception e) {
+				output.setText("err");
+				opErr.setText("Inserisci valori numerici!");
+			}
+		}
+	}
+	
+	public void getCheckBox(List<String> list) throws IOException {
+		for (int i = 0; i < list.size(); i++) {
+			CheckBox cb = new CheckBox(list.get(i));
+			cb.setId("check" + i);
+			choiceHBox.getChildren().add(cb);
 		}
 	}
 
