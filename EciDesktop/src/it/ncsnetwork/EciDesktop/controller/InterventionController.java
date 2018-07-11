@@ -221,7 +221,7 @@ public class InterventionController {
 		
 		//chiamata get
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://192.168.1.16:8080/PortalECI/rest/intervento?username=xxx&password=macrosolution");
+        WebTarget target = client.target("http://192.168.1.16:8080/PortalECI/rest/intervento?username=xxx&password=macrosolution&action=download");
          
         Response response = target.request().get();
         System.out.println("Response code: " + response.getStatus());
@@ -233,10 +233,10 @@ public class InterventionController {
         
         try {
         	Object obj = parser.parse(s);
-        	JSONObject jsonObject = (JSONObject) obj;
+        	//JSONObject jsonObject = (JSONObject) obj;
         	
-        	JSONArray interventi = (JSONArray) jsonObject.get("listaInterventi");
-        	
+        	//JSONArray interventi = (JSONArray) jsonObject.get("listaInterventi");
+        	JSONArray interventi = (JSONArray) obj;
         	for (Object intervento : interventi) {
 
             	JSONObject interv = (JSONObject) intervento;
