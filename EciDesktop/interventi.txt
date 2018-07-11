@@ -1,6 +1,6 @@
 {
-    "listaInterventi": {
-        "16": {
+    "listaInterventi": [
+        {
             "id": 16,
             "dataCreazione": 1519826565000,
             "idSede": 0,
@@ -82,7 +82,7 @@
                 "codice": "VIE"
             }
         },
-        "17": {
+        {
             "id": 17,
             "dataCreazione": 1519826956000,
             "idSede": 0,
@@ -164,7 +164,7 @@
                 "codice": "VAL"
             }
         },
-        "19": {
+        {
             "id": 19,
             "dataCreazione": 1519831844000,
             "idSede": 0,
@@ -246,7 +246,7 @@
                 "codice": "VAL"
             }
         },
-        "22": {
+        {
             "id": 22,
             "dataCreazione": 1519832645000,
             "idSede": 458,
@@ -328,7 +328,7 @@
                 "codice": "VIE"
             }
         },
-        "49": {
+        {
             "id": 49,
             "dataCreazione": 1529680423000,
             "idSede": 0,
@@ -410,7 +410,7 @@
                 "codice": "VAL"
             }
         },
-        "50": {
+        {
             "id": 50,
             "dataCreazione": 1530183230000,
             "idSede": 0,
@@ -492,7 +492,7 @@
                 "codice": "VIE"
             }
         },
-        "51": {
+        {
             "id": 51,
             "dataCreazione": 1530198816000,
             "idSede": 0,
@@ -574,5 +574,5 @@
                 "codice": "VAL"
             }
         }
-    }
+    ]
 }

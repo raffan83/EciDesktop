@@ -29,95 +29,81 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-
 /**
  * FXML Controller class
  *
  * @author Herudi
  */
-public class SplashController implements Initializable  {
-    @FXML
-    private Text lblWelcome;
-    @FXML
-    private Text lblRudy;
-    @FXML
-    private VBox vboxBottom;
-    @FXML
-    private Label lblClose;
-    Stage stage;
-    @FXML
-    private ImageView imgLoading;
-    /**
-     * Initializes the controller class.
-     * @param url
-     * @param rb
-     */
-   
-    public SplashController() 
-    {
-    }
-   /* public void initialize(URL url, ResourceBundle rb) {
-   //     longStart();
-    	 new FadeInLeftTransition(lblWelcome).play();
-         new FadeInRightTransition(lblRudy).play();
-         new FadeInTransition(vboxBottom).play();
-        lblClose.setOnMouseClicked((MouseEvent event) -> {
-            Platform.exit();
-            System.exit(0);
-        });
-        // TODO
-    }   
-    
-    private void longStart() {
-        Service<ApplicationContext> service = new Service<ApplicationContext>() {
-            @Override
-            protected Task<ApplicationContext> createTask() {
-                return new Task<ApplicationContext>() {           
-                    @Override
-                    protected ApplicationContext call() throws Exception {
-                        ApplicationContext appContex = config.getInstance().getApplicationContext();
-                        int max = appContex.getBeanDefinitionCount();
-                        updateProgress(0, max);
-                        for (int k = 0; k < max; k++) {
-                            Thread.sleep(50);
-                            updateProgress(k+1, max);
-                        }
-                        return appContex;
-                    }
-                };
-            }
-        };
-        service.start();
-        service.setOnRunning((WorkerStateEvent event) -> {
-            new FadeInLeftTransition(lblWelcome).play();
-            new FadeInRightTransition(lblRudy).play();
-            new FadeInTransition(vboxBottom).play();
-        });
-   //     service.setOnSucceeded((WorkerStateEvent event) -> {
-            
-   //     });
-    } */
+public class SplashController implements Initializable {
+	@FXML
+	private Text lblWelcome;
+	@FXML
+	private Text lblRudy;
+	@FXML
+	private VBox vboxBottom;
+	@FXML
+	private Label lblClose;
+	Stage stage;
+	@FXML
+	private ImageView imgLoading;
+
+	/**
+	 * Initializes the controller class.
+	 * 
+	 * @param url
+	 * @param rb
+	 */
+
+	public SplashController() {
+	}
+
+	/*
+	 * public void initialize(URL url, ResourceBundle rb) { // longStart(); new
+	 * FadeInLeftTransition(lblWelcome).play(); new
+	 * FadeInRightTransition(lblRudy).play(); new
+	 * FadeInTransition(vboxBottom).play(); lblClose.setOnMouseClicked((MouseEvent
+	 * event) -> { Platform.exit(); System.exit(0); }); // TODO }
+	 * 
+	 * private void longStart() { Service<ApplicationContext> service = new
+	 * Service<ApplicationContext>() {
+	 * 
+	 * @Override protected Task<ApplicationContext> createTask() { return new
+	 * Task<ApplicationContext>() {
+	 * 
+	 * @Override protected ApplicationContext call() throws Exception {
+	 * ApplicationContext appContex = config.getInstance().getApplicationContext();
+	 * int max = appContex.getBeanDefinitionCount(); updateProgress(0, max); for
+	 * (int k = 0; k < max; k++) { Thread.sleep(50); updateProgress(k+1, max); }
+	 * return appContex; } }; } }; service.start();
+	 * service.setOnRunning((WorkerStateEvent event) -> { new
+	 * FadeInLeftTransition(lblWelcome).play(); new
+	 * FadeInRightTransition(lblRudy).play(); new
+	 * FadeInTransition(vboxBottom).play(); }); //
+	 * service.setOnSucceeded((WorkerStateEvent event) -> {
+	 * 
+	 * // }); }
+	 */
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		 new FadeInLeftTransition(lblWelcome).play();
-         new FadeInRightTransition(lblRudy).play();
-         new FadeInTransition(vboxBottom).play();
-        lblClose.setOnMouseClicked((MouseEvent event) -> {
-            Platform.exit();
-            System.exit(0);
-        });
-		
-        try {
+		new FadeInLeftTransition(lblWelcome).play();
+		new FadeInRightTransition(lblRudy).play();
+		new FadeInTransition(vboxBottom).play();
+		lblClose.setOnMouseClicked((MouseEvent event) -> {
+			Platform.exit();
+			System.exit(0);
+		});
+
+		try {
 			Thread.sleep(2000);
-		//	 Parent login = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/login.fxml"));
-		//        Scene sceneLogin = new Scene(login);
-		 //       SplashScreenWin8.primaryStage.setScene(sceneLogin);
-		 //       SplashScreenWin8.primaryStage.show();
+			// Parent login =
+			// FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/login.fxml"));
+			// Scene sceneLogin = new Scene(login);
+			// SplashScreenWin8.primaryStage.setScene(sceneLogin);
+			// SplashScreenWin8.primaryStage.show();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-       
 
 	}
 }

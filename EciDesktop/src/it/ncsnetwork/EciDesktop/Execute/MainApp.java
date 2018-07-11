@@ -19,31 +19,32 @@ import javafx.util.Duration;
  * @author Herudi
  */
 public class MainApp extends Application {
-    
+
 	public static Stage primaryStage;
 
 	@Override
-    public void start(Stage stage) throws Exception {
 
-        Parent root = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/splash.fxml"));
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.show();
-     
-        
-        Parent login = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/login.fxml"));
-        Scene sceneLogin = new Scene(login);
-        PauseTransition delay = new PauseTransition(Duration.seconds(5));
-        delay.setOnFinished( event -> stage.setScene(sceneLogin) );
-        delay.play();
+	public void start(Stage stage) throws Exception {
 
-    }
-    /*
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        launch(args);
-    }
-    
+		Parent root = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/splash.fxml"));
+		Scene scene = new Scene(root);
+		stage.setScene(scene);
+		stage.initStyle(StageStyle.UNDECORATED);
+		stage.show();
+
+		Parent login = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/login.fxml"));
+		Scene sceneLogin = new Scene(login);
+		PauseTransition delay = new PauseTransition(Duration.seconds(5));
+		delay.setOnFinished(event -> stage.setScene(sceneLogin));
+		delay.play();
+
+	}
+
+	/*
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
+		launch(args);
+	}
+
 }
