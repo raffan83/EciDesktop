@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -25,6 +26,7 @@ public class menu extends Application {
 	public void start(Stage stage) throws Exception {
 		Parent root = FXMLLoader.load(PivotView.class.getResource("intervention.fxml"));// ("questionnaire.fxml"));
 		Scene scene = new Scene(root);
+		stage.getIcons().add(new Image("/it/ncsnetwork/EciDesktop/img/logo_eci_s.png"));
 		stage.setScene(scene);
 		stage.initStyle(StageStyle.DECORATED);
 		stage.show();

@@ -19,6 +19,8 @@ import org.json.simple.parser.JSONParser;
 
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
+import it.ncsnetwork.EciDesktop.model.User;
+import it.ncsnetwork.EciDesktop.model.UserDAO;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -54,7 +56,7 @@ public class InterventionController {
 	@FXML private TableColumn<Intervention, String> detailCol;
 	@FXML private ComboBox comboBox;
 	@FXML private ImageView imgDownload;
-
+	
 	@FXML
 	private void searchInterventions() throws SQLException, ClassNotFoundException {
 		try {
@@ -219,9 +221,21 @@ public class InterventionController {
 		new Thread(() -> {
 		    Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/load.gif")));	
 		
+		
+		User user = new User();
+		try {
+			user = UserDAO.getUser();
+		} catch (ClassNotFoundException | SQLException e1) {
+			e1.printStackTrace();
+		}
+		String username = user.getUsername();
+		String password = user.getPassword();
+		
+		username = "xxx";
+		password = "macrosolution";
 		//chiamata get
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://192.168.1.16:8080/PortalECI/rest/intervento?username=xxx&password=macrosolution&action=download");
+        WebTarget target = client.target("http://192.168.1.16:8080/PortalECI/rest/intervento?username="+username+"&password="+password+"&action=download");
          
         Response response = target.request().get();
         System.out.println("Response code: " + response.getStatus());
