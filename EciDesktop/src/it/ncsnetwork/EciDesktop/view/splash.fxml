@@ -10,11 +10,11 @@
 
 <AnchorPane id="AnchorPane" prefHeight="327.0" prefWidth="493.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.ncsnetwork.EciDesktop.controller.SplashController" >
    <children>
-      <AnchorPane layoutX="74.0" layoutY="14.0" prefHeight="327.0" prefWidth="518.0" style="-fx-background-color: #2b579a;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane layoutX="74.0" layoutY="14.0" prefHeight="327.0" prefWidth="518.0" style="-fx-background-color: #9d201d;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ImageView fx:id="imgLoading" fitHeight="16.0" fitWidth="179.0" layoutX="157.0" layoutY="164.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../img/294.GIF" />
+                  <Image url="@../img/294-3.gif" />
                </image>
             </ImageView>
             <Text fx:id="lblWelcome" fill="WHITE" layoutX="45.0" layoutY="96.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ECI Desktop" wrappingWidth="289.2421875">

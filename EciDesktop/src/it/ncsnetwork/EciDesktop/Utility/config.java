@@ -22,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -53,7 +54,9 @@ public class config {
 			st.initStyle(style);
 			st.setResizable(resize);
 			st.setMaximized(maximized);
-			st.setTitle(judul);
+			st.getIcons().add(new Image("/it/ncsnetwork/EciDesktop/img/logo-eci.jpg"));
+			//st.setTitle(judul);
+			st.setTitle("ECI spa");
 			st.setScene(scene);
 			st.show();
 			stage.close();

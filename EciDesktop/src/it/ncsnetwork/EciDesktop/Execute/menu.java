@@ -26,8 +26,9 @@ public class menu extends Application {
 	public void start(Stage stage) throws Exception {
 		Parent root = FXMLLoader.load(PivotView.class.getResource("intervention.fxml"));// ("questionnaire.fxml"));
 		Scene scene = new Scene(root);
-		stage.getIcons().add(new Image("/it/ncsnetwork/EciDesktop/img/logo_eci_s.png"));
+		stage.getIcons().add(new Image("/it/ncsnetwork/EciDesktop/img/logo-eci.jpg"));
 		stage.setScene(scene);
+		stage.setTitle("ECI spa");
 		stage.initStyle(StageStyle.DECORATED);
 		stage.show();
 	}

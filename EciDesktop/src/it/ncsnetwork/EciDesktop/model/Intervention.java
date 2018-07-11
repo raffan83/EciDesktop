@@ -5,12 +5,14 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 
 public class Intervention {
 	private SimpleIntegerProperty id;
 	private SimpleStringProperty sede;
 	private SimpleStringProperty dataCreazione;
 	private String stato;
+	private Label statoLbl;
 	private SimpleStringProperty codCategoria;
 	private SimpleStringProperty descrCategoria;
 	private SimpleStringProperty codVerifica;
@@ -26,12 +28,13 @@ public class Intervention {
 		this.sede = new SimpleStringProperty();
 		this.dataCreazione = new SimpleStringProperty();
 		this.stato = new String("Da compilare");
+		this.statoLbl = new Label("Da compilare");
 		this.codCategoria = new SimpleStringProperty();
 		this.descrCategoria = new SimpleStringProperty();
 		this.codVerifica = new SimpleStringProperty();
 		this.descrVerifica = new SimpleStringProperty();
 		this.note = new SimpleStringProperty();
-		this.detailBtn = new Button("Dettagli");
+		this.detailBtn = new Button("");
 		this.idIntervPortale = new Long(0);
 	}
 
@@ -158,6 +161,18 @@ public class Intervention {
 
 	public void setDetailBtn(Button button) {
 		this.detailBtn = button;
+	}
+	
+	// label stato
+	public Label getStatoLbl() {
+		return statoLbl;
+	}
+
+	public void setStatoLbl(int i) {
+		if (i == 1)
+			this.statoLbl.setText("In lavorazione");
+		else if (i == 2)
+			this.statoLbl.setText("Completo");
 	}
 
 	// intervId

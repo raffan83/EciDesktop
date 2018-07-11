@@ -91,7 +91,7 @@ public class InterventionController {
 	
 	
 	//imposta il colore allo stato
-	public void setStateColor() {
+/*	public void setStateColor() {
 		statoCol.setCellFactory(new Callback<TableColumn<Intervention, String>, TableCell<Intervention, String>>(){
            @Override
             public TableCell<Intervention, String> call(TableColumn<Intervention, String> param) {
@@ -101,22 +101,32 @@ public class InterventionController {
                     super.updateItem(item, empty);
                     if (!isEmpty()) {
                     	this.setTextFill(Color.BLACK);
-                        if(item.contains("In lavorazione")) 
-                            this.setTextFill(Color.ORANGE);
-                        else if(item.contains("Completo")) 
-                            this.setTextFill(Color.LIMEGREEN);
+                        if(item.contains("In lavorazione"))
+                        	this.getStyleClass().add("inLavorazione");
+                            //this.setTextFill(Color.ORANGE);
+                        else if(item.contains("Completo"))
+                        	this.getStyleClass().add("completo");
+                            //this.setTextFill(Color.LIMEGREEN);
                         setText(item);
                     }
                 }
                 };        
 	           };
 		});
-	}
+	}*/
 	
 	// imposta l'on click sul button dettagli
-	public void setDetail() {
+	public void setDetailAndState() {
 		for (Object item : interventionTable.getItems()) {
-			((Intervention) item).getDetailBtn().getStyleClass().add("dettagli");
+			String stateText = ((Intervention) item).getStatoLbl().getText();
+			((Intervention) item).getStatoLbl().setText(stateText.toUpperCase());
+			if (stateText == "Completo")
+				((Intervention) item).getStatoLbl().getStyleClass().add("completo");
+			else if (stateText == "In lavorazione") 
+				((Intervention) item).getStatoLbl().getStyleClass().add("inLavorazione");
+			else ((Intervention) item).getStatoLbl().getStyleClass().add("daCompilare");
+			
+			((Intervention) item).getDetailBtn().getStyleClass().add("dettagli");	
 			((Intervention) item).getDetailBtn().setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent e) {
@@ -151,12 +161,10 @@ public class InterventionController {
 	// Initializing the controller class.
 	@FXML
 	public void initialize() throws ClassNotFoundException, SQLException {
-		
-		//interventionTable.setCell
-		
+			
 		sedeCol.setCellValueFactory(cellData -> cellData.getValue().sedeProperty());
 		dataCol.setCellValueFactory(cellData -> cellData.getValue().dataCreazioneProperty());
-		statoCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("stato"));
+		statoCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("statoLbl"));
 		codCategoriaCol.setCellValueFactory(cellData -> cellData.getValue().codCategoriaProperty());
 		codVerificaCol.setCellValueFactory(cellData -> cellData.getValue().codVerificaProperty());
 		detailCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("detailBtn"));
@@ -170,8 +178,7 @@ public class InterventionController {
 		searchInterventions();
 	
 		// imposta il button dettagli cliccabile e il colore allo stato e l'altezza righe
-		setDetail();
-		setStateColor();
+		setDetailAndState();
 		setCellHeight();
 	
         //configura la select per filtrare lo stato
@@ -201,8 +208,7 @@ public class InterventionController {
 		try {
 			ObservableList<Intervention> intervData = InterventionDAO.searchIntervention(selectedState);
 			populateInterventions(intervData);
-			setDetail();
-			setStateColor();
+			setDetailAndState();
 			setCellHeight();
 	        String str = "Tutti";
 	        if (selectedState == 0) str = "Da compilare";
@@ -235,7 +241,7 @@ public class InterventionController {
 		password = "macrosolution";
 		//chiamata get
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://192.168.1.16:8080/PortalECI/rest/intervento?username="+username+"&password="+password+"&action=download");
+        WebTarget target = client.target("http://192.168.1.77:8080/PortalECI/rest/interventi?username="+username+"&password="+password+"&action=download");
          
         Response response = target.request().get();
         System.out.println("Response code: " + response.getStatus());
@@ -312,7 +318,7 @@ public class InterventionController {
 		searchInterventions();
 		
 		// imposta il button dettagli cliccabile e l'altezza righe
-		setDetail();
+		setDetailAndState();
 		setCellHeight(); 	
         	
         } catch (Exception e) {

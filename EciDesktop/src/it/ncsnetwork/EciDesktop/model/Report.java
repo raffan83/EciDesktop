@@ -29,7 +29,7 @@ public class Report {
 		this.state = new ImageView("/it/ncsnetwork/EciDesktop/img/0.png");
 		this.date = new SimpleObjectProperty<LocalDate>();
 		this.detailRep = new SimpleStringProperty();
-		this.completeRep = new Button("Completa");
+		this.completeRep = new Button("");
 	}
 
 	// id

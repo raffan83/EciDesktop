@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
@@ -14,13 +20,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.ncsnetwork.EciDesktop.controller.ReportController">
+<AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.ncsnetwork.EciDesktop.controller.ReportController">
    <children>
-      <SplitPane dividerPositions="0.26755852842809363" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <items>
-          <AnchorPane minHeight="50.0" minWidth="0.0" prefHeight="600.0" prefWidth="898.0">
+      <AnchorPane prefHeight="40.0" style="-fx-background-color: #9d201d;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Button layoutY="5.0" mnemonicParsing="false" onAction="#goBack" styleClass="btn" prefHeight="40.0" prefWidth="40.0" AnchorPane.leftAnchor="5.0">
+                  <Button mnemonicParsing="false" onAction="#goBack" prefHeight="40.0" prefWidth="40.0" styleClass="back">
                      <graphic>
                         <ImageView fitHeight="16.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -29,7 +35,30 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <VBox prefHeight="107.0" prefWidth="598.0" spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../img/logo_eci_s.png" />
+                     </image>
+                  </ImageView>
+                  <Label style="-fx-font-weight: bold;" text="Eci" textFill="WHITE">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
+                  <Label text="spa" textFill="WHITE">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+    <AnchorPane prefHeight="150.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+         <children>
+            <ScrollPane prefHeight="150.0" prefWidth="898.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="0.0">
+               <content>
+                  <VBox prefHeight="150.0" prefWidth="846.0" spacing="8.0">
                      <padding>
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
@@ -66,34 +95,38 @@
                            <children>
                               <Label text="Note:" />
                               <Text fx:id="note" strokeType="OUTSIDE" strokeWidth="0.0" />
-                              <Button mnemonicParsing="false" onAction="#modNote" styleClass="btn" style="-fx-background-color: transparent;">
+                              <Button mnemonicParsing="false" onAction="#modNote" style="-fx-background-color: transparent;" styleClass="btn">
                                  <graphic>
                                     <ImageView fitHeight="20.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
                                           <Image url="@../img/completa.png" />
                                        </image>
                                     </ImageView>
-                                 </graphic></Button>
+                                 </graphic>
+                              </Button>
                            </children>
                         </HBox>
                      </children>
                   </VBox>
-               </children>
-            </AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="543.0" prefWidth="898.0">
-               <children>
-                  <TableView fx:id="reportTable" prefHeight="340.0" prefWidth="598.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <columns>
-                      <TableColumn fx:id="idCol" prefWidth="60.0" text="ID" />
-                      <TableColumn fx:id="nameCol" prefWidth="225.0" text="Verbale" />
-                        <TableColumn fx:id="stateCol" prefWidth="55.0" text="Stato" />
-                        <TableColumn fx:id="dateCol" prefWidth="162.0" text="Data Completamento" />
-                        <TableColumn fx:id="completeCol" prefWidth="94.0" />
-                    </columns>
-                  </TableView>
-               </children>
-            </AnchorPane>
-        </items>
-      </SplitPane>
+               </content>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </ScrollPane>
+         </children>
+      </AnchorPane>
+    <AnchorPane layoutY="206.0" minHeight="0.0" minWidth="0.0" prefHeight="487.0" prefWidth="898.0" AnchorPane.topAnchor="190.0">
+         <children>
+            <TableView fx:id="reportTable" layoutY="61.0" prefHeight="543.0" prefWidth="898.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <columns>
+                <TableColumn fx:id="idCol" prefWidth="60.0" text="ID" />
+                <TableColumn fx:id="nameCol" prefWidth="225.0" text="Verbale" />
+                  <TableColumn fx:id="stateCol" prefWidth="55.0" text="Stato" />
+                  <TableColumn fx:id="dateCol" prefWidth="162.0" text="Data Completamento" />
+                  <TableColumn fx:id="completeCol" prefWidth="94.0" />
+              </columns>
+            </TableView>
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

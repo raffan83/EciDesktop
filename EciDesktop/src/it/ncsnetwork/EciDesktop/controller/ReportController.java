@@ -108,7 +108,7 @@ public class ReportController {
 
 		for (Object item : reportTable.getItems()) {
 			if (((Report) item).getCompleteRep() instanceof Button) {
-				((Report) item).getCompleteRep().getStyleClass().add("dettagli");
+				((Report) item).getCompleteRep().getStyleClass().add("completaVerbale");
 				((Report) item).getCompleteRep().setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent e) {
