@@ -3,10 +3,13 @@ package it.ncsnetwork.EciDesktop.model;
 import java.time.LocalDate;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -14,86 +17,86 @@ import javafx.scene.image.ImageView;
 
 public class Report {
 
-	private SimpleIntegerProperty idRep;
-	private SimpleStringProperty nameRep;
-	private ImageView state;
-	private ObjectProperty<LocalDate> date;
-	private SimpleStringProperty detailRep;
+	private SimpleLongProperty id;
+	private SimpleStringProperty descrVerifica;
+	private SimpleStringProperty codVerifica;
+	private SimpleStringProperty codCategoria;
+	private Label statoLbl;
 	private Button completeRep;
+	private SimpleLongProperty intervId;
 
-	static int reportId;
+	static long reportId;
 
 	public Report() {
-		this.idRep = new SimpleIntegerProperty();
-		this.nameRep = new SimpleStringProperty();
-		this.state = new ImageView("/it/ncsnetwork/EciDesktop/img/0.png");
-		this.date = new SimpleObjectProperty<LocalDate>();
-		this.detailRep = new SimpleStringProperty();
+		this.id = new SimpleLongProperty();
+		this.descrVerifica = new SimpleStringProperty();
+		this.codVerifica = new SimpleStringProperty();
+		this.codCategoria = new SimpleStringProperty();
+		this.statoLbl = new Label("Da compilare");
 		this.completeRep = new Button("");
+		this.intervId = new SimpleLongProperty();
 	}
 
 	// id
-	public int getIdRep() {
-		return idRep.get();
+	public long getId() {
+		return id.get();
 	}
 
-	public void setIdRep(int idR) {
-		this.idRep.set(idR);
+	public void setId(long idR) {
+		this.id.set(idR);
 	}
 
-	public IntegerProperty idRepProperty() {
-		return idRep;
+	public LongProperty idProperty() {
+		return id;
 	}
 
-	// nome
-	public String getNameRep() {
-		return nameRep.get();
+	// descrizione verifica
+	public String getDescrVerifica() {
+		return descrVerifica.get();
 	}
 
-	public void setNameRep(String nameR) {
-		this.nameRep.set(nameR);
+	public void setDescrVerifica(String descr) {
+		this.descrVerifica.set(descr);
 	}
 
-	public StringProperty nameRepProperty() {
-		return nameRep;
+	public StringProperty descrVerificaProperty() {
+		return descrVerifica;
+	}
+	// codice verifica
+	public String getCodVerifica() {
+		return codVerifica.get();
 	}
 
-	// dettagli
-	public String getDetailRep() {
-		return detailRep.get();
+	public void setCodVerifica(String cod) {
+		this.codVerifica.set(cod);
 	}
 
-	public void setDetailRep(String nameR) {
-		this.detailRep.set(nameR);
+	public StringProperty codVerificaProperty() {
+		return codVerifica;
+	}
+	// codice categoria
+	public String getCodCategoria() {
+		return codCategoria.get();
 	}
 
-	public StringProperty detailRepProperty() {
-		return detailRep;
+	public void setCodCategoria(String cod) {
+		this.codCategoria.set(cod);
 	}
 
-	// data
-	public LocalDate getDate() {
-		return date.get();
+	public StringProperty codCategoriaProperty() {
+		return codCategoria;
 	}
 
-	public void setDate(LocalDate d) {
-		this.date.set(d);
+	// label stato
+	public Label getStatoLbl() {
+		return statoLbl;
 	}
 
-	public ObjectProperty<LocalDate> dateProperty() {
-		return date;
-	}
-
-	// image
-	public ImageView getState() {
-		return state;
-	}
-
-	public void setState(int i) {
+	public void setStatoLbl(int i) {
 		if (i == 1)
-			this.state = new ImageView(new Image("/it/ncsnetwork/EciDesktop/img/1.png"));
+			this.statoLbl.setText("In lavorazione");
 		else if (i == 2)
-			this.state = new ImageView(new Image("/it/ncsnetwork/EciDesktop/img/2.png"));
+			this.statoLbl.setText("Completo");
 	}
 
 	// completeReport
@@ -109,12 +112,25 @@ public class Report {
 		this.completeRep = null;
 	}
 
+	// id intervento
+	public long getIntervId() {
+		return intervId.get();
+	}
+
+	public void setIntervId(long id) {
+		this.intervId.set(id);
+	}
+
+	public LongProperty intervIdProperty() {
+		return intervId;
+	}
+	
 	// reportId
-	public static int getReportId() {
+	public static long getReportId() {
 		return reportId;
 	}
 
-	public static void setReportId(int i) {
+	public static void setReportId(long i) {
 		reportId = i;
 	}
 

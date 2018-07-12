@@ -63,8 +63,8 @@
 
 .dettagli:hover{
 	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/detail.png");
-  	-fx-background-color: #888888;
-  	-fx-border-color: #888888;
+  	-fx-background-color: #9d201d;
+  	-fx-border-color: #9d201d;
    	-fx-cursor: hand;
 
 }
@@ -107,6 +107,7 @@
     -fx-background-color: LIMEGREEN;
 	-fx-background-radius: 3px;
 	-fx-border-radius:3px;
+	-fx-font-weight: bold;
 	
 }
 .inLavorazione {
@@ -145,37 +146,67 @@
 .completaVerbale{
 	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/completa2.png");
 	-fx-background-repeat: stretch;   
-    -fx-background-size: 25 25;
-    -fx-background-position: center center;
     -fx-background-color: transparent;
-    /*-fx-border-width: 2px;
-    -fx-border-color: #333333;*/
-    -fx-background-radius: 30px;
-	-fx-border-radius:12px;
-	-fx-pref-width: 30px;
+    -fx-pref-width: 30px;
 	-fx-pref-height: 30px;
-	-fx-alignment: center;
+	-fx-background-size: 30 30;
+    -fx-background-position: center center;
 }
 
 .completaVerbale:hover{
-	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/completa3.png");
-  	-fx-background-color: #888888;
-  	-fx-border-color: #888888;
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/completa4.png");
+  	-fx-background-color: #9d201d;
+  	-fx-border-color: #9d201d;
    	-fx-cursor: hand;
+    -fx-background-radius: 30px;
+	-fx-border-radius:15px;
 
 }
 .completaVerbale:pressed, .completaVerbale:default:hover:pressed{
-	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/completa3.png");
+  	-fx-background-color: black;
+  	-fx-border-color: black;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Button indietro                                            *
+ *                                                                             *
+ ******************************************************************************/
+
+.back{  
+    -fx-background-color: transparent;
+}
+
+.back:hover{
+    -fx-background-size: 30 30;
+    -fx-background-position: center center;
+
+    -fx-border-width: 2px;
+    -fx-border-color: white;
+    -fx-background-radius: 30px;
+	-fx-border-radius:15px;
+	-fx-pref-width: 30px;
+	-fx-pref-height: 30px;
+	-fx-alignment: center;
+   	-fx-cursor: hand;
+
+}
+.back:pressed, .back:default:hover:pressed{
   	-fx-background-color: black;
   	-fx-border-color: black;
 
 }
 
+/*******************************************************************************
+ *                                                                             *
+ * Button nota                                            *
+ *                                                                             *
+ ******************************************************************************/
 
-
-
-
-
+.nota:hover{
+  	-fx-border-color: transparent;
+   	-fx-cursor: hand;
+}
 
 
 

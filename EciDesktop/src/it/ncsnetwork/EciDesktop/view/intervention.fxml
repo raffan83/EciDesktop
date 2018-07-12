@@ -21,7 +21,7 @@
 
 <AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.ncsnetwork.EciDesktop.controller.InterventionController">
    <children>
-      <AnchorPane prefHeight="40.0"  style="-fx-background-color: #9d201d;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane prefHeight="40.0" style="-fx-background-color: #9d201d;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
@@ -42,14 +42,14 @@
                   </Label>
                </children>
                <padding>
-                  <Insets left="30.0" />
+                  <Insets left="15.0" />
                </padding>
             </HBox>
          </children>
       </AnchorPane>
       <AnchorPane layoutX="44.0" layoutY="75.0" prefHeight="50.0" prefWidth="900.0" style="-fx-background-color: ebeff5;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
          <children>
-            <Button alignment="CENTER" layoutX="684.0" layoutY="12.0" mnemonicParsing="false" onAction="#downloadInterventions" styleClass="btn" text="Scarica nuovi interventi">
+            <Button alignment="CENTER" layoutX="679.0" layoutY="8.0" mnemonicParsing="false" onAction="#downloadInterventions" prefHeight="35.0" prefWidth="158.0" styleClass="btn" text="Scarica nuovi interventi">
                <graphic>
                   <ImageView fx:id="imgDownload" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -71,7 +71,7 @@
             <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="900.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <Label text="Filtra per stato" />
-                  <ComboBox fx:id="comboBox" onAction="#selectState" prefWidth="150.0" />
+                  <ComboBox fx:id="comboBox" onAction="#selectState" prefHeight="31.0" prefWidth="150.0" />
                </children>
                <padding>
                   <Insets left="20.0" />

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../css/style.css" fx:controller="it.ncsnetwork.EciDesktop.controller.QuestionnaireController">
+<AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../css/style.css" fx:controller="it.ncsnetwork.EciDesktop.controller.QuestionnaireController">
    <children>
       <Button mnemonicParsing="false" onAction="#goBack" styleClass="btn" prefHeight="40.0" prefWidth="40.0" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="3.0">
          <graphic>

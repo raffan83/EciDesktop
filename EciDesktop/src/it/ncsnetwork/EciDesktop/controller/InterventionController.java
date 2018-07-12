@@ -19,6 +19,8 @@ import org.json.simple.parser.JSONParser;
 
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
+import it.ncsnetwork.EciDesktop.model.Report;
+import it.ncsnetwork.EciDesktop.model.ReportDAO;
 import it.ncsnetwork.EciDesktop.model.User;
 import it.ncsnetwork.EciDesktop.model.UserDAO;
 import javafx.application.Platform;
@@ -130,7 +132,7 @@ public class InterventionController {
 			((Intervention) item).getDetailBtn().setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent e) {
-					int intervId = ((Intervention) item).getId();
+					long intervId = ((Intervention) item).getId();
 					Intervention.setIntervId(intervId);
 
 					try {
@@ -241,21 +243,24 @@ public class InterventionController {
 		password = "macrosolution";
 		//chiamata get
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://192.168.1.77:8080/PortalECI/rest/interventi?username="+username+"&password="+password+"&action=download");
+        WebTarget target = client.target("http://192.168.1.8:8080/PortalECI/rest/intervento?username="+username+"&password="+password+"&action=download");
          
         Response response = target.request().get();
         System.out.println("Response code: " + response.getStatus());
         
-        String s = response.readEntity(String.class);
+       String s = response.readEntity(String.class);
         System.out.println(s);
         
         JSONParser parser = new JSONParser();
         
         try {
         	Object obj = parser.parse(s);
-        	//JSONObject jsonObject = (JSONObject) obj;
+        	/*JSONObject jsonObject = (JSONObject) obj;*/
         	
-        	//JSONArray interventi = (JSONArray) jsonObject.get("listaInterventi");
+        	/*JSONArray interventi = (JSONArray) jsonObject.get("listaInterventi");*/
+        	
+        	/*Object obj = parser.parse(new FileReader("interventi.txt"));*/
+        	
         	JSONArray interventi = (JSONArray) obj;
         	for (Object intervento : interventi) {
 
@@ -304,7 +309,7 @@ public class InterventionController {
     			
 			//salva sul db i nuovi interventi
 			Intervention i = new Intervention();
-			i.setIdIntervPortale(id);
+			i.setId(id);
 			i.setDataCreazione(dataCreazione);
 			i.setSede(sede);
 			i.setDescrVerifica(descrizioneTipo);
@@ -312,6 +317,25 @@ public class InterventionController {
 			i.setDescrCategoria(descrizioneCat);
 			i.setCodCategoria(codiceCat);
 			InterventionDAO.saveJSON(i);
+			
+			
+			// salvo i verbali
+			JSONArray verbali = (JSONArray) interv.get("verbali");
+			for (Object v : verbali) {
+				JSONObject verb = (JSONObject) v;
+				Long idVerb = (Long) verb.get("id");
+				String codVerVerb = (String) verb.get("codiceVerifica");
+				String codCatVerb = (String) verb.get("codiceCategoria");
+				String descrVerVerb = (String) verb.get("descrizioneVerifica");
+					
+				//salva sul db i verbali
+				Report r = new Report();
+				r.setId(idVerb);
+				r.setCodVerifica(codVerVerb);
+				r.setCodCategoria(codCatVerb);
+				r.setDescrVerifica(descrVerVerb);
+				ReportDAO.saveJSON(r, id);
+			}
 			
         }
 		// ripopola la tabella

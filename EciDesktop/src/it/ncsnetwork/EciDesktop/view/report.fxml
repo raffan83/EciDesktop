@@ -51,6 +51,9 @@
                      </font>
                   </Label>
                </children>
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
             </HBox>
          </children>
       </AnchorPane>
@@ -95,11 +98,11 @@
                            <children>
                               <Label text="Note:" />
                               <Text fx:id="note" strokeType="OUTSIDE" strokeWidth="0.0" />
-                              <Button mnemonicParsing="false" onAction="#modNote" style="-fx-background-color: transparent;" styleClass="btn">
+                              <Button mnemonicParsing="false" onAction="#modNote" style="-fx-background-color: transparent;" styleClass="nota">
                                  <graphic>
                                     <ImageView fitHeight="20.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../img/completa.png" />
+                                          <Image url="@../img/scrivi.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -120,10 +123,11 @@
             <TableView fx:id="reportTable" layoutY="61.0" prefHeight="543.0" prefWidth="898.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
               <columns>
                 <TableColumn fx:id="idCol" prefWidth="60.0" text="ID" />
-                <TableColumn fx:id="nameCol" prefWidth="225.0" text="Verbale" />
-                  <TableColumn fx:id="stateCol" prefWidth="55.0" text="Stato" />
-                  <TableColumn fx:id="dateCol" prefWidth="162.0" text="Data Completamento" />
-                  <TableColumn fx:id="completeCol" prefWidth="94.0" />
+                <TableColumn fx:id="codCategoriaCol" prefWidth="135.6666717529297" text="Codice Categoria" />
+                  <TableColumn fx:id="codVerificaCol" prefWidth="141.0" text="Codice Verifica" />
+                  <TableColumn fx:id="descrVerificaCol" prefWidth="241.0" text="Descrizione Verifica" />
+                  <TableColumn fx:id="statoCol" prefWidth="97.0" text="Stato" />
+                  <TableColumn fx:id="completeCol" prefWidth="92.0" />
               </columns>
             </TableView>
          </children>

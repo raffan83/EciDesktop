@@ -49,12 +49,12 @@ public class InterventionDAO {
 
 	//cambia lo stato dell'intervento
 	public static void setState() throws SQLException, ClassNotFoundException {
-		int id = Intervention.getIntervId();
-		String selectReportState = "SELECT state FROM report WHERE intervention_id = " + id;
+		long id = Intervention.getIntervId();
+		String selectReportState = "SELECT stato FROM report WHERE intervention_id = " + id;
 		ObservableList<Integer> stateList = FXCollections.observableArrayList();
 		ResultSet rs2 = DBUtil.dbExecuteQuery(selectReportState);
 		while (rs2.next()) {
-			stateList.add(rs2.getInt("state"));
+			stateList.add(rs2.getInt("stato"));
 		}
 		int newState = 1;
 		int state0 = 0, state2 = 0;
@@ -70,7 +70,7 @@ public class InterventionDAO {
 		DBUtil.dbExecuteUpdate(stmt);
 	}
 
-	public static void saveNote(int intervId, String note) throws ClassNotFoundException, SQLException {
+	public static void saveNote(long intervId, String note) throws ClassNotFoundException, SQLException {
 		String stmt = "UPDATE intervention SET note = '" + note + "' WHERE id = " + intervId;
 		try {
 			DBUtil.dbExecuteUpdate(stmt);
@@ -100,8 +100,8 @@ public class InterventionDAO {
 	// salva sul db gli interventi dal JSON
 	public static void saveJSON(Intervention i) throws ClassNotFoundException, SQLException {
 		String stmt = "INSERT INTO intervention "
-				+ "(data_creazione, sede, codice_categoria, codice_verifica, descrizione_categoria, descrizione_verifica, user_id) VALUES"
-				+ " ('" + i.getDataCreazione()+"','"+i.getSede()+"','"+i.getCodCategoria()+"','"+i.getCodVerifica()+"','"+i.getDescrCategoria()+"','"
+				+ "(id, data_creazione, sede, codice_categoria, codice_verifica, descrizione_categoria, descrizione_verifica, user_id) VALUES"
+				+ " ("+ i.getId() + ",'" + i.getDataCreazione()+"','"+i.getSede()+"','"+i.getCodCategoria()+"','"+i.getCodVerifica()+"','"+i.getDescrCategoria()+"','"
 				+i.getDescrVerifica()+"','"+userId+"')";
 		
 		DBUtil.dbExecuteUpdate(stmt);

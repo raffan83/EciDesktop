@@ -2,6 +2,9 @@ package it.ncsnetwork.EciDesktop.controller;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
 import it.ncsnetwork.EciDesktop.model.Report;
@@ -15,7 +18,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -23,6 +28,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class ReportController {
 
@@ -30,19 +36,15 @@ public class ReportController {
 	private int selectedState;
 
 	@FXML private TableView reportTable;
-	@FXML private TableColumn<Report, Integer> idCol;
-	@FXML private TableColumn<Report, String> nameCol;
-	@FXML private TableColumn<Report, ImageView> stateCol;
-	@FXML private TableColumn<Report, String> dateCol;
+	@FXML private TableColumn<Report, Long> idCol;
+	@FXML private TableColumn<Report, String> descrVerificaCol;
+	@FXML private TableColumn<Report, String> codVerificaCol;
+	@FXML private TableColumn<Report, String> codCategoriaCol;
+	@FXML private TableColumn<Report, String> statoCol;
 	@FXML private TableColumn<Report, String> completeCol;
 	@FXML private Label sedeLabel, dataLabel, codVerLabel, descrVerLabel, codCatLabel, descrCatLabel;
 	@FXML private Text note;
-	
-	
-	public ReportController() {
 		
-	}
-	
 	public void initData(Intervention interv, int state) {
 		selectedInterv = interv;
 		sedeLabel.setText(selectedInterv.getSede());
@@ -97,23 +99,44 @@ public class ReportController {
 	@FXML
 	private void initialize() throws ClassNotFoundException, SQLException {
 
-		idCol.setCellValueFactory(cellData -> cellData.getValue().idRepProperty().asObject());
-		nameCol.setCellValueFactory(cellData -> cellData.getValue().nameRepProperty());
-		stateCol.setCellValueFactory(new PropertyValueFactory<Report, ImageView>("state"));
-		stateCol.setStyle("-fx-alignment: CENTER;");
-		// dateCol.setCellValueFactory(cellData -> cellData.getValue().dateProperty());
+		idCol.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
+		descrVerificaCol.setCellValueFactory(cellData -> cellData.getValue().descrVerificaProperty());
+		codVerificaCol.setCellValueFactory(cellData -> cellData.getValue().codVerificaProperty());
+		codCategoriaCol.setCellValueFactory(cellData -> cellData.getValue().codCategoriaProperty());
+		statoCol.setCellValueFactory(new PropertyValueFactory<Report, String>("statoLbl"));
 		completeCol.setCellValueFactory(new PropertyValueFactory<Report, String>("completeRep"));
 
 		searchReports();
 
+		setCompleteAndState();
+		setCellHeight();
+		
+	}
+
+	@FXML
+	private void populateReports(ObservableList<Report> reportData) throws ClassNotFoundException {
+		reportTable.setItems(reportData);
+	}
+	
+	@FXML
+	private void setCompleteAndState() {
 		for (Object item : reportTable.getItems()) {
+			if (((Report) item).getStatoLbl() instanceof Label) {
+				String stateText = ((Report) item).getStatoLbl().getText();
+				((Report) item).getStatoLbl().setText(stateText.toUpperCase());
+				if (stateText == "Completo")
+					((Report) item).getStatoLbl().getStyleClass().add("completo");
+				else if (stateText == "In lavorazione") 
+					((Report) item).getStatoLbl().getStyleClass().add("inLavorazione");
+				else ((Report) item).getStatoLbl().getStyleClass().add("daCompilare");
+			}
 			if (((Report) item).getCompleteRep() instanceof Button) {
 				((Report) item).getCompleteRep().getStyleClass().add("completaVerbale");
 				((Report) item).getCompleteRep().setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent e) {
 
-						int repId = ((Report) item).getIdRep();
+						long repId = ((Report) item).getId();
 						Report.setReportId(repId);
 
 						try {
@@ -135,15 +158,28 @@ public class ReportController {
 						}
 					}
 				});
-
 			}
 		}
-		
 	}
-
-	@FXML
-	private void populateReports(ObservableList<Report> reportData) throws ClassNotFoundException {
-		reportTable.setItems(reportData);
+	
+	// imposta il testo a capo nelle righe della tabella
+	public void setCellHeight () {
+		List<TableColumn<Report, String>> list = new ArrayList<>();
+		list.add(descrVerificaCol);list.add(codVerificaCol);list.add(codCategoriaCol);
+		for(TableColumn<Report, String> col : list) {
+		   col.setCellFactory(new Callback<TableColumn<Report, String>, TableCell<Report, String>>() {
+		        @Override
+		        public TableCell<Report, String> call(TableColumn<Report, String> param) {
+		            TableCell<Report, String> cell = new TableCell<>();
+		            Text text = new Text();
+		            cell.setGraphic(text);
+		            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+		            text.wrappingWidthProperty().bind(cell.widthProperty());
+		            text.textProperty().bind(cell.itemProperty());
+		            return cell ;
+		        }
+		    });
+		}
 	}
 	
 }
