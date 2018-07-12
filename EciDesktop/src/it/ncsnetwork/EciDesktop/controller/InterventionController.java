@@ -224,7 +224,7 @@ public class InterventionController {
 	}
 	
 	@FXML
-	private void downloadInterventions() {
+	private void downloadInterventions(ActionEvent event) {
 		// imposta la gif di caricamento
 		new Thread(() -> {
 		    Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/load.gif")));	

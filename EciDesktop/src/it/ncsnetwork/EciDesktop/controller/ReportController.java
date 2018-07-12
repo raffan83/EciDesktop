@@ -80,7 +80,7 @@ public class ReportController {
 		InterventionController controller = loader.getController();
 		controller.searchSelectedState(selectedState);
 		Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-		window.setTitle("Interventi");
+		//window.setTitle("ECI spa");
 		window.setScene(tableViewScene);
 		window.show();
 	}
