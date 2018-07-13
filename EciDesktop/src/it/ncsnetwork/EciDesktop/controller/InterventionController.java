@@ -1,6 +1,5 @@
 package it.ncsnetwork.EciDesktop.controller;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -17,6 +16,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
 import it.ncsnetwork.EciDesktop.model.Report;
@@ -34,13 +34,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -48,8 +50,11 @@ import javafx.util.Callback;
 public class InterventionController {
 
 	private int selectedState = 3;
+
+	private static User user;
 	
 	@FXML private TableView interventionTable;
+	@FXML private TableColumn<Intervention, Long> idCol;
 	@FXML private TableColumn<Intervention, String> sedeCol;
 	@FXML private TableColumn<Intervention, String> dataCol;
 	@FXML private TableColumn<Intervention, String> statoCol;
@@ -58,6 +63,9 @@ public class InterventionController {
 	@FXML private TableColumn<Intervention, String> detailCol;
 	@FXML private ComboBox comboBox;
 	@FXML private ImageView imgDownload;
+	@FXML private MenuBar menuBar;
+	@FXML private Menu usernameMenu;
+	@FXML private Label usernameMenuLbl;
 	
 	@FXML
 	private void searchInterventions() throws SQLException, ClassNotFoundException {
@@ -91,32 +99,6 @@ public class InterventionController {
 		}
 	}
 	
-	
-	//imposta il colore allo stato
-/*	public void setStateColor() {
-		statoCol.setCellFactory(new Callback<TableColumn<Intervention, String>, TableCell<Intervention, String>>(){
-           @Override
-            public TableCell<Intervention, String> call(TableColumn<Intervention, String> param) {
-                return new TableCell<Intervention, String>() {
-                @Override
-                public void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (!isEmpty()) {
-                    	this.setTextFill(Color.BLACK);
-                        if(item.contains("In lavorazione"))
-                        	this.getStyleClass().add("inLavorazione");
-                            //this.setTextFill(Color.ORANGE);
-                        else if(item.contains("Completo"))
-                        	this.getStyleClass().add("completo");
-                            //this.setTextFill(Color.LIMEGREEN);
-                        setText(item);
-                    }
-                }
-                };        
-	           };
-		});
-	}*/
-	
 	// imposta l'on click sul button dettagli
 	public void setDetailAndState() {
 		for (Object item : interventionTable.getItems()) {
@@ -144,12 +126,11 @@ public class InterventionController {
 
 						// invio i dettagli dell'intervento alla pagina verbali
 						ReportController controller = loader.getController();
-						controller.initData((Intervention) item, selectedState);
+						controller.initData((Intervention) item, selectedState, usernameMenu.getText());
 
 						Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
 						window.setWidth(Control.USE_COMPUTED_SIZE);
 						window.setHeight(Control.USE_COMPUTED_SIZE);
-						window.setTitle("Verbali");
 						window.setScene(tableViewScene);
 						window.show();
 					} catch (IOException e1) {
@@ -163,7 +144,8 @@ public class InterventionController {
 	// Initializing the controller class.
 	@FXML
 	public void initialize() throws ClassNotFoundException, SQLException {
-			
+		
+		idCol.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
 		sedeCol.setCellValueFactory(cellData -> cellData.getValue().sedeProperty());
 		dataCol.setCellValueFactory(cellData -> cellData.getValue().dataCreazioneProperty());
 		statoCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("statoLbl"));
@@ -171,13 +153,27 @@ public class InterventionController {
 		codVerificaCol.setCellValueFactory(cellData -> cellData.getValue().codVerificaProperty());
 		detailCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("detailBtn"));
 
-		sedeCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.45));
+		idCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
+		sedeCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.35));
 		dataCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
+		statoCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.12));
 		codCategoriaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
-		codVerificaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
+		codVerificaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.12));
+		detailCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.08));
 		
 		// popola la tabella
 		searchInterventions();
+		
+		//imposta il nome utente
+		try {
+			user = UserDAO.getUser();
+		} catch (ClassNotFoundException | SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		usernameMenu.setText(user.getUsername());
+		usernameMenuLbl.setText(user.getUsername());
+		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
 	
 		// imposta il button dettagli cliccabile e il colore allo stato e l'altezza righe
 		setDetailAndState();
@@ -230,12 +226,12 @@ public class InterventionController {
 		    Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/load.gif")));	
 		
 		
-		User user = new User();
+		/*User user = new User();
 		try {
 			user = UserDAO.getUser();
 		} catch (ClassNotFoundException | SQLException e1) {
 			e1.printStackTrace();
-		}
+		}*/
 		String username = user.getUsername();
 		String password = user.getPassword();
 		
@@ -353,6 +349,11 @@ public class InterventionController {
         Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/download.png")));
 		}).start();
         
+	}
+	
+	public void logout(ActionEvent event) throws ClassNotFoundException {
+			config c = new config();
+			c.logout(menuBar);
 	}
 	
 

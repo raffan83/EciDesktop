@@ -180,6 +180,7 @@ and open the template in the editor.
 .button:hover{
     /*-fx-background-color: #3659b3;*/
     -fx-background-color: #791917;
+     -fx-cursor: hand;
 }
  
 .button:pressed, .button:default:hover:pressed

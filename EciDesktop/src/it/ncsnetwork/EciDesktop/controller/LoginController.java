@@ -39,7 +39,9 @@ public class LoginController implements Initializable {
 	@FXML
 	private PasswordField txtPassword;
 	@FXML
-	private Text lblWelcome;
+	private Text lblEci;
+	@FXML
+	private Text lblSpa;
 	@FXML
 	private Text lblUserLogin;
 	@FXML
@@ -71,7 +73,8 @@ public class LoginController implements Initializable {
 
 		Platform.runLater(() -> {
 			new FadeInRightTransition(lblUserLogin).play();
-			new FadeInLeftTransition(lblWelcome).play();
+			new FadeInLeftTransition(lblEci).play();
+			new FadeInLeftTransition(lblSpa).play();
 			new FadeInLeftTransition1(lblPassword).play();
 			new FadeInLeftTransition1(lblUsername).play();
 			new FadeInLeftTransition1(txtUsername).play();
@@ -89,7 +92,7 @@ public class LoginController implements Initializable {
 		try {
 			if (LoginDAO.isLogin(txtUsername.getText(), txtPassword.getText())) {
 				config c = new config();
-				c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml", "Interventi", true,
+				c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml","Eci spa", true,
 						StageStyle.DECORATED, false);
 			} else {
 				errLogin.setText("Username o password errati!");

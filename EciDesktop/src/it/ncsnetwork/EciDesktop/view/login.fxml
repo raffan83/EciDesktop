@@ -14,12 +14,17 @@
          <children>
             <TextField fx:id="txtUsername" layoutX="132.0" layoutY="133.0" opacity="0.0" prefHeight="33.0" prefWidth="305.0" promptText="This Username App" />
             <PasswordField fx:id="txtPassword" layoutX="132.0" layoutY="173.0" opacity="0.0" prefHeight="33.0" prefWidth="305.0" promptText="This Password App" />
-            <Text fx:id="lblWelcome" fill="WHITE" layoutX="141.0" layoutY="74.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ECI spa">
+            <Text fx:id="lblEci" fill="WHITE" layoutX="167.0" layoutY="78.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ECI">
+               <font>
+                  <Font name="Segoe UI" size="44.0" />
+               </font>
+            </Text>
+               <Text fx:id="lblSpa" fill="WHITE" layoutX="235.0" layoutY="78.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="spa">
                <font>
                   <Font name="Segoe UI Light" size="44.0" />
                </font>
             </Text>
-            <ImageView fitHeight="59.0" fitWidth="98.0" layoutX="37.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="80.0" fitWidth="120.0" layoutX="37.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../img/logo_eci_s.png" />
                </image>
@@ -40,14 +45,14 @@
                </font>
             </Text>
             <Button fx:id="btnLogin" layoutX="314.0" layoutY="215.0" mnemonicParsing="false" onAction="#Login" opacity="0.0" prefHeight="33.0" prefWidth="123.0" text="Login" />
-            <Label fx:id="lblClose" layoutX="472.0" layoutY="5.0" text="X" textFill="WHITE">
+            <Label fx:id="lblClose" layoutX="472.0" layoutY="5.0" style="-fx-cursor: hand;" text="X" textFill="WHITE">
                <font>
                   <Font name="Arial Black" size="15.0" />
                </font>
             </Label>
              <Label fx:id="errLogin" layoutX="50.0" layoutY="215.0" textFill="YELLOW">
              	<font>
-                  <Font name="Arial Black" size="17.0" />
+                  <Font name="Arial" size="16.0" />
                </font>
              </Label>
          </children>

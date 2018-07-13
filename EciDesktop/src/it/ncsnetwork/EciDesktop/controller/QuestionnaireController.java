@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
 import it.ncsnetwork.EciDesktop.model.Questionnaire;
-import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,6 +22,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -46,6 +48,11 @@ public class QuestionnaireController {
 	@FXML Text quest;
 	@FXML TextField answer;
 	@FXML HBox choiceHBox;
+	
+	@FXML private String user;
+	@FXML private MenuBar menuBar;
+	@FXML private Menu usernameMenu;
+	@FXML private Label usernameMenuLbl;
 
 	@FXML
 	public void goBack(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
@@ -56,21 +63,24 @@ public class QuestionnaireController {
 
 		// ricarica le info dell'intervento sulla pagina verbali
 		ReportController controller = loader.getController();
-		controller.initData(selectedInterv, selectedState);
+		controller.initData(selectedInterv, selectedState, user);
 		
 		// aggiorno lo stato dell'intervento sul db
 		InterventionDAO.setState();
 
 		Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-		window.setTitle("Verbali");
 		window.setScene(tableViewScene);
 		window.show();
 	}
 
 	// salva le info dell'intervento per rimetterle sulla pagina verbali
-	public void setData(Intervention interv, int state) {
+	public void setData(Intervention interv, int state, String username) {
 		selectedInterv = interv;
 		selectedState = state;
+		user = username;
+		usernameMenu.setText(user);
+		usernameMenuLbl.setText(user);
+		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
 	}
 
 	//metodo da chiamare per caricare la domanda
@@ -323,6 +333,11 @@ public class QuestionnaireController {
 			cb.setId("check" + i);
 			choiceHBox.getChildren().add(cb);
 		}
+	}
+	
+	public void logout(ActionEvent event) throws ClassNotFoundException {
+		config c = new config();
+		c.logout(menuBar);
 	}
 
 }

@@ -23,6 +23,8 @@
     -fx-text-fill: white;*/
     -fx-background-radius: 3px;
 	-fx-border-radius:3px;
+	-fx-focus-color: #9d201d;
+	-fx-faint-focus-color: transparent;
 }
 
 .btn:hover{
@@ -128,10 +130,12 @@
  ******************************************************************************/
 
 .combo-box{
-	 -fx-cursor: hand;
+	-fx-cursor: hand;
+	-fx-focus-color: #9d201d;
+	-fx-faint-focus-color: transparent;
 }
 .combo-box .cell{
-	 -fx-cursor: hand;
+	-fx-cursor: hand;
 }
 
 /*******************************************************************************
@@ -140,7 +144,7 @@
  *                                                                             *
  ******************************************************************************/
  #reportTable #completeCol {
-  -fx-alignment: CENTER;
+	-fx-alignment: CENTER;
 }
 
 .completaVerbale{
@@ -213,12 +217,15 @@
  * menu user                                           *
  *                                                                             *
  ******************************************************************************/
-.userMenu {
-	-fx-background-color: transparent;
-}
-
+ .userMenu {
+ 	-fx-background-color: transparent;
+ 	-fx-cursor: hand;
+ }
 .userMenu .label{
 	-fx-text-fill: white;
+}
+.userMenu .button{
+	-fx-cursor: hand;
 }
 
 

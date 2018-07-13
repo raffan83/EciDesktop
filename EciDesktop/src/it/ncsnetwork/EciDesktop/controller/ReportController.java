@@ -5,10 +5,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
 import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
+import it.ncsnetwork.EciDesktop.model.User;
+import it.ncsnetwork.EciDesktop.model.UserDAO;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -20,6 +23,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -44,8 +49,12 @@ public class ReportController {
 	@FXML private TableColumn<Report, String> completeCol;
 	@FXML private Label sedeLabel, dataLabel, codVerLabel, descrVerLabel, codCatLabel, descrCatLabel;
 	@FXML private Text note;
+	@FXML private MenuBar menuBar;
+	@FXML private Menu usernameMenu;
+	@FXML private Label usernameMenuLbl;
+
 		
-	public void initData(Intervention interv, int state) {
+	public void initData(Intervention interv, int state, String username) {
 		selectedInterv = interv;
 		sedeLabel.setText(selectedInterv.getSede());
 		dataLabel.setText(selectedInterv.getDataCreazione());
@@ -55,6 +64,9 @@ public class ReportController {
 		descrCatLabel.setText(selectedInterv.getDescrCategoria());
 		note.setText(selectedInterv.getNote());
 		selectedState = state;
+		usernameMenu.setText(username);
+		usernameMenuLbl.setText(username);
+		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
 	}
 
 	// apre dialog note
@@ -80,7 +92,6 @@ public class ReportController {
 		InterventionController controller = loader.getController();
 		controller.searchSelectedState(selectedState);
 		Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-		//window.setTitle("ECI spa");
 		window.setScene(tableViewScene);
 		window.show();
 	}
@@ -105,12 +116,19 @@ public class ReportController {
 		codCategoriaCol.setCellValueFactory(cellData -> cellData.getValue().codCategoriaProperty());
 		statoCol.setCellValueFactory(new PropertyValueFactory<Report, String>("statoLbl"));
 		completeCol.setCellValueFactory(new PropertyValueFactory<Report, String>("completeRep"));
+		
+		idCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.14));
+		descrVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.32));
+		codVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.15));
+		codCategoriaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.14));
+		statoCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
+		completeCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.1));
 
 		searchReports();
 
 		setCompleteAndState();
 		setCellHeight();
-		
+			
 	}
 
 	@FXML
@@ -146,11 +164,10 @@ public class ReportController {
 							Scene tableViewScene = new Scene(tableViewParent);
 
 							QuestionnaireController controller = loader.getController();
-							controller.setData(selectedInterv, selectedState);
+							controller.setData(selectedInterv, selectedState, usernameMenu.getText());
 							controller.createQuest();
 
 							Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
-							window.setTitle("Questionario");
 							window.setScene(tableViewScene);
 							window.show();
 						} catch (IOException e1) {
@@ -181,5 +198,10 @@ public class ReportController {
 		    });
 		}
 	}
+	
+	public void logout(ActionEvent event) throws ClassNotFoundException {
+		config c = new config();
+		c.logout(menuBar);
+}
 	
 }
