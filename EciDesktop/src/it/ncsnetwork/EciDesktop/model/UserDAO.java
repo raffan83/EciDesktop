@@ -20,5 +20,19 @@ public class UserDAO {
 		}
 		return user;
 	}
+	
+	public static void updateUser(String user, String password) throws ClassNotFoundException, SQLException {
+		
+		String stmt = "SELECT * FROM user WHERE username = '"+user+"'";
+		ResultSet rs = DBUtil.dbExecuteQuery(stmt);
+		if (rs.next()) {
+			String stmt2 = "UPDATE user SET password = '" + password + "' WHERE username = '"+user+"'";
+			DBUtil.dbExecuteUpdate(stmt2);
+		} else {
+			String stmt3 = "INSERT INTO user (username, password) VALUES ('" + user + "' , '" + password + "' )";
+			DBUtil.dbExecuteUpdate(stmt3);
+		}
+
+	}
 
 }

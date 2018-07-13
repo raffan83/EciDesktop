@@ -24,7 +24,7 @@ public class menu extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		Parent root = FXMLLoader.load(PivotView.class.getResource("intervention.fxml"));// ("questionnaire.fxml"));
+		Parent root = FXMLLoader.load(PivotView.class.getResource("intervention.fxml"));
 		Scene scene = new Scene(root);
 		stage.getIcons().add(new Image("/it/ncsnetwork/EciDesktop/img/logo-eci.jpg"));
 		stage.setScene(scene);
