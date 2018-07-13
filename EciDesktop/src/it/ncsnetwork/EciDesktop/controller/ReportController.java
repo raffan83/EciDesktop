@@ -10,8 +10,6 @@ import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
 import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
-import it.ncsnetwork.EciDesktop.model.User;
-import it.ncsnetwork.EciDesktop.model.UserDAO;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -31,6 +29,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -49,9 +48,11 @@ public class ReportController {
 	@FXML private TableColumn<Report, String> completeCol;
 	@FXML private Label sedeLabel, dataLabel, codVerLabel, descrVerLabel, codCatLabel, descrCatLabel;
 	@FXML private Text note;
+	@FXML private Button modNoteBtn;
 	@FXML private MenuBar menuBar;
 	@FXML private Menu usernameMenu;
 	@FXML private Label usernameMenuLbl;
+	@FXML private HBox noteHBox;
 
 		
 	public void initData(Intervention interv, int state, String username) {
@@ -69,18 +70,52 @@ public class ReportController {
 		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
 	}
 
-	// apre dialog note
+	// modifica le note
 	public void modNote(ActionEvent event) throws IOException {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/it/ncsnetwork/EciDesktop/view/template/note.fxml"));
-		Stage st = new Stage();
-		Parent root = loader.load();
-		Scene scene = new Scene(root);
-		NoteController controller = loader.getController();
-		controller.initData(selectedInterv);
-		st.setTitle("Note");
-		st.setScene(scene);
-		st.show();
+		
+		modNoteBtn.setVisible(false);
+		
+		TextArea itNote = new TextArea(note.getText());
+		Button annNote = new Button ("Annulla");
+		Button salvaNote = new Button ("Salva");
+		
+		String defaultNote = note.getText();
+		note.setText("");
+			
+		annNote.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				note.setText(defaultNote);
+				note.setVisible(true);
+				modNoteBtn.setVisible(true);
+				noteHBox.getChildren().remove(itNote);
+				noteHBox.getChildren().remove(annNote);
+				noteHBox.getChildren().remove(salvaNote);
+		
+			}
+		});
+		
+		salvaNote.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {	
+				try {
+					InterventionDAO.saveNote(selectedInterv.getId(), itNote.getText());
+				} catch (ClassNotFoundException | SQLException e1) {
+					e1.printStackTrace();
+				}
+				note.setText(itNote.getText());
+				note.setVisible(true);
+				modNoteBtn.setVisible(true);
+				noteHBox.getChildren().remove(itNote);
+				noteHBox.getChildren().remove(annNote);
+				noteHBox.getChildren().remove(salvaNote);
+		
+			}
+		});
+		
+		noteHBox.getChildren().add(itNote);
+		noteHBox.getChildren().add(annNote);
+		noteHBox.getChildren().add(salvaNote);
 	}
 
 	@FXML
@@ -109,7 +144,7 @@ public class ReportController {
 
 	@FXML
 	private void initialize() throws ClassNotFoundException, SQLException {
-
+	
 		idCol.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
 		descrVerificaCol.setCellValueFactory(cellData -> cellData.getValue().descrVerificaProperty());
 		codVerificaCol.setCellValueFactory(cellData -> cellData.getValue().codVerificaProperty());
