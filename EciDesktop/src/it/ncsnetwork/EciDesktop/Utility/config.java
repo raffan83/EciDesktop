@@ -20,8 +20,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -53,11 +55,28 @@ public class config {
 			st.initStyle(style);
 			st.setResizable(resize);
 			st.setMaximized(maximized);
+			st.getIcons().add(new Image("/it/ncsnetwork/EciDesktop/img/logo-eci.jpg"));
 			st.setTitle(judul);
 			st.setScene(scene);
 			st.show();
 			stage.close();
 		} catch (Exception e) {
+		}
+	}
+	
+	public void logout(MenuBar mb) {
+		try {
+			Stage st = new Stage();
+			Stage stage = (Stage) mb.getScene().getWindow();
+			Parent root = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/login.fxml"));
+			Scene scene = new Scene(root);
+			st.initStyle(StageStyle.UNDECORATED);
+			st.getIcons().add(new Image("/it/ncsnetwork/EciDesktop/img/logo-eci.jpg"));
+			st.setScene(scene);
+			st.show();
+			stage.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
 		}
 	}
 
@@ -118,7 +137,7 @@ public class config {
 	
 	public void testGet() {  //192.168.1.11:8080/PortalECI/rest/intervento
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://192.168.1.11:8080/PortalECI/rest/intervento");
+        WebTarget target = client.target("http://localhost:8080/PortalECI/rest/intervento");
          
         Response response = target.request().get();
         System.out.println("Response code: " + response.getStatus());

@@ -10,7 +10,7 @@ import javafx.collections.ObservableList;
 public class ReportDAO {
 
 	public static ObservableList<Report> searchReports() throws SQLException, ClassNotFoundException {
-		int intervId = Intervention.getIntervId();
+		long intervId = Intervention.getIntervId();
 		String selectStmt = "SELECT * FROM report WHERE intervention_id = " + intervId;
 
 		try {
@@ -30,24 +30,22 @@ public class ReportDAO {
 
 		while (rs.next()) {
 			Report report = new Report();
-			report.setIdRep(rs.getInt("id"));
-			report.setNameRep(rs.getString("name"));
-			report.setState(rs.getInt("state"));
-			if (rs.getInt("state") == 2) {
-				report.setNullCompleteRep();
-				// data completamento
-			} else {
-				// report.setDetailRep("Completa");
-			}
+			report.setId(rs.getInt("id"));
+			report.setDescrVerifica(rs.getString("descrizione_verifica"));
+			report.setCodVerifica(rs.getString("codice_verifica"));
+			report.setCodCategoria(rs.getString("codice_categoria"));
+			report.setStatoLbl(rs.getInt("stato"));
+			if (rs.getInt("stato") == 2) report.setNullCompleteRep();
+
 			reportList.add(report);
 		}
 		return reportList;
 	}
 
 	public static void changeState(int s) throws ClassNotFoundException, SQLException {
-		int reportId = Report.getReportId();
+		long reportId = Report.getReportId();
 		
-		String stmt = "UPDATE report SET state = " + s + " WHERE id = " + reportId;
+		String stmt = "UPDATE report SET stato = " + s + " WHERE id = " + reportId;
 		DBUtil.dbExecuteUpdate(stmt);
 	}
 	
@@ -67,6 +65,15 @@ public class ReportDAO {
 		} catch (SQLException e) {
 			throw e;
 		}
+	}
+	
+	// salva sul db i verbali dal JSON
+	public static void saveJSON(Report r, long intervId) throws ClassNotFoundException, SQLException {
+		String stmt = "INSERT INTO report "
+				+ "(id, descrizione_verifica, intervention_id, codice_categoria, codice_verifica) VALUES"
+				+ " ("+ r.getId() + ",'" + r.getDescrVerifica()+"',"+intervId+",'"+r.getCodCategoria()+"','"+r.getCodVerifica()+"')";
+		
+		DBUtil.dbExecuteUpdate(stmt);
 	}
 
 }

@@ -1,6 +1,5 @@
 package it.ncsnetwork.EciDesktop.controller;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -17,8 +16,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
+import it.ncsnetwork.EciDesktop.model.Report;
+import it.ncsnetwork.EciDesktop.model.ReportDAO;
+import it.ncsnetwork.EciDesktop.model.User;
+import it.ncsnetwork.EciDesktop.model.UserDAO;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -30,13 +34,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -44,8 +50,11 @@ import javafx.util.Callback;
 public class InterventionController {
 
 	private int selectedState = 3;
+
+	private static User user;
 	
 	@FXML private TableView interventionTable;
+	@FXML private TableColumn<Intervention, Long> idCol;
 	@FXML private TableColumn<Intervention, String> sedeCol;
 	@FXML private TableColumn<Intervention, String> dataCol;
 	@FXML private TableColumn<Intervention, String> statoCol;
@@ -54,7 +63,10 @@ public class InterventionController {
 	@FXML private TableColumn<Intervention, String> detailCol;
 	@FXML private ComboBox comboBox;
 	@FXML private ImageView imgDownload;
-
+	@FXML private MenuBar menuBar;
+	@FXML private Menu usernameMenu;
+	@FXML private Label usernameMenuLbl;
+	
 	@FXML
 	private void searchInterventions() throws SQLException, ClassNotFoundException {
 		try {
@@ -87,38 +99,22 @@ public class InterventionController {
 		}
 	}
 	
-	
-	//imposta il colore allo stato
-	public void setStateColor() {
-		statoCol.setCellFactory(new Callback<TableColumn<Intervention, String>, TableCell<Intervention, String>>(){
-           @Override
-            public TableCell<Intervention, String> call(TableColumn<Intervention, String> param) {
-                return new TableCell<Intervention, String>() {
-                @Override
-                public void updateItem(String item, boolean empty) {
-                    super.updateItem(item, empty);
-                    if (!isEmpty()) {
-                    	this.setTextFill(Color.BLACK);
-                        if(item.contains("In lavorazione")) 
-                            this.setTextFill(Color.ORANGE);
-                        else if(item.contains("Completo")) 
-                            this.setTextFill(Color.LIMEGREEN);
-                        setText(item);
-                    }
-                }
-                };        
-	           };
-		});
-	}
-	
 	// imposta l'on click sul button dettagli
-	public void setDetail() {
+	public void setDetailAndState() {
 		for (Object item : interventionTable.getItems()) {
-			((Intervention) item).getDetailBtn().getStyleClass().add("dettagli");
+			String stateText = ((Intervention) item).getStatoLbl().getText();
+			((Intervention) item).getStatoLbl().setText(stateText.toUpperCase());
+			if (stateText == "Completo")
+				((Intervention) item).getStatoLbl().getStyleClass().add("completo");
+			else if (stateText == "In lavorazione") 
+				((Intervention) item).getStatoLbl().getStyleClass().add("inLavorazione");
+			else ((Intervention) item).getStatoLbl().getStyleClass().add("daCompilare");
+			
+			((Intervention) item).getDetailBtn().getStyleClass().add("dettagli");	
 			((Intervention) item).getDetailBtn().setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent e) {
-					int intervId = ((Intervention) item).getId();
+					long intervId = ((Intervention) item).getId();
 					Intervention.setIntervId(intervId);
 
 					try {
@@ -130,12 +126,11 @@ public class InterventionController {
 
 						// invio i dettagli dell'intervento alla pagina verbali
 						ReportController controller = loader.getController();
-						controller.initData((Intervention) item, selectedState);
+						controller.initData((Intervention) item, selectedState, usernameMenu.getText());
 
 						Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
 						window.setWidth(Control.USE_COMPUTED_SIZE);
 						window.setHeight(Control.USE_COMPUTED_SIZE);
-						window.setTitle("Verbali");
 						window.setScene(tableViewScene);
 						window.show();
 					} catch (IOException e1) {
@@ -150,26 +145,38 @@ public class InterventionController {
 	@FXML
 	public void initialize() throws ClassNotFoundException, SQLException {
 		
-		//interventionTable.setCell
-		
+		idCol.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
 		sedeCol.setCellValueFactory(cellData -> cellData.getValue().sedeProperty());
 		dataCol.setCellValueFactory(cellData -> cellData.getValue().dataCreazioneProperty());
-		statoCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("stato"));
+		statoCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("statoLbl"));
 		codCategoriaCol.setCellValueFactory(cellData -> cellData.getValue().codCategoriaProperty());
 		codVerificaCol.setCellValueFactory(cellData -> cellData.getValue().codVerificaProperty());
 		detailCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("detailBtn"));
 
-		sedeCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.45));
+		idCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
+		sedeCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.35));
 		dataCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
+		statoCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.12));
 		codCategoriaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
-		codVerificaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
+		codVerificaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.12));
+		detailCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.08));
 		
 		// popola la tabella
 		searchInterventions();
+		
+		//imposta il nome utente
+		try {
+			user = UserDAO.getUser();
+		} catch (ClassNotFoundException | SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		usernameMenu.setText(user.getUsername());
+		usernameMenuLbl.setText(user.getUsername());
+		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
 	
 		// imposta il button dettagli cliccabile e il colore allo stato e l'altezza righe
-		setDetail();
-		setStateColor();
+		setDetailAndState();
 		setCellHeight();
 	
         //configura la select per filtrare lo stato
@@ -199,8 +206,7 @@ public class InterventionController {
 		try {
 			ObservableList<Intervention> intervData = InterventionDAO.searchIntervention(selectedState);
 			populateInterventions(intervData);
-			setDetail();
-			setStateColor();
+			setDetailAndState();
 			setCellHeight();
 	        String str = "Tutti";
 	        if (selectedState == 0) str = "Da compilare";
@@ -214,28 +220,43 @@ public class InterventionController {
 	}
 	
 	@FXML
-	private void downloadInterventions() {
+	private void downloadInterventions(ActionEvent event) {
 		// imposta la gif di caricamento
 		new Thread(() -> {
 		    Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/load.gif")));	
 		
+		
+		/*User user = new User();
+		try {
+			user = UserDAO.getUser();
+		} catch (ClassNotFoundException | SQLException e1) {
+			e1.printStackTrace();
+		}*/
+		String username = user.getUsername();
+		String password = user.getPassword();
+		
+		username = "xxx";
+		password = "macrosolution";
 		//chiamata get
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://192.168.1.16:8080/PortalECI/rest/intervento?username=xxx&password=macrosolution&action=download");
+        WebTarget target = client.target("http://192.168.1.8:8080/PortalECI/rest/intervento?username="+username+"&password="+password+"&action=download");
          
         Response response = target.request().get();
         System.out.println("Response code: " + response.getStatus());
         
-        String s = response.readEntity(String.class);
+       String s = response.readEntity(String.class);
         System.out.println(s);
         
         JSONParser parser = new JSONParser();
         
         try {
         	Object obj = parser.parse(s);
-        	//JSONObject jsonObject = (JSONObject) obj;
+        	/*JSONObject jsonObject = (JSONObject) obj;*/
         	
-        	//JSONArray interventi = (JSONArray) jsonObject.get("listaInterventi");
+        	/*JSONArray interventi = (JSONArray) jsonObject.get("listaInterventi");*/
+        	
+        	/*Object obj = parser.parse(new FileReader("interventi.txt"));*/
+        	
         	JSONArray interventi = (JSONArray) obj;
         	for (Object intervento : interventi) {
 
@@ -284,7 +305,7 @@ public class InterventionController {
     			
 			//salva sul db i nuovi interventi
 			Intervention i = new Intervention();
-			i.setIdIntervPortale(id);
+			i.setId(id);
 			i.setDataCreazione(dataCreazione);
 			i.setSede(sede);
 			i.setDescrVerifica(descrizioneTipo);
@@ -293,12 +314,31 @@ public class InterventionController {
 			i.setCodCategoria(codiceCat);
 			InterventionDAO.saveJSON(i);
 			
+			
+			// salvo i verbali
+			JSONArray verbali = (JSONArray) interv.get("verbali");
+			for (Object v : verbali) {
+				JSONObject verb = (JSONObject) v;
+				Long idVerb = (Long) verb.get("id");
+				String codVerVerb = (String) verb.get("codiceVerifica");
+				String codCatVerb = (String) verb.get("codiceCategoria");
+				String descrVerVerb = (String) verb.get("descrizioneVerifica");
+					
+				//salva sul db i verbali
+				Report r = new Report();
+				r.setId(idVerb);
+				r.setCodVerifica(codVerVerb);
+				r.setCodCategoria(codCatVerb);
+				r.setDescrVerifica(descrVerVerb);
+				ReportDAO.saveJSON(r, id);
+			}
+			
         }
 		// ripopola la tabella
 		searchInterventions();
 		
 		// imposta il button dettagli cliccabile e l'altezza righe
-		setDetail();
+		setDetailAndState();
 		setCellHeight(); 	
         	
         } catch (Exception e) {
@@ -309,6 +349,11 @@ public class InterventionController {
         Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/download.png")));
 		}).start();
         
+	}
+	
+	public void logout(ActionEvent event) throws ClassNotFoundException {
+			config c = new config();
+			c.logout(menuBar);
 	}
 	
 

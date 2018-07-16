@@ -1,10 +1,15 @@
-/*#detailCol {
-    -fx-cursor: hand;
-    -fx-text-fill: blue;
-}*/
-
-.table-view .column-header .label {
-  -fx-text-alignment: center;
+/*******************************************************************************
+ *                                                                             *
+ * tables                                             						*
+ *                                                                             *
+ ******************************************************************************/
+.table-view .column-header .label{
+	  -fx-alignment: CENTER-LEFT;
+	  -fx-padding: 0 0 0 10;
+}
+.table-view .table-column {
+	-fx-alignment: center-left;
+	-fx-padding-left: 5;
 }
 
 /*******************************************************************************
@@ -13,34 +18,63 @@
  *                                                                             *
  ******************************************************************************/
 .btn{
-    -fx-border-color : transparent;
+    /*-fx-border-color : transparent;
     -fx-background-color: #299bb4;
-    -fx-text-fill: white;
+    -fx-text-fill: white;*/
+    -fx-background-radius: 3px;
+	-fx-border-radius:3px;
+	-fx-focus-color: #9d201d;
+	-fx-faint-focus-color: transparent;
 }
 
 .btn:hover{
-    -fx-background-color: #699ca7;
+    /*-fx-background-color: #699ca7;
+    -fx-text-fill: white;*/
     -fx-cursor: hand;
-      -fx-text-fill: white;
+    
 }
-.btn:pressed, .btn:default:hover:pressed{
+/*.btn:pressed, .btn:default:hover:pressed{
   -fx-background-color: black;
   -fx-text-fill: white;
+}*/
+
+
+/*******************************************************************************
+ *                                                                             *
+ * Button dettagli interventi                                             *
+ *                                                                             *
+ ******************************************************************************/
+ #interventionTable #detailCol {
+  -fx-alignment: CENTER;
 }
+
 .dettagli{
-    -fx-border-color : transparent;
-    -fx-background-color: #299bb4;
-    -fx-text-fill: white;
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/detail2.png");
+	-fx-background-repeat: stretch;   
+    -fx-background-size: 30 30;
+    -fx-background-position: center center;
+    -fx-background-color: transparent;
+    -fx-border-width: 2px;
+    -fx-border-color: #333333;
+    -fx-background-radius: 30px;
+	-fx-border-radius:15px;
+	-fx-pref-width: 30px;
+	-fx-pref-height: 30px;
+	-fx-alignment: center;
 }
 
 .dettagli:hover{
-    -fx-background-color: #699ca7;
-    -fx-cursor: hand;
-      -fx-text-fill: white;
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/detail.png");
+  	-fx-background-color: #9d201d;
+  	-fx-border-color: #9d201d;
+   	-fx-cursor: hand;
+
 }
 .dettagli:pressed, .dettagli:default:hover:pressed{
-  -fx-background-color: black;
-  -fx-text-fill: white;
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/detail.png");
+  	-fx-background-color: black;
+  	-fx-border-color: black;
+
 }
 
 
@@ -56,24 +90,143 @@
 
 /*******************************************************************************
  *                                                                             *
+ * stato intervento          										   *
+ *                                                                             *
+ ******************************************************************************/
+.daCompilare {
+	-fx-padding: 2 5 2 5;
+	-fx-font-size: 7pt;
+	-fx-text-fill: white; 
+    -fx-background-color: red;
+    -fx-background-radius: 3px;
+	-fx-border-radius:3px;
+	-fx-font-weight: bold;
+}
+.completo {
+	-fx-padding: 2 5 2 5;
+	-fx-font-size: 7pt;
+	-fx-text-fill: white; 
+    -fx-background-color: LIMEGREEN;
+	-fx-background-radius: 3px;
+	-fx-border-radius:3px;
+	-fx-font-weight: bold;
+	
+}
+.inLavorazione {
+	-fx-padding: 2 5 2 5;
+	-fx-font-size: 7pt;
+	-fx-text-fill: white; 
+    -fx-background-color: ORANGE;
+	-fx-background-radius: 3px;
+	-fx-border-radius:3px;
+	-fx-font-weight: bold;
+}
+
+
+/*******************************************************************************
+ *                                                                             *
  * Combo box per filtro stato          										   *
  *                                                                             *
  ******************************************************************************/
 
+.combo-box{
+	-fx-cursor: hand;
+	-fx-focus-color: #9d201d;
+	-fx-faint-focus-color: transparent;
+}
+.combo-box .cell{
+	-fx-cursor: hand;
+}
 
+/*******************************************************************************
+ *                                                                             *
+ * Button completa verbale                                            *
+ *                                                                             *
+ ******************************************************************************/
+ #reportTable #completeCol {
+	-fx-alignment: CENTER;
+}
 
+.completaVerbale{
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/completa2.png");
+	-fx-background-repeat: stretch;   
+    -fx-background-color: transparent;
+    -fx-pref-width: 30px;
+	-fx-pref-height: 30px;
+	-fx-background-size: 30 30;
+    -fx-background-position: center center;
+}
 
+.completaVerbale:hover{
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/completa4.png");
+  	-fx-background-color: #9d201d;
+  	-fx-border-color: #9d201d;
+   	-fx-cursor: hand;
+    -fx-background-radius: 30px;
+	-fx-border-radius:15px;
 
+}
+.completaVerbale:pressed, .completaVerbale:default:hover:pressed{
+  	-fx-background-color: black;
+  	-fx-border-color: black;
+}
 
+/*******************************************************************************
+ *                                                                             *
+ * Button indietro                                            *
+ *                                                                             *
+ ******************************************************************************/
 
+.back{  
+    -fx-background-color: transparent;
+}
 
+.back:hover{
+    -fx-background-size: 30 30;
+    -fx-background-position: center center;
 
+    -fx-border-width: 2px;
+    -fx-border-color: white;
+    -fx-background-radius: 30px;
+	-fx-border-radius:15px;
+	-fx-pref-width: 30px;
+	-fx-pref-height: 30px;
+	-fx-alignment: center;
+   	-fx-cursor: hand;
 
+}
+.back:pressed, .back:default:hover:pressed{
+  	-fx-background-color: black;
+  	-fx-border-color: black;
 
+}
 
+/*******************************************************************************
+ *                                                                             *
+ * Button nota                                            *
+ *                                                                             *
+ ******************************************************************************/
 
+.nota:hover{
+  	-fx-border-color: transparent;
+   	-fx-cursor: hand;
+}
 
-
+/*******************************************************************************
+ *                                                                             *
+ * menu user                                           *
+ *                                                                             *
+ ******************************************************************************/
+ .userMenu {
+ 	-fx-background-color: transparent;
+ 	-fx-cursor: hand;
+ }
+.userMenu .label{
+	-fx-text-fill: white;
+}
+.userMenu .button{
+	-fx-cursor: hand;
+}
 
 
 

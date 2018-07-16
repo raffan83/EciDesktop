@@ -10,7 +10,8 @@ and open the template in the editor.
 
 .page1{
     -fx-border-color:transparent;
-    -fx-background-color: #2b579a;
+    /*-fx-background-color: #2b579a;*/
+    -fx-background-color: #9d201d;
 }
 
 .test{
@@ -168,7 +169,7 @@ and open the template in the editor.
     -fx-background-radius: 0;
     -fx-border-color : #f4f4f4;
     -fx-border-width:2;
-    -fx-background-color: #2b579a;
+    -fx-background-color: #9d201d;
     -fx-background-insets: 0;
     -fx-border-insets: 0;
     -fx-font-family: "Segoe UI Semibold";
@@ -177,7 +178,9 @@ and open the template in the editor.
 }
  
 .button:hover{
-    -fx-background-color: #3659b3;
+    /*-fx-background-color: #3659b3;*/
+    -fx-background-color: #791917;
+     -fx-cursor: hand;
 }
  
 .button:pressed, .button:default:hover:pressed
@@ -187,7 +190,7 @@ and open the template in the editor.
     -fx-background-radius: 0;
     -fx-border-color : #f4f4f4;
     -fx-border-width:2;
-    -fx-background-color: #2b579a;
+    -fx-background-color: #9d201d;
     -fx-background-insets: 0;
     -fx-border-insets: 0;
     -fx-font-family: "Segoe UI Semibold";
@@ -202,7 +205,7 @@ and open the template in the editor.
     -fx-background-radius: 0;
     -fx-border-color : #f4f4f4;
     -fx-border-width:2;
-    -fx-background-color: #2b579a;
+    -fx-background-color: #9d201d;
     -fx-background-insets: 0;
     -fx-border-insets: 0;
     -fx-font-family: "Segoe UI Semibold";

@@ -10,6 +10,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -30,6 +31,8 @@ public class MainApp extends Application {
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
 		stage.initStyle(StageStyle.UNDECORATED);
+		stage.getIcons().add(new Image("/it/ncsnetwork/EciDesktop/img/logo-eci.jpg"));
+		stage.setTitle("Eci spa");
 		stage.show();
 
 		Parent login = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/login.fxml"));

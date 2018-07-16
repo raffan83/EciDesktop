@@ -5,15 +5,27 @@
  */
 package it.ncsnetwork.EciDesktop.controller;
 
+import java.io.IOException;
+import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition;
 import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition1;
 import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
 import it.ncsnetwork.EciDesktop.model.LoginDAO;
+import it.ncsnetwork.EciDesktop.model.User;
+import it.ncsnetwork.EciDesktop.model.UserDAO;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,7 +51,9 @@ public class LoginController implements Initializable {
 	@FXML
 	private PasswordField txtPassword;
 	@FXML
-	private Text lblWelcome;
+	private Text lblEci;
+	@FXML
+	private Text lblSpa;
 	@FXML
 	private Text lblUserLogin;
 	@FXML
@@ -71,7 +85,8 @@ public class LoginController implements Initializable {
 
 		Platform.runLater(() -> {
 			new FadeInRightTransition(lblUserLogin).play();
-			new FadeInLeftTransition(lblWelcome).play();
+			new FadeInLeftTransition(lblEci).play();
+			new FadeInLeftTransition(lblSpa).play();
 			new FadeInLeftTransition1(lblPassword).play();
 			new FadeInLeftTransition1(lblUsername).play();
 			new FadeInLeftTransition1(txtUsername).play();
@@ -85,18 +100,62 @@ public class LoginController implements Initializable {
 		// TODO
 	}
 
-	public void Login(ActionEvent event) throws ClassNotFoundException {
+	public void Login(ActionEvent event) throws ClassNotFoundException, UnknownHostException, IOException {
+		
+		//verifica connessione
+		Socket socket = null;
+		boolean connesso = false;
 		try {
-			if (LoginDAO.isLogin(txtUsername.getText(), txtPassword.getText())) {
-				config c = new config();
-				c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml", "Interventi", true,
-						StageStyle.DECORATED, false);
-			} else {
+		    socket = new Socket("www.google.com", 80);
+		    connesso = true;
+		    System.out.print("connesso");
+		} catch (Exception e) {
+			System.out.println("non connesso");
+		}
+		finally {            
+		    if (socket != null) try { socket.close(); } catch(IOException e) {}
+		}
+		
+		if (connesso) { // login chiamata rest
+			
+			 Client client = ClientBuilder.newClient();
+		     WebTarget target = client.target("http://192.168.1.205:8080/PortalECI/rest/login?username="+txtUsername.getText()+"&password="+txtPassword.getText()+"&action=download");
+		     
+		     User user = new User();
+		     user.setUsername(txtUsername.getText());
+		     user.setPassword(txtPassword.getText());
+		     
+		     try {
+			     Response response = target.request().post(Entity.entity(user, MediaType.APPLICATION_JSON));
+			     System.out.println("Response code: " + response.getStatus());
+			     //String s = response.readEntity(String.class);
+			     //System.out.println(s);
+		     }catch (Exception e) {
+		    	 e.printStackTrace();
+		     } finally {
+		    	 config c = new config();
+				 c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml","Eci spa", true, StageStyle.DECORATED, false);
+				 try {
+					UserDAO.updateUser(txtUsername.getText(), txtPassword.getText());
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		     }   
+		      
+		} else { //effettua login  offline
+			
+			try {
+				if (LoginDAO.isLogin(txtUsername.getText(), txtPassword.getText())) {
+					config c = new config();
+					c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml","Eci spa", true,
+							StageStyle.DECORATED, false);
+				} else {
+					errLogin.setText("Username o password errati!");
+				}
+			} catch (SQLException e) {
 				errLogin.setText("Username o password errati!");
+				e.printStackTrace();
 			}
-		} catch (SQLException e) {
-			errLogin.setText("Username o password errati!");
-			e.printStackTrace();
 		}
 	}
 

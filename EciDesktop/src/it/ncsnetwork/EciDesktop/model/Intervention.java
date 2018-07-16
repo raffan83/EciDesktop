@@ -1,50 +1,54 @@
 package it.ncsnetwork.EciDesktop.model;
 
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 
 public class Intervention {
-	private SimpleIntegerProperty id;
+	private SimpleLongProperty id;
 	private SimpleStringProperty sede;
 	private SimpleStringProperty dataCreazione;
 	private String stato;
+	private Label statoLbl;
 	private SimpleStringProperty codCategoria;
 	private SimpleStringProperty descrCategoria;
 	private SimpleStringProperty codVerifica;
 	private SimpleStringProperty descrVerifica;
 	private SimpleStringProperty note;
 	private Button detailBtn;
-	private Long idIntervPortale;
 
-	static int intervId;
+	static long intervId;
 
 	public Intervention() {
-		this.id = new SimpleIntegerProperty();
+		this.id = new SimpleLongProperty();
 		this.sede = new SimpleStringProperty();
 		this.dataCreazione = new SimpleStringProperty();
 		this.stato = new String("Da compilare");
+		this.statoLbl = new Label("Da compilare");
 		this.codCategoria = new SimpleStringProperty();
 		this.descrCategoria = new SimpleStringProperty();
 		this.codVerifica = new SimpleStringProperty();
 		this.descrVerifica = new SimpleStringProperty();
 		this.note = new SimpleStringProperty();
-		this.detailBtn = new Button("Dettagli");
-		this.idIntervPortale = new Long(0);
+		this.detailBtn = new Button("");
+
 	}
 
 	// id
-	public int getId() {
+	public long getId() {
 		return id.get();
 	}
 
-	public void setId(int intId) {
+	public void setId(long intId) {
 		this.id.set(intId);
 	}
 
-	public IntegerProperty idProperty() {
+	public LongProperty idProperty() {
 		return id;
 	}
 
@@ -159,23 +163,27 @@ public class Intervention {
 	public void setDetailBtn(Button button) {
 		this.detailBtn = button;
 	}
+	
+	// label stato
+	public Label getStatoLbl() {
+		return statoLbl;
+	}
+
+	public void setStatoLbl(int i) {
+		if (i == 1)
+			this.statoLbl.setText("In lavorazione");
+		else if (i == 2)
+			this.statoLbl.setText("Completo");
+	}
 
 	// intervId
-	public static int getIntervId() {
+	public static long getIntervId() {
 		return intervId;
 	}
 
-	public static void setIntervId(int i) {
+	public static void setIntervId(long i) {
 		intervId = i;
 	}
 	
-	// id intervento portale
-	public Long getIdIntervPortale() {
-		return idIntervPortale;
-	}
-
-	public void setIdIntervPortale(long l) {
-		idIntervPortale = l;
-	}
 
 }
