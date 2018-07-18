@@ -119,7 +119,7 @@ public class LoginController implements Initializable {
 		if (connesso) { // login chiamata rest
 			
 			 Client client = ClientBuilder.newClient();
-		     WebTarget target = client.target("http://192.168.1.205:8080/PortalECI/rest/login?username="+txtUsername.getText()+"&password="+txtPassword.getText()+"&action=download");
+		     WebTarget target = client.target("http://localhost:8080/PortalECI/rest/login?username="+txtUsername.getText()+"&password="+txtPassword.getText()+"&action=download");
 		     
 		     User user = new User();
 		     user.setUsername(txtUsername.getText());

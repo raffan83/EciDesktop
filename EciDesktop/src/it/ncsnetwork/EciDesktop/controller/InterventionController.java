@@ -239,7 +239,7 @@ public class InterventionController {
 		password = "macrosolution";
 		//chiamata get
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://192.168.1.8:8080/PortalECI/rest/intervento?username="+username+"&password="+password+"&action=download");
+        WebTarget target = client.target("http://localhost:8080/PortalECI/rest/intervento?username="+username+"&password="+password+"&action=download");
          
         Response response = target.request().get();
         System.out.println("Response code: " + response.getStatus());
