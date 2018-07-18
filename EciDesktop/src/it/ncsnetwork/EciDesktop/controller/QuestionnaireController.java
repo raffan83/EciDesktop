@@ -14,6 +14,7 @@ import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
 import it.ncsnetwork.EciDesktop.model.Questionnaire;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
+import it.ncsnetwork.EciDesktop.model.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -38,6 +39,7 @@ public class QuestionnaireController {
 
 	private Intervention selectedInterv;
 	private int selectedState;
+	private User selectedUser;
 
 	List<String> list = new ArrayList<>();
 	
@@ -63,7 +65,7 @@ public class QuestionnaireController {
 
 		// ricarica le info dell'intervento sulla pagina verbali
 		ReportController controller = loader.getController();
-		controller.initData(selectedInterv, selectedState, user);
+		controller.initData(selectedInterv, selectedState, selectedUser);
 		
 		// aggiorno lo stato dell'intervento sul db
 		InterventionDAO.setState();
@@ -74,12 +76,12 @@ public class QuestionnaireController {
 	}
 
 	// salva le info dell'intervento per rimetterle sulla pagina verbali
-	public void setData(Intervention interv, int state, String username) {
+	public void setData(Intervention interv, int state, User user) {
 		selectedInterv = interv;
 		selectedState = state;
-		user = username;
-		usernameMenu.setText(user);
-		usernameMenuLbl.setText(user);
+		selectedUser = user;
+		usernameMenu.setText(selectedUser.getUsername());
+		usernameMenuLbl.setText(selectedUser.getUsername());
 		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
 	}
 
@@ -335,7 +337,7 @@ public class QuestionnaireController {
 		}
 	}
 	
-	public void logout(ActionEvent event) throws ClassNotFoundException {
+	public void logout(ActionEvent event) throws ClassNotFoundException, SQLException {
 		config c = new config();
 		c.logout(menuBar);
 	}

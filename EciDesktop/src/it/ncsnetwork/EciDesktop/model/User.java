@@ -1,32 +1,36 @@
 package it.ncsnetwork.EciDesktop.model;
 
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class User {
-	private SimpleIntegerProperty id;
+	private SimpleLongProperty id;
 	private SimpleStringProperty username;
 	private SimpleStringProperty password;
-	static int userId;
+	private SimpleStringProperty accessToken;
+	public static long userId;
 
 	public User() {
-		this.id = new SimpleIntegerProperty();
+		this.id = new SimpleLongProperty();
 		this.username = new SimpleStringProperty();
 		this.password = new SimpleStringProperty();
+		this.accessToken = new SimpleStringProperty();
 	}
 
 	// id
-	public int getId() {
+	public Long getId() {
 		return id.get();
 	}
 
-	public void setId(int i) {
-		this.id.set(i);
+	public void setId(long l) {
+		this.id.set(l);
 	}
 
-	public IntegerProperty idProperty() {
+	public LongProperty idProperty() {
 		return id;
 	}
 
@@ -55,14 +59,27 @@ public class User {
 	public StringProperty passwordProperty() {
 		return password;
 	}
+	
+	// access token
+	public String getAccessToken() {
+		return accessToken.get();
+	}
+
+	public void setAccessToken(String ac) {
+		this.accessToken.set(ac);
+	}
+
+	public StringProperty accessTokenProperty() {
+		return accessToken;
+	}
 
 	// userId
-	public static int getUserId() {
+	public static Long getUserId() {
 		return userId;
 	}
 
-	public static void setUserId(int i) {
-		userId = i;
+	public static void setUserId(long l) {
+		userId = l;
 	}
 
 }

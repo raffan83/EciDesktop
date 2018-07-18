@@ -22,7 +22,6 @@ import it.ncsnetwork.EciDesktop.model.InterventionDAO;
 import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
 import it.ncsnetwork.EciDesktop.model.User;
-import it.ncsnetwork.EciDesktop.model.UserDAO;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,6 +31,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
@@ -50,8 +50,8 @@ import javafx.util.Callback;
 public class InterventionController {
 
 	private int selectedState = 3;
-
-	private static User user;
+	private User selectedUser;
+	//private static User user;
 	
 	@FXML private TableView interventionTable;
 	@FXML private TableColumn<Intervention, Long> idCol;
@@ -66,6 +66,14 @@ public class InterventionController {
 	@FXML private MenuBar menuBar;
 	@FXML private Menu usernameMenu;
 	@FXML private Label usernameMenuLbl;
+	
+	
+	public void initData(User user) {
+		selectedUser = user;
+		usernameMenu.setText(selectedUser.getUsername());
+		usernameMenuLbl.setText(selectedUser.getUsername());
+		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
+	}
 	
 	@FXML
 	private void searchInterventions() throws SQLException, ClassNotFoundException {
@@ -126,7 +134,7 @@ public class InterventionController {
 
 						// invio i dettagli dell'intervento alla pagina verbali
 						ReportController controller = loader.getController();
-						controller.initData((Intervention) item, selectedState, usernameMenu.getText());
+						controller.initData((Intervention) item, selectedState, selectedUser);
 
 						Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
 						window.setWidth(Control.USE_COMPUTED_SIZE);
@@ -164,17 +172,6 @@ public class InterventionController {
 		// popola la tabella
 		searchInterventions();
 		
-		//imposta il nome utente
-		try {
-			user = UserDAO.getUser();
-		} catch (ClassNotFoundException | SQLException e1) {
-			e1.printStackTrace();
-		}
-		
-		usernameMenu.setText(user.getUsername());
-		usernameMenuLbl.setText(user.getUsername());
-		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
-	
 		// imposta il button dettagli cliccabile e il colore allo stato e l'altezza righe
 		setDetailAndState();
 		setCellHeight();
@@ -225,133 +222,130 @@ public class InterventionController {
 		new Thread(() -> {
 		    Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/load.gif")));	
 		
-		
-		/*User user = new User();
-		try {
-			user = UserDAO.getUser();
-		} catch (ClassNotFoundException | SQLException e1) {
-			e1.printStackTrace();
-		}*/
-		String username = user.getUsername();
-		String password = user.getPassword();
-		
-		username = "xxx";
-		password = "macrosolution";
-		//chiamata get
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://192.168.1.8:8080/PortalECI/rest/intervento?username="+username+"&password="+password+"&action=download");
-         
-        Response response = target.request().get();
-        System.out.println("Response code: " + response.getStatus());
-        
-       String s = response.readEntity(String.class);
-        System.out.println(s);
-        
-        JSONParser parser = new JSONParser();
-        
-        try {
-        	Object obj = parser.parse(s);
-        	/*JSONObject jsonObject = (JSONObject) obj;*/
-        	
-        	/*JSONArray interventi = (JSONArray) jsonObject.get("listaInterventi");*/
-        	
-        	/*Object obj = parser.parse(new FileReader("interventi.txt"));*/
-        	
-        	JSONArray interventi = (JSONArray) obj;
-        	for (Object intervento : interventi) {
-
-            	JSONObject interv = (JSONObject) intervento;
-            	
-            	// id
-            	Long id = (Long) interv.get("id");
-            	
-            	// data creazione
-            	Long data = (Long) interv.get("dataCreazione");
-    			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-    			String dataCreazione = df.format(data);
-    			
-    			// sede
-    			String sede = (String) interv.get("nome_sede");
-    			
-    			// id commessa
-    			String idCommessa = (String) interv.get("idCommessa");
-
-    			// tipo verifica
-    			JSONArray tipoVerifica = (JSONArray) interv.get("tipo_verifica");
-    			String descrizioneTipo="", codiceTipo="", descrizioneCat="", codiceCat="";
-    			int count=0;
-    			for (Object tv : tipoVerifica) {
-                	JSONObject tipoVer = (JSONObject) tv;
-	    			String descrTipo = (String) tipoVer.get("descrizione");	    			
-	    			String codTipo = (String) tipoVer.get("codice");
-	    			//categoria
-	    			JSONObject catVer = (JSONObject) tipoVer.get("categoria");
-	    			String descrCat = (String) catVer.get("descrizione");
-	    			String codCat = (String) catVer.get("codice");
-	    			
-	    			if (count == 0) {
-		    			descrizioneTipo = descrTipo;
-		    			codiceTipo = codTipo;
-		    			descrizioneCat = descrCat;
-		    			codiceCat = codCat;
-	    			}else {
-		    			descrizioneTipo += ", " + descrTipo;
-		    			codiceTipo += ", " + codTipo;
-		    			descrizioneCat += ", " + descrCat;
-		    			codiceCat += ", " + codCat;
-	    			} 
-	    			count++;
-        	 }
-    			
-			//salva sul db i nuovi interventi
-			Intervention i = new Intervention();
-			i.setId(id);
-			i.setDataCreazione(dataCreazione);
-			i.setSede(sede);
-			i.setDescrVerifica(descrizioneTipo);
-			i.setCodVerifica(codiceTipo);
-			i.setDescrCategoria(descrizioneCat);
-			i.setCodCategoria(codiceCat);
-			InterventionDAO.saveJSON(i);
+		//verifica connessione
+		if (config.isConnected()) {
+			String username = selectedUser.getUsername();
+			String password = selectedUser.getPassword();
 			
-			
-			// salvo i verbali
-			JSONArray verbali = (JSONArray) interv.get("verbali");
-			for (Object v : verbali) {
-				JSONObject verb = (JSONObject) v;
-				Long idVerb = (Long) verb.get("id");
-				String codVerVerb = (String) verb.get("codiceVerifica");
-				String codCatVerb = (String) verb.get("codiceCategoria");
-				String descrVerVerb = (String) verb.get("descrizioneVerifica");
+			//chiamata get
+	        Client client = ClientBuilder.newClient();
+	        WebTarget target = client.target(config.URL_API.concat("intervento?username="+username+"&password="+password+"&action=download"));
+	         
+	        Response response = target.request().get();
+	        System.out.println("Response code: " + response.getStatus());
+	        
+	        if (response.getStatus() == 200) {
+	        
+		        String s = response.readEntity(String.class);
+		        System.out.println(s);
+		        
+		        JSONParser parser = new JSONParser();
+		        
+		        try {
+		        	Object obj = parser.parse(s);
+		        	
+		        	JSONArray interventi = (JSONArray) obj;
+		        	for (Object intervento : interventi) {
+		
+		            	JSONObject interv = (JSONObject) intervento;
+		            	
+		            	// id
+		            	Long id = (Long) interv.get("id");
+		            	
+		            	// data creazione
+		            	Long data = (Long) interv.get("dataCreazione");
+		    			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+		    			String dataCreazione = df.format(data);
+		    			
+		    			// sede
+		    			String sede = (String) interv.get("nome_sede");
+		    			
+		    			// id commessa
+		    			String idCommessa = (String) interv.get("idCommessa");
+		
+		    			// tipo verifica
+		    			JSONArray tipoVerifica = (JSONArray) interv.get("tipo_verifica");
+		    			String descrizioneTipo="", codiceTipo="", descrizioneCat="", codiceCat="";
+		    			int count=0;
+		    			for (Object tv : tipoVerifica) {
+		                	JSONObject tipoVer = (JSONObject) tv;
+			    			String descrTipo = (String) tipoVer.get("descrizione");	    			
+			    			String codTipo = (String) tipoVer.get("codice");
+			    			//categoria
+			    			JSONObject catVer = (JSONObject) tipoVer.get("categoria");
+			    			String descrCat = (String) catVer.get("descrizione");
+			    			String codCat = (String) catVer.get("codice");
+			    			
+			    			if (count == 0) {
+				    			descrizioneTipo = descrTipo;
+				    			codiceTipo = codTipo;
+				    			descrizioneCat = descrCat;
+				    			codiceCat = codCat;
+			    			}else {
+				    			descrizioneTipo += ", " + descrTipo;
+				    			codiceTipo += ", " + codTipo;
+				    			descrizioneCat += ", " + descrCat;
+				    			codiceCat += ", " + codCat;
+			    			} 
+			    			count++;
+		        	 }
+		    			
+					//salva sul db i nuovi interventi
+					Intervention i = new Intervention();
+					i.setId(id);
+					i.setDataCreazione(dataCreazione);
+					i.setSede(sede);
+					i.setDescrVerifica(descrizioneTipo);
+					i.setCodVerifica(codiceTipo);
+					i.setDescrCategoria(descrizioneCat);
+					i.setCodCategoria(codiceCat);
+					InterventionDAO.saveJSON(i);
 					
-				//salva sul db i verbali
-				Report r = new Report();
-				r.setId(idVerb);
-				r.setCodVerifica(codVerVerb);
-				r.setCodCategoria(codCatVerb);
-				r.setDescrVerifica(descrVerVerb);
-				ReportDAO.saveJSON(r, id);
-			}
-			
-        }
-		// ripopola la tabella
-		searchInterventions();
-		
-		// imposta il button dettagli cliccabile e l'altezza righe
-		setDetailAndState();
-		setCellHeight(); 	
-        	
-        } catch (Exception e) {
-			e.printStackTrace();
-		}     
-        
+					
+					// salvo i verbali
+					JSONArray verbali = (JSONArray) interv.get("verbali");
+					for (Object v : verbali) {
+						JSONObject verb = (JSONObject) v;
+						Long idVerb = (Long) verb.get("id");
+						String codVerVerb = (String) verb.get("codiceVerifica");
+						String codCatVerb = (String) verb.get("codiceCategoria");
+						String descrVerVerb = (String) verb.get("descrizioneVerifica");
+							
+						//salva sul db i verbali
+						Report r = new Report();
+						r.setId(idVerb);
+						r.setCodVerifica(codVerVerb);
+						r.setCodCategoria(codCatVerb);
+						r.setDescrVerifica(descrVerVerb);
+						ReportDAO.saveJSON(r, id);
+					}
+					
+		        }
+				// ripopola la tabella
+				searchInterventions();
+				
+				// imposta il button dettagli cliccabile e l'altezza righe
+				setDetailAndState();
+				setCellHeight(); 	
+		        	
+		        } catch (Exception e) {
+					e.printStackTrace();
+				}
+	        
+	        } else {
+	        	Platform.runLater(()-> config.dialog(AlertType.ERROR, "Impossibile scaricare i nuovi interventi."));
+	        }
+	        
+		} else {
+			Platform.runLater(()-> config.dialog(AlertType.WARNING, "Nessuna connessione"));
+		}
         // ripristina l'immagine di default
-        Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/download.png")));
+        Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/download2.png")));
 		}).start();
         
 	}
 	
-	public void logout(ActionEvent event) throws ClassNotFoundException {
+	public void logout(ActionEvent event) throws ClassNotFoundException, SQLException {
 			config c = new config();
 			c.logout(menuBar);
 	}

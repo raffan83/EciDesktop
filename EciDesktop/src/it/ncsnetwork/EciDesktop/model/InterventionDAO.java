@@ -8,12 +8,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class InterventionDAO {
-
-	static int userId = User.getUserId();
 	
 	public static ObservableList<Intervention> searchInterventions() throws SQLException, ClassNotFoundException {
 
-		String selectStmt = "SELECT * FROM intervention WHERE user_id = "+ userId + " ORDER BY stato";
+		String selectStmt = "SELECT * FROM intervention WHERE user_id = "+ User.getUserId() + " ORDER BY stato";
 
 		try {
 			ResultSet rsInt = DBUtil.dbExecuteQuery(selectStmt);
@@ -83,10 +81,10 @@ public class InterventionDAO {
 	// filtra interventi per stato
 	public static ObservableList<Intervention> searchIntervention(int stato) throws SQLException, ClassNotFoundException {
 		
-		String selectStmt = "SELECT * FROM intervention WHERE user_id = " + userId + " ORDER BY stato";
+		String selectStmt = "SELECT * FROM intervention WHERE user_id = " + User.getUserId() + " ORDER BY stato";
 		
 		if (stato != 3) {		
-			selectStmt = "SELECT * FROM intervention WHERE stato = " + stato + " AND user_id = " + userId;
+			selectStmt = "SELECT * FROM intervention WHERE stato = " + stato + " AND user_id = " + User.getUserId();
 		}	
 		try {
 			ResultSet rsInt = DBUtil.dbExecuteQuery(selectStmt);
@@ -102,7 +100,7 @@ public class InterventionDAO {
 		String stmt = "INSERT INTO intervention "
 				+ "(id, data_creazione, sede, codice_categoria, codice_verifica, descrizione_categoria, descrizione_verifica, user_id) VALUES"
 				+ " ("+ i.getId() + ",'" + i.getDataCreazione()+"','"+i.getSede()+"','"+i.getCodCategoria()+"','"+i.getCodVerifica()+"','"+i.getDescrCategoria()+"','"
-				+i.getDescrVerifica()+"','"+userId+"')";
+				+i.getDescrVerifica()+"','"+User.getUserId()+"')";
 		
 		DBUtil.dbExecuteUpdate(stmt);
 	}

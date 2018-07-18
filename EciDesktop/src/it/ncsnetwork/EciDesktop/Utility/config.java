@@ -7,12 +7,20 @@ package it.ncsnetwork.EciDesktop.Utility;
 
 import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.SQLException;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
+import it.ncsnetwork.EciDesktop.controller.InterventionController;
+import it.ncsnetwork.EciDesktop.controller.ReportController;
+import it.ncsnetwork.EciDesktop.model.Intervention;
+import it.ncsnetwork.EciDesktop.model.User;
+import it.ncsnetwork.EciDesktop.model.UserDAO;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -33,23 +41,30 @@ import javafx.stage.StageStyle;
  * @author Herudi
  */
 public class config {
-
+	
+	public static final String URL_API = "http://localhost:8080/PortalECI/rest/";
+	
 	public config() {
 	}
 
 	public static void dialog(Alert.AlertType alertType, String s) {
 		Alert alert = new Alert(alertType, s);
 		alert.initStyle(StageStyle.UTILITY);
+		//alert.setHeaderText(s);
 		alert.setTitle("Info");
 		alert.showAndWait();
 	}
 
 	public void newStage(Stage stage, Label lb, String load, String judul, boolean resize, StageStyle style,
-			boolean maximized) {
+			boolean maximized, User user) {
 		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource(load));
+			Parent root = loader.load();
+			
 			Stage st = new Stage();
 			stage = (Stage) lb.getScene().getWindow();
-			Parent root = FXMLLoader.load(getClass().getResource(load));
+			//Parent root = FXMLLoader.load(getClass().getResource(load));
 
 			Scene scene = new Scene(root);
 			st.initStyle(style);
@@ -58,13 +73,17 @@ public class config {
 			st.getIcons().add(new Image("/it/ncsnetwork/EciDesktop/img/logo-eci.jpg"));
 			st.setTitle(judul);
 			st.setScene(scene);
+			
+			InterventionController controller = loader.getController();
+			controller.initData(user);
+			
 			st.show();
 			stage.close();
 		} catch (Exception e) {
 		}
 	}
 	
-	public void logout(MenuBar mb) {
+	public void logout(MenuBar mb) throws ClassNotFoundException, SQLException {
 		try {
 			Stage st = new Stage();
 			Stage stage = (Stage) mb.getScene().getWindow();
@@ -75,11 +94,29 @@ public class config {
 			st.setScene(scene);
 			st.show();
 			stage.close();
+			
+			UserDAO.deleteAccessToken();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 	}
+	
+	public static boolean isConnected() {
 
+		try {
+           URL siteURL = new URL(URL_API);
+           HttpURLConnection connection = (HttpURLConnection) siteURL.openConnection();
+           connection.setRequestMethod("HEAD");
+           connection.connect();
+           System.out.println("connesso");
+           return true;
+      
+		} catch (Exception e) {
+			System.out.println("non connesso");
+			return false;
+		}
+	}
+/*
 	public void newStage2(Stage stage, Button lb, String load, String judul, boolean resize, StageStyle style,
 			boolean maximized) {
 		try {
@@ -97,32 +134,8 @@ public class config {
 		} catch (Exception e) {
 		}
 	}
-
-	public void newStageReport(String load, String title) {
-		try {
-			Stage stage = new Stage();
-			Parent root = FXMLLoader.load(getClass().getResource(load));
-			Scene scene = new Scene(root);
-			stage.setScene(scene);
-			stage.initStyle(StageStyle.DECORATED);
-			stage.setTitle(title);
-			stage.show();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void changeScreenButtonPushed(ActionEvent event, String url) throws IOException {
-		Parent tableViewParent = FXMLLoader.load(getClass().getResource(url));
-		Scene tableViewScene = new Scene(tableViewParent);
-
-		// This line gets the Stage information
-		Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
-		window.setScene(tableViewScene);
-		window.show();
-	}
-
+*/
+/*
 	public void loadAnchorPane(AnchorPane ap, String a) {
 		try {
 			AnchorPane p = FXMLLoader.load(getClass().getResource("/herudi/view/" + a));
@@ -130,21 +143,11 @@ public class config {
 		} catch (IOException e) {
 		}
 	}
-
+*/
+/*
 	public static void setModelColumn(TableColumn tb, String a) {
 		tb.setCellValueFactory(new PropertyValueFactory(a));
 	}
-	
-	public void testGet() {  //192.168.1.11:8080/PortalECI/rest/intervento
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://192.168.1.11:8080/PortalECI/rest/intervento");
-         
-        Response response = target.request().get();
-        System.out.println("Response code: " + response.getStatus());
-        
-        String s = response.readEntity(String.class);
-        System.out.println(s);
-
-	}
+*/
 	
 }

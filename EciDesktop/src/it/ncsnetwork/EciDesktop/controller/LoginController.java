@@ -6,10 +6,10 @@
 package it.ncsnetwork.EciDesktop.controller;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 import javax.ws.rs.client.Client;
@@ -19,11 +19,13 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition;
 import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition1;
 import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
-import it.ncsnetwork.EciDesktop.model.LoginDAO;
 import it.ncsnetwork.EciDesktop.model.User;
 import it.ncsnetwork.EciDesktop.model.UserDAO;
 import javafx.application.Platform;
@@ -34,6 +36,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -103,24 +106,11 @@ public class LoginController implements Initializable {
 	public void Login(ActionEvent event) throws ClassNotFoundException, UnknownHostException, IOException {
 		
 		//verifica connessione
-		Socket socket = null;
-		boolean connesso = false;
-		try {
-		    socket = new Socket("www.google.com", 80);
-		    connesso = true;
-		    System.out.print("connesso");
-		} catch (Exception e) {
-			System.out.println("non connesso");
-		}
-		finally {            
-		    if (socket != null) try { socket.close(); } catch(IOException e) {}
-		}
-		
-		if (connesso) { // login chiamata rest
+
+		if (config.isConnected()) { // login chiamata rest
 			
 			 Client client = ClientBuilder.newClient();
-		     WebTarget target = client.target("http://192.168.1.205:8080/PortalECI/rest/login?username="+txtUsername.getText()+"&password="+txtPassword.getText()+"&action=download");
-		     
+			 WebTarget target = client.target(config.URL_API.concat("login?username="+txtUsername.getText()+"&password="+txtPassword.getText()+"&action=download"));
 		     User user = new User();
 		     user.setUsername(txtUsername.getText());
 		     user.setPassword(txtPassword.getText());
@@ -128,27 +118,40 @@ public class LoginController implements Initializable {
 		     try {
 			     Response response = target.request().post(Entity.entity(user, MediaType.APPLICATION_JSON));
 			     System.out.println("Response code: " + response.getStatus());
-			     //String s = response.readEntity(String.class);
-			     //System.out.println(s);
+			     
+			     if(response.getStatus() == 200) {
+			    	 try { // aggiorna sul db i dati dell'utente
+						String s = response.readEntity(String.class);
+						JSONParser parser = new JSONParser(); 
+						Object obj = parser.parse(s);
+						JSONObject jsonObj = (JSONObject) obj;
+						String accessToken = (String) jsonObj.get("access_toke");
+					    	 
+			    		UserDAO.updateUser(txtUsername.getText(), txtPassword.getText(), accessToken);
+			    		UserDAO.setUserId(txtUsername.getText(), txtPassword.getText());
+					} catch (SQLException e) {
+							e.printStackTrace();
+					} finally {
+			    	 config c = new config();
+					 c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml","Eci spa", true, StageStyle.DECORATED, false, user); 	
+					}	     
+			     } else {
+			    	 errLogin.setText("Username o password errati!");
+			     }
 		     }catch (Exception e) {
 		    	 e.printStackTrace();
-		     } finally {
-		    	 config c = new config();
-				 c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml","Eci spa", true, StageStyle.DECORATED, false);
-				 try {
-					UserDAO.updateUser(txtUsername.getText(), txtPassword.getText());
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-		     }   
-		      
+		     } 
+
 		} else { //effettua login  offline
-			
+
 			try {
-				if (LoginDAO.isLogin(txtUsername.getText(), txtPassword.getText())) {
+				if (UserDAO.isLogin(txtUsername.getText(), txtPassword.getText())) {
+				    User user = new User();
+				    user.setUsername(txtUsername.getText());
+				    user.setPassword(txtPassword.getText());
 					config c = new config();
 					c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml","Eci spa", true,
-							StageStyle.DECORATED, false);
+							StageStyle.DECORATED, false, user);
 				} else {
 					errLogin.setText("Username o password errati!");
 				}

@@ -10,6 +10,7 @@ import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
 import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
+import it.ncsnetwork.EciDesktop.model.User;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -38,6 +39,7 @@ public class ReportController {
 
 	private Intervention selectedInterv;
 	private int selectedState;
+	private User selectedUser;
 
 	@FXML private TableView reportTable;
 	@FXML private TableColumn<Report, Long> idCol;
@@ -55,7 +57,7 @@ public class ReportController {
 	@FXML private HBox noteHBox;
 
 		
-	public void initData(Intervention interv, int state, String username) {
+	public void initData(Intervention interv, int state, User user) {
 		selectedInterv = interv;
 		sedeLabel.setText(selectedInterv.getSede());
 		dataLabel.setText(selectedInterv.getDataCreazione());
@@ -65,8 +67,9 @@ public class ReportController {
 		descrCatLabel.setText(selectedInterv.getDescrCategoria());
 		note.setText(selectedInterv.getNote());
 		selectedState = state;
-		usernameMenu.setText(username);
-		usernameMenuLbl.setText(username);
+		selectedUser = user;
+		usernameMenu.setText(selectedUser.getUsername());
+		usernameMenuLbl.setText(selectedUser.getUsername());
 		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
 	}
 
@@ -126,6 +129,7 @@ public class ReportController {
 		Scene tableViewScene = new Scene(tableViewParent);
 		InterventionController controller = loader.getController();
 		controller.searchSelectedState(selectedState);
+		controller.initData(selectedUser);
 		Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		window.setScene(tableViewScene);
 		window.show();
@@ -199,7 +203,7 @@ public class ReportController {
 							Scene tableViewScene = new Scene(tableViewParent);
 
 							QuestionnaireController controller = loader.getController();
-							controller.setData(selectedInterv, selectedState, usernameMenu.getText());
+							controller.setData(selectedInterv, selectedState, selectedUser);
 							controller.createQuest();
 
 							Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
@@ -234,7 +238,7 @@ public class ReportController {
 		}
 	}
 	
-	public void logout(ActionEvent event) throws ClassNotFoundException {
+	public void logout(ActionEvent event) throws ClassNotFoundException, SQLException {
 		config c = new config();
 		c.logout(menuBar);
 }
