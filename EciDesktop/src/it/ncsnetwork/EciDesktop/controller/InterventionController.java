@@ -17,10 +17,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import it.ncsnetwork.EciDesktop.Utility.config;
+import it.ncsnetwork.EciDesktop.model.Domanda;
+import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
 import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
+import it.ncsnetwork.EciDesktop.model.Risposta;
 import it.ncsnetwork.EciDesktop.model.User;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -229,9 +232,9 @@ public class InterventionController {
 			
 			//chiamata get
 	        Client client = ClientBuilder.newClient();
-	        WebTarget target = client.target(config.URL_API.concat("intervento?username="+username+"&password="+password+"&action=download"));
+	        WebTarget target = client.target(config.URL_API.concat("intervento?action=download"));
 	         
-	        Response response = target.request().get();
+	        Response response = target.request().header("X-ECI-Auth", selectedUser.getAccessToken()).get();
 	        System.out.println("Response code: " + response.getStatus());
 	        
 	        if (response.getStatus() == 200) {
@@ -239,98 +242,19 @@ public class InterventionController {
 		        String s = response.readEntity(String.class);
 		        System.out.println(s);
 		        
-		        JSONParser parser = new JSONParser();
+		        ParseJsonInterventi(s);
 		        
-		        try {
-		        	Object obj = parser.parse(s);
-		        	
-		        	JSONArray interventi = (JSONArray) obj;
-		        	for (Object intervento : interventi) {
-		
-		            	JSONObject interv = (JSONObject) intervento;
-		            	
-		            	// id
-		            	Long id = (Long) interv.get("id");
-		            	
-		            	// data creazione
-		            	Long data = (Long) interv.get("dataCreazione");
-		    			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-		    			String dataCreazione = df.format(data);
-		    			
-		    			// sede
-		    			String sede = (String) interv.get("nome_sede");
-		    			
-		    			// id commessa
-		    			String idCommessa = (String) interv.get("idCommessa");
-		
-		    			// tipo verifica
-		    			JSONArray tipoVerifica = (JSONArray) interv.get("tipo_verifica");
-		    			String descrizioneTipo="", codiceTipo="", descrizioneCat="", codiceCat="";
-		    			int count=0;
-		    			for (Object tv : tipoVerifica) {
-		                	JSONObject tipoVer = (JSONObject) tv;
-			    			String descrTipo = (String) tipoVer.get("descrizione");	    			
-			    			String codTipo = (String) tipoVer.get("codice");
-			    			//categoria
-			    			JSONObject catVer = (JSONObject) tipoVer.get("categoria");
-			    			String descrCat = (String) catVer.get("descrizione");
-			    			String codCat = (String) catVer.get("codice");
-			    			
-			    			if (count == 0) {
-				    			descrizioneTipo = descrTipo;
-				    			codiceTipo = codTipo;
-				    			descrizioneCat = descrCat;
-				    			codiceCat = codCat;
-			    			}else {
-				    			descrizioneTipo += ", " + descrTipo;
-				    			codiceTipo += ", " + codTipo;
-				    			descrizioneCat += ", " + descrCat;
-				    			codiceCat += ", " + codCat;
-			    			} 
-			    			count++;
-		        	 }
-		    			
-					//salva sul db i nuovi interventi
-					Intervention i = new Intervention();
-					i.setId(id);
-					i.setDataCreazione(dataCreazione);
-					i.setSede(sede);
-					i.setDescrVerifica(descrizioneTipo);
-					i.setCodVerifica(codiceTipo);
-					i.setDescrCategoria(descrizioneCat);
-					i.setCodCategoria(codiceCat);
-					InterventionDAO.saveJSON(i);
-					
-					
-					// salvo i verbali
-					JSONArray verbali = (JSONArray) interv.get("verbali");
-					for (Object v : verbali) {
-						JSONObject verb = (JSONObject) v;
-						Long idVerb = (Long) verb.get("id");
-						String codVerVerb = (String) verb.get("codiceVerifica");
-						String codCatVerb = (String) verb.get("codiceCategoria");
-						String descrVerVerb = (String) verb.get("descrizioneVerifica");
-							
-						//salva sul db i verbali
-						Report r = new Report();
-						r.setId(idVerb);
-						r.setCodVerifica(codVerVerb);
-						r.setCodCategoria(codCatVerb);
-						r.setDescrVerifica(descrVerVerb);
-						ReportDAO.saveJSON(r, id);
-					}
-					
-		        }
 				// ripopola la tabella
-				searchInterventions();
+				try {
+					searchInterventions();
+				} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
+				}
 				
 				// imposta il button dettagli cliccabile e l'altezza righe
 				setDetailAndState();
-				setCellHeight(); 	
-		        	
-		        } catch (Exception e) {
-					e.printStackTrace();
-				}
+				setCellHeight(); 
+		        
 	        
 	        } else {
 	        	Platform.runLater(()-> config.dialog(AlertType.ERROR, "Impossibile scaricare i nuovi interventi."));
@@ -343,6 +267,133 @@ public class InterventionController {
         Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/download2.png")));
 		}).start();
         
+	}
+	
+	// parsa il json degli interventi e salva sul db
+	private void ParseJsonInterventi(String s) {
+		JSONParser parser = new JSONParser();
+        
+        try {
+        	Object obj = parser.parse(s);
+        	
+        	JSONArray interventi = (JSONArray) obj;
+        	for (Object intervento : interventi) {
+
+            	JSONObject interv = (JSONObject) intervento;
+            	
+            	// id
+            	long id = (long) interv.get("id");
+            	
+            	// data creazione
+            	long data = (long) interv.get("dataCreazione");
+    			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+    			String dataCreazione = df.format(data);
+    			
+    			// sede
+    			String sede = (String) interv.get("nome_sede");
+    			
+    			// id commessa
+    			String idCommessa = (String) interv.get("idCommessa");
+
+    			// tipo verifica
+    			JSONArray tipoVerifica = (JSONArray) interv.get("tipo_verifica");
+    			String descrizioneTipo="", codiceTipo="", descrizioneCat="", codiceCat="";
+    			int count=0;
+    			for (Object tv : tipoVerifica) {
+                	JSONObject tipoVer = (JSONObject) tv;
+	    			String descrTipo = (String) tipoVer.get("descrizione");	    			
+	    			String codTipo = (String) tipoVer.get("codice");
+	    			//categoria
+	    			JSONObject catVer = (JSONObject) tipoVer.get("categoria");
+	    			String descrCat = (String) catVer.get("descrizione");
+	    			String codCat = (String) catVer.get("codice");
+	    			
+	    			if (count == 0) {
+		    			descrizioneTipo = descrTipo;
+		    			codiceTipo = codTipo;
+		    			descrizioneCat = descrCat;
+		    			codiceCat = codCat;
+	    			}else {
+		    			descrizioneTipo += ", " + descrTipo;
+		    			codiceTipo += ", " + codTipo;
+		    			descrizioneCat += ", " + descrCat;
+		    			codiceCat += ", " + codCat;
+	    			} 
+	    			count++;
+    			}
+    				
+				//salva sul db i nuovi interventi
+				Intervention i = new Intervention();
+				i.setId(id);
+				i.setDataCreazione(dataCreazione);
+				i.setSede(sede);
+				i.setDescrVerifica(descrizioneTipo);
+				i.setCodVerifica(codiceTipo);
+				i.setDescrCategoria(descrizioneCat);
+				i.setCodCategoria(codiceCat);
+				InterventionDAO.saveJSON(i);
+			
+			
+				// salvo i verbali
+				JSONArray verbali = (JSONArray) interv.get("verbali");
+				for (Object v : verbali) {
+					JSONObject verb = (JSONObject) v;
+					long idVerb = (long) verb.get("id");
+					String codVerVerb = (String) verb.get("codiceVerifica");
+					String codCatVerb = (String) verb.get("codiceCategoria");
+					String descrVerVerb = (String) verb.get("descrizioneVerifica");
+						
+					//salva sul db i verbali
+					Report r = new Report();
+					r.setId(idVerb);
+					r.setCodVerifica(codVerVerb);
+					r.setCodCategoria(codCatVerb);
+					r.setDescrVerifica(descrVerVerb);
+					ReportDAO.saveJSON(r, id);
+					
+					//domande
+					JSONArray domande = (JSONArray) verb.get("domande");
+					for (Object dom : domande) {
+						Risposta risp = new Risposta();
+	                	JSONObject domanda = (JSONObject) dom;
+	                	
+	                	long idDomanda = (long) domanda.get("id");
+	                	String testo = (String) domanda.get("testo");
+	                	boolean obbligatoria = (boolean) domanda.get("obbligatoria");
+	                	long posizione = (long) domanda.get("posizione");
+	                	
+	                	JSONObject risposta = (JSONObject) domanda.get("risposta");
+	                	long idRisposta = (long) risposta.get("id");
+	                	risp.setId(idRisposta);
+	                	String tipoRisposta = (String) risposta.get("tipo");
+	                	risp.setTipo(tipoRisposta);
+	                	if(tipoRisposta == "RES_FORMULA") {
+	                		String label1 = (String) risposta.get("label1");
+	                		risp.setLabel1(label1);
+	                		String label2 = (String) risposta.get("label2");
+	                		risp.setLabel2(label2);
+	                		String operatore = (String) risposta.get("operatore");
+	                		risp.setOperatore(operatore);
+	                		String labelRisultato = (String) risposta.get("label_risultato");
+	                		risp.setLabelRisultato(labelRisultato);
+	                	}
+	                	
+						// salva le domande
+						Domanda d = new Domanda();
+						d.setId(idDomanda);
+						d.setTesto(testo);
+						d.setObbligatoria(obbligatoria);
+						d.setPosizione(posizione);
+						d.setRisposta(risp);
+						QuestionarioDAO.saveJSON(d, idVerb);
+					}
+				}
+			
+        	}	
+        	
+        } catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void logout(ActionEvent event) throws ClassNotFoundException, SQLException {

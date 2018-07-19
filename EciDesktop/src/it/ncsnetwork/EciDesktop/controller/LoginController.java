@@ -85,7 +85,12 @@ public class LoginController implements Initializable {
 	}
 
 	public void initialize(URL url, ResourceBundle rb) {
-
+		try {
+			UserDAO.deleteAccessToken();
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		
 		Platform.runLater(() -> {
 			new FadeInRightTransition(lblUserLogin).play();
 			new FadeInLeftTransition(lblEci).play();
@@ -125,7 +130,7 @@ public class LoginController implements Initializable {
 						JSONParser parser = new JSONParser(); 
 						Object obj = parser.parse(s);
 						JSONObject jsonObj = (JSONObject) obj;
-						String accessToken = (String) jsonObj.get("access_toke");
+						String accessToken = (String) jsonObj.get("access_token");
 					    	 
 			    		UserDAO.updateUser(txtUsername.getText(), txtPassword.getText(), accessToken);
 			    		UserDAO.setUserId(txtUsername.getText(), txtPassword.getText());

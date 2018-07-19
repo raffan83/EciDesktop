@@ -70,7 +70,7 @@ public class UserDAO {
 	}
 	
 	public static void deleteAccessToken() throws ClassNotFoundException, SQLException {
-			String stmt2 = "UPDATE user SET access_token = NULL WHERE id = " + User.getUserId();
+			String stmt2 = "UPDATE user SET access_token = NULL"; //WHERE id = " + User.getUserId();
 			DBUtil.dbExecuteUpdate(stmt2);
 	}
 

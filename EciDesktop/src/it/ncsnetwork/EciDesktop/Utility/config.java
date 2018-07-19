@@ -94,8 +94,6 @@ public class config {
 			st.setScene(scene);
 			st.show();
 			stage.close();
-			
-			UserDAO.deleteAccessToken();
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
