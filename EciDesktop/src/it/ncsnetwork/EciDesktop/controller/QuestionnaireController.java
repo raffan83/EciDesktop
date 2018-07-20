@@ -1,6 +1,9 @@
 package it.ncsnetwork.EciDesktop.controller;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -10,10 +13,14 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import it.ncsnetwork.EciDesktop.Utility.config;
+import it.ncsnetwork.EciDesktop.model.Domanda;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
+import it.ncsnetwork.EciDesktop.model.Opzione;
+import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
 import it.ncsnetwork.EciDesktop.model.Questionnaire;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
+import it.ncsnetwork.EciDesktop.model.Risposta;
 import it.ncsnetwork.EciDesktop.model.User;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,7 +28,9 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -29,6 +38,8 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -40,21 +51,36 @@ public class QuestionnaireController {
 	private Intervention selectedInterv;
 	private int selectedState;
 	private User selectedUser;
-
-	List<String> list = new ArrayList<>();
+	private int indice = 0;
+	private ObservableList<Domanda> questionario = FXCollections.observableArrayList();
 	
-	@FXML private Label reportId;
-	@FXML VBox reportBox;
-	@FXML TextField input1, input2, output;
-	@FXML Label opErr;
-	@FXML Text quest;
-	@FXML TextField answer;
-	@FXML HBox choiceHBox;
+	@FXML private VBox reportBox;
 	
 	@FXML private String user;
 	@FXML private MenuBar menuBar;
 	@FXML private Menu usernameMenu;
 	@FXML private Label usernameMenuLbl;
+	
+	// salva le info dell'intervento per rimetterle sulla pagina verbali
+	public void setData(Intervention interv, int state, User user) {
+		selectedInterv = interv;
+		selectedState = state;
+		selectedUser = user;
+		usernameMenu.setText(selectedUser.getUsername());
+		usernameMenuLbl.setText(selectedUser.getUsername());
+		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
+	}
+	
+	@FXML
+	private void searchDomande() throws SQLException, ClassNotFoundException {
+		try {
+			ObservableList<Domanda> quest = QuestionarioDAO.searchDomande();
+			questionario = quest;
+		} catch (SQLException e) {
+			System.out.println("Error occurred while getting questions information from DB.\n" + e);
+			throw e;
+		}
+	}
 
 	@FXML
 	public void goBack(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
@@ -75,22 +101,13 @@ public class QuestionnaireController {
 		window.show();
 	}
 
-	// salva le info dell'intervento per rimetterle sulla pagina verbali
-	public void setData(Intervention interv, int state, User user) {
-		selectedInterv = interv;
-		selectedState = state;
-		selectedUser = user;
-		usernameMenu.setText(selectedUser.getUsername());
-		usernameMenuLbl.setText(selectedUser.getUsername());
-		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
-	}
-
 	//metodo da chiamare per caricare la domanda
-	public void loadFxml(String template) throws IOException {
+	/*public void loadFxml(String template) throws IOException {
 		Pane newLoadedPane = FXMLLoader.load(getClass().getResource(template));
 		reportBox.getChildren().add(newLoadedPane);
-	}
+	}*/
 	
+	// crea template
 	public VBox createTemplateQuestion() {
 		reportBox.setPadding(new Insets (20, 50, 20, 50));
 		Pane pane = new Pane();
@@ -102,118 +119,305 @@ public class QuestionnaireController {
 		
 		return vb;
 	}
-	public void loadOpenQuestion(String question) {
+	// crea la domanda a risposta aperta
+	public void loadOpenQuestion(Domanda d) {
+		
 		Text t = new Text();
-		t.setText(question);
-		t.setId("question");
+		t.setText(d.getTesto());
+		//t.setId("question");
 		createTemplateQuestion().getChildren().add(t);
 		TextArea ta = new TextArea();
 		ta.setPrefHeight(40);
 		createTemplateQuestion().getChildren().add(ta);
+		
+		//button indietro e avanti
+		HBox hbBtn = new HBox();
+		createTemplateQuestion().getChildren().add(hbBtn);
+		Button indietro = new Button("Indietro");
+		hbBtn.getChildren().add(indietro);
+		Button avanti = new Button("Avanti");
+		hbBtn.getChildren().add(avanti);
+		
+		indietro.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override public void handle(ActionEvent e) {
+		        if (indice == 0) {
+		        	indietro.setVisible(false);
+		        } else {
+		        	indice--;
+		        }
+		    }
+		});
+		avanti.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override public void handle(ActionEvent e) {
+		        if (indice == questionario.size()-1) {
+		        	avanti.setVisible(true);
+		        } else {
+		        	indice--;
+		        }
+		    }
+		});
 	}
-	
-	public void loadOperation(String question) {
+	// crea la domanda formula
+	public void loadFormula(Domanda d) {
+		
+		Risposta r = d.getRisposta();
 		Text t = new Text();
-		t.setText(question);
-		t.setId("question");
+		t.setText(d.getTesto());
+		//t.setId("question");
 		createTemplateQuestion().getChildren().add(t);
 		HBox hb = new HBox();
 		hb.setSpacing(20);
-		Label opErr = new Label();
+		//Label opErr = new Label();
 		createTemplateQuestion().getChildren().add(hb);
-		createTemplateQuestion().getChildren().add(opErr);
+		//createTemplateQuestion().getChildren().add(opErr);
 		TextField input1 = new TextField();
 		TextField input2 = new TextField();
 		TextField output = new TextField();
 		
-		hb.getChildren().add(input1);
-		hb.getChildren().add(input2);
-		hb.getChildren().add(output);
-
-		if (input1.getText().isEmpty() || input2.getText().isEmpty()) {
-			output.setText("");
-		} else {
-			try {
-				double out = Double.parseDouble(input1.getText()) * Double.parseDouble(input2.getText());
-				String outs = Double.toString(out);
-				opErr.setText("");
-				output.setText(outs);
-			} catch (Exception e) {
-				output.setText("err");
-				opErr.setText("Inserisci valori numerici!");
-			}
+		// evento per fare la somma
+		EventHandler<KeyEvent> somma = new EventHandler<KeyEvent>() {
+		    @Override
+		    public void handle(KeyEvent event) {
+		    	if (input1.getText().isEmpty() || input2.getText().isEmpty()) {
+	    			output.setText("");
+		    	} else {
+	    			try {
+	    				double out = Double.parseDouble(input1.getText()) + Double.parseDouble(input2.getText());
+	    				String outs = Double.toString(out);
+	    				//opErr.setText("");
+	    				output.setText(outs);
+	    			} catch (Exception e) {
+	    				output.setText("err");
+	    				//opErr.setText("Inserisci valori numerici!");
+	    			}
+		    	}
+		    }
+		};
+		// evento per fare la moltiplicazione
+		EventHandler<KeyEvent> moltiplicazione = new EventHandler<KeyEvent>() {
+		    @Override
+		    public void handle(KeyEvent event) {
+		    	if (input1.getText().isEmpty() || input2.getText().isEmpty()) {
+	    			output.setText("");
+		    	} else {
+	    			try {
+	    				double out = Double.parseDouble(input1.getText()) + Double.parseDouble(input2.getText());
+	    				String outs = Double.toString(out);
+	    				//opErr.setText("");
+	    				output.setText(outs);
+	    			} catch (Exception e) {
+	    				output.setText("err");
+	    				//opErr.setText("Inserisci valori numerici!");
+	    			}
+		    	}
+		    }
+		};
+		
+		GridPane gridpane = new GridPane();
+		gridpane.add(new Label(r.getLabel1()), 0, 0); // colonna riga
+		gridpane.add(new Label(r.getLabel2()), 2, 0);
+		gridpane.add(new Label(r.getLabelRisultato()), 4, 0);
+		gridpane.add(input1, 0, 1);
+		gridpane.add(input2, 2, 1);
+		gridpane.add(new Label("="), 3, 1);
+		gridpane.add(output, 4, 1);			
+		if (r.getOperatore().equals(config.SOMMA)) {
+			gridpane.add(new Label("+"), 1, 1);
+			input1.setOnKeyReleased(somma);
+			input2.setOnKeyReleased(somma);
+		} else if (r.getOperatore().equals(config.MOLTIPLICAZIONE)) {
+			gridpane.add(new Label("X"), 1, 1);
+			input1.setOnKeyReleased(moltiplicazione);
+			input2.setOnKeyReleased(moltiplicazione);
 		}
+
+		hb.getChildren().add(gridpane);
+		
+		//button indietro e avanti
+				HBox hbBtn = new HBox();
+				createTemplateQuestion().getChildren().add(hbBtn);
+				Button indietro = new Button("Indietro");
+				hbBtn.getChildren().add(indietro);
+				Button avanti = new Button("Avanti");
+				hbBtn.getChildren().add(avanti);
+				
+				indietro.setOnAction(new EventHandler<ActionEvent>() {
+				    @Override public void handle(ActionEvent e) {
+				        if (indice == 0) {
+				        	indietro.setVisible(false);
+				        } else {
+				        	indice--;
+				        }
+				    }
+				});
+				avanti.setOnAction(new EventHandler<ActionEvent>() {
+				    @Override public void handle(ActionEvent e) {
+				        if (indice == questionario.size()-1) {
+				        	avanti.setVisible(true);
+				        } else {
+				        	indice--;
+				        }
+				    }
+				});
+
 	}
-	
-	public void loadRadioButton(String question, List<String> list) throws IOException {
+	// crea la domanda a scelta singola
+	public void loadRadioButton(Domanda d) throws IOException {
+		
+		Risposta r = d.getRisposta();
 		Text t = new Text();
-		t.setText(question);
-		t.setId("question");
+		t.setText(d.getTesto());
+		//t.setId("question");
 		createTemplateQuestion().getChildren().add(t);
 		
 		HBox hb = new HBox();
 		hb.setSpacing(20);
 		createTemplateQuestion().getChildren().add(hb);
 		
-		ToggleGroup group = new ToggleGroup();	
-		for (int i = 0; i < list.size(); i++) {
-			RadioButton rb = new RadioButton(list.get(i));
+		ToggleGroup group = new ToggleGroup();
+		for (Opzione o: r.getOpzioni()) {
+			RadioButton rb = new RadioButton(o.getTesto());
 			rb.setToggleGroup(group);
 			hb.getChildren().add(rb);
 		}
+		
+		//button indietro e avanti
+				HBox hbBtn = new HBox();
+				createTemplateQuestion().getChildren().add(hbBtn);
+				Button indietro = new Button("Indietro");
+				hbBtn.getChildren().add(indietro);
+				Button avanti = new Button("Avanti");
+				hbBtn.getChildren().add(avanti);
+				
+				indietro.setOnAction(new EventHandler<ActionEvent>() {
+				    @Override public void handle(ActionEvent e) {
+				        if (indice == 1) {
+				        	indietro.setVisible(false);
+				        	indice--;
+				        } else {
+				        	avanti.setVisible(true);
+				        	indice--;
+				        }
+				        System.out.println(indice);
+				    }
+				});
+				avanti.setOnAction(new EventHandler<ActionEvent>() {
+				    @Override public void handle(ActionEvent e) {
+				        if (indice == questionario.size()-2) {
+				        	avanti.setVisible(false);
+				        	indice++;
+				        } else {
+				        	indietro.setVisible(true);
+				        	indice++;
+				        }
+				        System.out.println(indice);
+				    }
+				});
 	}
-	
-	public void loadCheckBox(String question, List<String> list) throws IOException {
+	//cra la domanda a scelta multipla
+	public void loadCheckBox(Domanda d) throws IOException {
+		
+		Risposta r = d.getRisposta();
 		Text t = new Text();
-		t.setText(question);
-		t.setId("question");
+		t.setText(d.getTesto());
+		//t.setId("question");
 		createTemplateQuestion().getChildren().add(t);
 		HBox hb = new HBox();
 		hb.setSpacing(20);
 		createTemplateQuestion().getChildren().add(hb);
 	
-		for (int i = 0; i < list.size(); i++) {
-			CheckBox cb = new CheckBox(list.get(i));
-			hb.getChildren().add(cb);
+		for (Opzione o: r.getOpzioni()) {
+			CheckBox rb = new CheckBox(o.getTesto());
+			hb.getChildren().add(rb);
 		}
+		//button indietro e avanti
+				HBox hbBtn = new HBox();
+				createTemplateQuestion().getChildren().add(hbBtn);
+				Button indietro = new Button("Indietro");
+				hbBtn.getChildren().add(indietro);
+				Button avanti = new Button("Avanti");
+				hbBtn.getChildren().add(avanti);
+				
+				indietro.setOnAction(new EventHandler<ActionEvent>() {
+				    @Override public void handle(ActionEvent e) {
+				        if (indice == 1) {
+				        	indietro.setVisible(false);
+				        	indice--;
+				        } else {
+				        	indice--;
+				        }
+				    }
+				});
+				avanti.setOnAction(new EventHandler<ActionEvent>() {
+				    @Override public void handle(ActionEvent e) {
+				        if (indice == questionario.size()-1) {
+				        	avanti.setVisible(true);
+				        } else {
+				        	indice--;
+				        }
+				    }
+				});
 	}
-
+	//carica il questionario tutto insieme
 	public void createQuest() throws IOException {
-		loadFxml(Questionnaire.openQuestion);
-		loadFxml(Questionnaire.oneChoice);
-		loadFxml(Questionnaire.multiChoice);
-		loadFxml("/it/ncsnetwork/EciDesktop/view/template/quest.fxml");
-		loadFxml(Questionnaire.multiplication);
-		loadRadioButton("Domanda", list);
-		loadRadioButton("Domanda", list);
-		loadCheckBox("Domanda", list);
-		loadOpenQuestion("Domanda");
-		
+		for (Domanda d: questionario) {
+			Risposta risposta = d.getRisposta();
+			if (risposta.getTipo().equals(config.RES_TEXT)) {
+				loadOpenQuestion(d);
+			} else if (risposta.getTipo().equals(config.RES_FORMULA)) {
+				loadFormula(d);
+			} else if (risposta.getTipo().equals(config.RES_CHOICE)) {
+				if (risposta.isMultipla()) {
+					loadCheckBox(d);
+				} else {
+					loadRadioButton(d);
+				}
+			}
+		}			
 	}
 	
-	public void initialize() throws IOException {
-		//String id = String.valueOf(Report.getReportId());
-		//reportId.setText(id);
+	// carica la domanda secondo l'indice
+	public void loadQuestion() throws IOException {
+		reportBox.getChildren().clear();
+		Domanda d = questionario.get(indice);
+		Risposta risposta = d.getRisposta();
+		if (risposta.getTipo().equals(config.RES_TEXT)) {
+			loadOpenQuestion(d);
+		} else if (risposta.getTipo().equals(config.RES_FORMULA)) {
+			loadFormula(d);
+		} else if (risposta.getTipo().equals(config.RES_CHOICE)) {
+			if (risposta.isMultipla()) {
+				loadCheckBox(d);
+			} else {
+				loadRadioButton(d);
+			}
+		}
+	}
 		
-		list.add("ciao");
-		list.add("ciao2");
-		list.add("ciao3");
-		list.add("ciao4");
+	
+	
+	public void initialize() throws IOException, ClassNotFoundException, SQLException {	
 
+		searchDomande();
+		//createQuest();
+	
 	}
 
-	public void saveReport() throws IOException, ClassNotFoundException, SQLException {
-		System.out.print(getQuestionnaire());
-		ReportDAO.changeState(1);
+	public void saveReport(ActionEvent e) throws IOException, ClassNotFoundException, SQLException {
+		loadQuestion();
+		indice++;
+
+		//System.out.print(getQuestionnaire());
+		//ReportDAO.changeState(1);
 	}
 
 	public void completeReport(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
-		System.out.print(getQuestionnaire());
+		//System.out.print(getQuestionnaire());
 		ReportDAO.changeState(2);
 		goBack(event);
 	}
 
-	public Map<String, Questionnaire> getQuestionnaire() {
+/*	public Map<String, Questionnaire> getQuestionnaire() {
 
 		int questionId = 0;
 		String questionText = "";
@@ -280,22 +484,21 @@ public class QuestionnaireController {
 		}
 		op.clear();
 
-		/*
-		 * System.out.println(questMap); System.out.println(questMap.values());
-		 * 
-		 * System.out.println("Domanda: "+ questMap.get("quest1").getQuestion());
-		 * System.out.println("Risposta: " + questMap.get("quest1").getOpenAnswer());
-		 * 
-		 * System.out.println("Domanda: "+ questMap.get("quest2").getQuestion());
-		 * System.out.println("Risposta: " + questMap.get("quest2").getCheckBox());
-		 * 
-		 * System.out.println("Domanda: "+ questMap.get("quest3").getQuestion());
-		 * System.out.println("Risposta: " + questMap.get("quest3").getCheckBox());
-		 * 
-		 * System.out.println("Domanda: "+ questMap.get("quest4").getQuestion());
-		 * System.out.println("Risposta: " + questMap.get("quest4").getOutput());
-		 */
-
+		
+		 //* System.out.println(questMap); System.out.println(questMap.values());
+		 //* 
+		 //* System.out.println("Domanda: "+ questMap.get("quest1").getQuestion());
+		 //* System.out.println("Risposta: " + questMap.get("quest1").getOpenAnswer());
+		 //* 
+		 //* System.out.println("Domanda: "+ questMap.get("quest2").getQuestion());
+		 //* System.out.println("Risposta: " + questMap.get("quest2").getCheckBox());
+		 //* 
+		 //* System.out.println("Domanda: "+ questMap.get("quest3").getQuestion());
+		 //* System.out.println("Risposta: " + questMap.get("quest3").getCheckBox());
+		 //* 
+		 //* System.out.println("Domanda: "+ questMap.get("quest4").getQuestion());
+		 //* System.out.println("Risposta: " + questMap.get("quest4").getOutput());
+		 
 		return questMap;
 	}
 
@@ -312,30 +515,7 @@ public class QuestionnaireController {
 				addAllDescendents((Parent) node, nodes);
 		}
 	}
-	
-	public void doMultiplication() {
-		if (input1.getText().isEmpty() || input2.getText().isEmpty()) {
-			output.setText("");
-		} else {
-			try {
-				double out = Double.parseDouble(input1.getText()) * Double.parseDouble(input2.getText());
-				String outs = Double.toString(out);
-				opErr.setText("");
-				output.setText(outs);
-			} catch (Exception e) {
-				output.setText("err");
-				opErr.setText("Inserisci valori numerici!");
-			}
-		}
-	}
-	
-	public void getCheckBox(List<String> list) throws IOException {
-		for (int i = 0; i < list.size(); i++) {
-			CheckBox cb = new CheckBox(list.get(i));
-			cb.setId("check" + i);
-			choiceHBox.getChildren().add(cb);
-		}
-	}
+*/
 	
 	public void logout(ActionEvent event) throws ClassNotFoundException, SQLException {
 		config c = new config();

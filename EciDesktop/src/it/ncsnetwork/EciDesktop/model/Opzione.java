@@ -3,16 +3,13 @@ package it.ncsnetwork.EciDesktop.model;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-
-public class Domanda {
+public class Opzione {
 	private long id;
 	private SimpleStringProperty testo;
-	private boolean obbligatoria;
 	private long posizione;
-	private Risposta risposta;
 	
-	public Domanda() {
-		this.testo = new SimpleStringProperty();
+	public Opzione() {
+		this.testo = new SimpleStringProperty();		
 	}
 
 	public long getId() {
@@ -35,14 +32,6 @@ public class Domanda {
 		return testo;
 	}
 
-	public boolean isObbligatoria() {
-		return obbligatoria;
-	}
-
-	public void setObbligatoria(boolean obbligatoria) {
-		this.obbligatoria = obbligatoria;
-	}
-
 	public long getPosizione() {
 		return posizione;
 	}
@@ -50,12 +39,5 @@ public class Domanda {
 	public void setPosizione(long posizione) {
 		this.posizione = posizione;
 	}
-
-	public Risposta getRisposta() {
-		return risposta;
-	}
-
-	public void setRisposta(Risposta risposta) {
-		this.risposta = risposta;
-	}
+	
 }

@@ -131,7 +131,7 @@ public class LoginController implements Initializable {
 						Object obj = parser.parse(s);
 						JSONObject jsonObj = (JSONObject) obj;
 						String accessToken = (String) jsonObj.get("access_token");
-					    	 
+					    user.setAccessToken(accessToken);
 			    		UserDAO.updateUser(txtUsername.getText(), txtPassword.getText(), accessToken);
 			    		UserDAO.setUserId(txtUsername.getText(), txtPassword.getText());
 					} catch (SQLException e) {

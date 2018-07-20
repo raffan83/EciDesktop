@@ -43,14 +43,33 @@ import javafx.stage.StageStyle;
 public class config {
 	
 	public static final String URL_API = "http://localhost:8080/PortalECI/rest/";
+	public static final String RES_TEXT = "RES_TEXT";
+	public static final String RES_FORMULA = "RES_FORMULA";
+	public static final String RES_CHOICE = "RES_CHOICE";
+	public static final String SOMMA = "Somma";
+	public static final String MOLTIPLICAZIONE = "Moltiplicazione";
 	
 	public config() {
+	}
+	
+	public static void dialogLogout(Alert.AlertType alertType, String s, MenuBar mb) {
+		Alert alert = new Alert(alertType, s);
+		alert.initStyle(StageStyle.UTILITY);
+		alert.setTitle("Errore");
+		alert.setOnCloseRequest(event -> {
+			config c = new config();
+			try {
+				c.logout(mb);
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		});
+		alert.showAndWait();
 	}
 
 	public static void dialog(Alert.AlertType alertType, String s) {
 		Alert alert = new Alert(alertType, s);
 		alert.initStyle(StageStyle.UTILITY);
-		//alert.setHeaderText(s);
 		alert.setTitle("Info");
 		alert.showAndWait();
 	}
@@ -83,7 +102,7 @@ public class config {
 		}
 	}
 	
-	public void logout(MenuBar mb) throws ClassNotFoundException, SQLException {
+	public void logout(MenuBar mb) throws ClassNotFoundException {
 		try {
 			Stage st = new Stage();
 			Stage stage = (Stage) mb.getScene().getWindow();
