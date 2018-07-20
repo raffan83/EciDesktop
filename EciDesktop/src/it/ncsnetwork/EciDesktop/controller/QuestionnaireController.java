@@ -1,5 +1,6 @@
 package it.ncsnetwork.EciDesktop.controller;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,6 +14,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import it.ncsnetwork.EciDesktop.Utility.config;
+import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition;
+import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition1;
+import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
 import it.ncsnetwork.EciDesktop.model.Domanda;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
@@ -30,6 +34,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -39,6 +44,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -55,6 +61,9 @@ public class QuestionnaireController {
 	private ObservableList<Domanda> questionario = FXCollections.observableArrayList();
 	
 	@FXML private VBox reportBox;
+	
+	@FXML private Button indietro, avanti;
+	@FXML private ComboBox comboBox;
 	
 	@FXML private String user;
 	@FXML private MenuBar menuBar;
@@ -109,6 +118,9 @@ public class QuestionnaireController {
 	
 	// crea template
 	public VBox createTemplateQuestion() {
+		Platform.runLater(() -> {
+			new FadeInRightTransition(reportBox).play();
+		});
 		reportBox.setPadding(new Insets (20, 50, 20, 50));
 		Pane pane = new Pane();
 		pane.setPadding(new Insets (10, 15, 10, 15));
@@ -129,33 +141,6 @@ public class QuestionnaireController {
 		TextArea ta = new TextArea();
 		ta.setPrefHeight(40);
 		createTemplateQuestion().getChildren().add(ta);
-		
-		//button indietro e avanti
-		HBox hbBtn = new HBox();
-		createTemplateQuestion().getChildren().add(hbBtn);
-		Button indietro = new Button("Indietro");
-		hbBtn.getChildren().add(indietro);
-		Button avanti = new Button("Avanti");
-		hbBtn.getChildren().add(avanti);
-		
-		indietro.setOnAction(new EventHandler<ActionEvent>() {
-		    @Override public void handle(ActionEvent e) {
-		        if (indice == 0) {
-		        	indietro.setVisible(false);
-		        } else {
-		        	indice--;
-		        }
-		    }
-		});
-		avanti.setOnAction(new EventHandler<ActionEvent>() {
-		    @Override public void handle(ActionEvent e) {
-		        if (indice == questionario.size()-1) {
-		        	avanti.setVisible(true);
-		        } else {
-		        	indice--;
-		        }
-		    }
-		});
 	}
 	// crea la domanda formula
 	public void loadFormula(Domanda d) {
@@ -232,34 +217,6 @@ public class QuestionnaireController {
 		}
 
 		hb.getChildren().add(gridpane);
-		
-		//button indietro e avanti
-				HBox hbBtn = new HBox();
-				createTemplateQuestion().getChildren().add(hbBtn);
-				Button indietro = new Button("Indietro");
-				hbBtn.getChildren().add(indietro);
-				Button avanti = new Button("Avanti");
-				hbBtn.getChildren().add(avanti);
-				
-				indietro.setOnAction(new EventHandler<ActionEvent>() {
-				    @Override public void handle(ActionEvent e) {
-				        if (indice == 0) {
-				        	indietro.setVisible(false);
-				        } else {
-				        	indice--;
-				        }
-				    }
-				});
-				avanti.setOnAction(new EventHandler<ActionEvent>() {
-				    @Override public void handle(ActionEvent e) {
-				        if (indice == questionario.size()-1) {
-				        	avanti.setVisible(true);
-				        } else {
-				        	indice--;
-				        }
-				    }
-				});
-
 	}
 	// crea la domanda a scelta singola
 	public void loadRadioButton(Domanda d) throws IOException {
@@ -280,39 +237,6 @@ public class QuestionnaireController {
 			rb.setToggleGroup(group);
 			hb.getChildren().add(rb);
 		}
-		
-		//button indietro e avanti
-				HBox hbBtn = new HBox();
-				createTemplateQuestion().getChildren().add(hbBtn);
-				Button indietro = new Button("Indietro");
-				hbBtn.getChildren().add(indietro);
-				Button avanti = new Button("Avanti");
-				hbBtn.getChildren().add(avanti);
-				
-				indietro.setOnAction(new EventHandler<ActionEvent>() {
-				    @Override public void handle(ActionEvent e) {
-				        if (indice == 1) {
-				        	indietro.setVisible(false);
-				        	indice--;
-				        } else {
-				        	avanti.setVisible(true);
-				        	indice--;
-				        }
-				        System.out.println(indice);
-				    }
-				});
-				avanti.setOnAction(new EventHandler<ActionEvent>() {
-				    @Override public void handle(ActionEvent e) {
-				        if (indice == questionario.size()-2) {
-				        	avanti.setVisible(false);
-				        	indice++;
-				        } else {
-				        	indietro.setVisible(true);
-				        	indice++;
-				        }
-				        System.out.println(indice);
-				    }
-				});
 	}
 	//cra la domanda a scelta multipla
 	public void loadCheckBox(Domanda d) throws IOException {
@@ -330,33 +254,6 @@ public class QuestionnaireController {
 			CheckBox rb = new CheckBox(o.getTesto());
 			hb.getChildren().add(rb);
 		}
-		//button indietro e avanti
-				HBox hbBtn = new HBox();
-				createTemplateQuestion().getChildren().add(hbBtn);
-				Button indietro = new Button("Indietro");
-				hbBtn.getChildren().add(indietro);
-				Button avanti = new Button("Avanti");
-				hbBtn.getChildren().add(avanti);
-				
-				indietro.setOnAction(new EventHandler<ActionEvent>() {
-				    @Override public void handle(ActionEvent e) {
-				        if (indice == 1) {
-				        	indietro.setVisible(false);
-				        	indice--;
-				        } else {
-				        	indice--;
-				        }
-				    }
-				});
-				avanti.setOnAction(new EventHandler<ActionEvent>() {
-				    @Override public void handle(ActionEvent e) {
-				        if (indice == questionario.size()-1) {
-				        	avanti.setVisible(true);
-				        } else {
-				        	indice--;
-				        }
-				    }
-				});
 	}
 	//carica il questionario tutto insieme
 	public void createQuest() throws IOException {
@@ -378,7 +275,7 @@ public class QuestionnaireController {
 	
 	// carica la domanda secondo l'indice
 	public void loadQuestion() throws IOException {
-		reportBox.getChildren().clear();
+		
 		Domanda d = questionario.get(indice);
 		Risposta risposta = d.getRisposta();
 		if (risposta.getTipo().equals(config.RES_TEXT)) {
@@ -397,18 +294,78 @@ public class QuestionnaireController {
 	
 	
 	public void initialize() throws IOException, ClassNotFoundException, SQLException {	
-
 		searchDomande();
-		//createQuest();
-	
-	}
-
-	public void saveReport(ActionEvent e) throws IOException, ClassNotFoundException, SQLException {
 		loadQuestion();
-		indice++;
+		indietro.setVisible(false);
+        comboBox.getItems().addAll(comboItems(questionario.size()));
+        comboBox.setPromptText("1");
+	}
+	
+	private ObservableList<Integer> comboItems(int n){
+		ObservableList<Integer> list = FXCollections.observableArrayList();
+		for (int i=1; i <= n; i++) {
+			list.add(i);
+		}
+		return list;
+	}
+	
+	@FXML
+	public void avanti(ActionEvent e) throws IOException, ClassNotFoundException, SQLException {
+		reportBox.getChildren().clear();
+		if (indice == questionario.size()-2) {
+        	avanti.setVisible(false);
+        	indice++;
+        } else {
+        	indietro.setVisible(true);
+        	indice++;
+        }
+		String ind = Integer.toString(indice+1);
+		comboBox.setValue(ind);
+		//loadQuestion();		
+		
+		//salva risposte sul db
+		
 
 		//System.out.print(getQuestionnaire());
 		//ReportDAO.changeState(1);
+	}
+	@FXML
+	public void indietro(ActionEvent e) throws IOException {
+		reportBox.getChildren().clear();
+        if (indice == 1) {
+        	indietro.setVisible(false);
+        	indice--;
+        } else {
+        	avanti.setVisible(true);
+        	indice--;
+        }
+		String ind = Integer.toString(indice+1);
+		comboBox.setValue(ind);
+		//loadQuestion();
+		
+		//salva risposte sul db
+		
+		
+	}
+	
+	//combo box
+	public void selectDomanda(ActionEvent actionEvent) throws IOException {
+		String s = comboBox.getValue().toString();
+		indice = Integer.parseInt(s) -1;
+		reportBox.getChildren().clear();
+		loadQuestion();
+		if (indice == 0) {
+			indietro.setVisible(false);
+			avanti.setVisible(true);
+		}
+		else if (indice == questionario.size()-1) {
+			avanti.setVisible(false);
+			indietro.setVisible(true);
+		}
+		else {
+			indietro.setVisible(true);
+			avanti.setVisible(true);
+		}
 	}
 
 	public void completeReport(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
