@@ -14,12 +14,12 @@ public class Risposta {
 	private SimpleStringProperty testoRisposta;
 	//RES_FORMULA
 	private SimpleStringProperty label1;
-	private SimpleDoubleProperty input1;
+	private SimpleStringProperty input1;
 	private SimpleStringProperty label2;
-	private SimpleDoubleProperty input2;
+	private SimpleStringProperty input2;
 	private String operatore;
 	private SimpleStringProperty labelRisultato;
-	private SimpleDoubleProperty risultato;
+	private SimpleStringProperty risultato;
 	//RES_CHOICE
 	private boolean multipla;
 	private ArrayList<Opzione> opzioni = new ArrayList<Opzione>();
@@ -27,12 +27,16 @@ public class Risposta {
 	public Risposta() {
 		this.testoRisposta = new SimpleStringProperty();
 		this.label1 = new SimpleStringProperty();
-		this.input1 = new SimpleDoubleProperty();
+		this.input1 = new SimpleStringProperty();
 		this.label2 = new SimpleStringProperty();
-		this.input2 = new SimpleDoubleProperty();
+		this.input2 = new SimpleStringProperty();
 		this.labelRisultato = new SimpleStringProperty();
-		this.risultato = new SimpleDoubleProperty();
-		
+		this.risultato = new SimpleStringProperty();	
+	}
+	
+	public Risposta(long id, ArrayList<Opzione> opzioni) {
+		this.id = id;
+		this.opzioni = opzioni;
 	}
 	
 	public long getId() {
@@ -54,7 +58,7 @@ public class Risposta {
 		return testoRisposta.get();
 	}
 
-	public void setSede(String testoRisposta) {
+	public void setTestoRisposta(String testoRisposta) {
 		this.testoRisposta.set(testoRisposta);
 	}
 
@@ -74,15 +78,15 @@ public class Risposta {
 		return label1;
 	}
 	
-	public Double getInput1() {
+	public String getInput1() {
 		return input1.get();
 	}
 
-	public void setInput1(Double input1) {
+	public void setInput1(String input1) {
 		this.input1.set(input1);
 	}
 
-	public DoubleProperty input1Property() {
+	public StringProperty input1Property() {
 		return input1;
 	}
 	
@@ -98,15 +102,15 @@ public class Risposta {
 		return label2;
 	}
 	
-	public Double getInput2() {
+	public String getInput2() {
 		return input2.get();
 	}
 
-	public void setInput2(Double input2) {
+	public void setInput2(String input2) {
 		this.input2.set(input2);
 	}
 
-	public DoubleProperty input2Property() {
+	public StringProperty input2Property() {
 		return input2;
 	}
 
@@ -130,15 +134,15 @@ public class Risposta {
 		return labelRisultato;
 	}
 	
-	public Double getRisultato() {
+	public String getRisultato() {
 		return risultato.get();
 	}
 
-	public void setRisultato(Double risultato) {
+	public void setRisultato(String risultato) {
 		this.risultato.set(risultato);
 	}
 
-	public DoubleProperty risultatoProperty() {
+	public StringProperty risultatoProperty() {
 		return risultato;
 	}
 

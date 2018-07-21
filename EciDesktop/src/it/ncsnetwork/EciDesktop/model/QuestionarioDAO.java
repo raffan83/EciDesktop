@@ -70,43 +70,91 @@ public class QuestionarioDAO {
 	 
 	 private static ObservableList<Domanda> getDomandeList(ResultSet rs)
 				throws SQLException, ClassNotFoundException {
-			ObservableList<Domanda> questionario = FXCollections.observableArrayList();
-	
-			while (rs.next()) {
-				Domanda d = new Domanda();
-				Risposta r = new Risposta();
+		ObservableList<Domanda> questionario = FXCollections.observableArrayList();
 
-				String stmtOp = "SELECT * FROM opzioni WHERE id_risposta="+rs.getInt("id_risposta");
-				ResultSet rsOp = DBUtil.dbExecuteQuery(stmtOp);
-				ArrayList<Opzione> opzioni = new ArrayList<Opzione>();
-				while (rsOp.next()) {
-					Opzione o = new Opzione();
-					o.setId(rsOp.getInt("id"));
-					o.setTesto(rsOp.getString("testo"));
-					o.setPosizione(rsOp.getInt("posizione"));
-					
-					opzioni.add(o);
-				}
-				
-				r.setId(rs.getInt("id_risposta"));
-				r.setTipo(rs.getString("tipo"));
-				r.setLabel1(rs.getString("label1"));
-				r.setLabel2(rs.getString("label2"));
-				r.setOperatore(rs.getString("operatore"));
-				r.setLabelRisultato(rs.getString("label_risultato"));
-				r.setMultipla(Boolean.parseBoolean(rs.getString("multipla")));
-				r.setOpzioni(opzioni);
+		while (rs.next()) {
+			Domanda d = new Domanda();
+			Risposta r = new Risposta();
 
-				d.setId(rs.getInt("id"));
-				d.setTesto(rs.getString("testo"));
-				d.setObbligatoria(Boolean.parseBoolean(rs.getString("obbligatoria")));
-				d.setPosizione(rs.getInt("posizione"));
-				d.setRisposta(r);
+			String stmtOp = "SELECT * FROM opzioni WHERE id_risposta=" + rs.getInt("id_risposta") + " ORDER BY posizione";
+			ResultSet rsOp = DBUtil.dbExecuteQuery(stmtOp);
+			ArrayList<Opzione> opzioni = new ArrayList<Opzione>();
+			while (rsOp.next()) {
+				Opzione o = new Opzione();
+				o.setId(rsOp.getInt("id"));
+				o.setTesto(rsOp.getString("testo"));
+				o.setPosizione(rsOp.getInt("posizione"));
+				o.setChecked(Boolean.parseBoolean(rsOp.getString("checked")));
 				
-				questionario.add(d);
+				opzioni.add(o);
 			}
 			
-			return questionario;
+			r.setId(rs.getInt("id_risposta"));
+			r.setTipo(rs.getString("tipo"));
+			r.setTestoRisposta(rs.getString("testo_risposta"));
+			r.setLabel1(rs.getString("label1"));
+			r.setInput1(rs.getString("input1"));
+			r.setLabel2(rs.getString("label2"));
+			r.setInput2(rs.getString("input2"));
+			r.setOperatore(rs.getString("operatore"));
+			r.setLabelRisultato(rs.getString("label_risultato"));
+			r.setRisultato(rs.getString("risultato"));
+			r.setMultipla(Boolean.parseBoolean(rs.getString("multipla")));
+			r.setOpzioni(opzioni);
+
+			d.setId(rs.getInt("id"));
+			d.setTesto(rs.getString("testo"));
+			d.setObbligatoria(Boolean.parseBoolean(rs.getString("obbligatoria")));
+			d.setPosizione(rs.getInt("posizione"));
+			d.setRisposta(r);
+			
+			questionario.add(d);
 		}
+		
+		return questionario;
+	}
+	 
+	 public static void saveResText(Risposta r) throws ClassNotFoundException, SQLException {
+		String stmt = "UPDATE risposte SET testo_risposta = '" + r.getTestoRisposta() + "' WHERE id_risposta = " + r.getId();
+		try {
+			DBUtil.dbExecuteUpdate(stmt);
+		} catch (SQLException e) {
+			System.out.println("SQL select operation has been failed: " + e);
+			throw e;
+		}
+	 }
+	 public static void saveResFormula(Risposta r) throws ClassNotFoundException, SQLException {
+		String stmt = "UPDATE risposte SET "
+				+ "input1 = '" + r.getInput1() 
+				+ "', input2 = '" + r.getInput2()
+				+ "', risultato = '" + r.getRisultato()
+				+ "' WHERE id_risposta = " + r.getId();
+		try {
+			DBUtil.dbExecuteUpdate(stmt);
+		} catch (SQLException e) {
+			System.out.println("SQL select operation has been failed: " + e);
+			throw e;
+		}
+	 }
+	 public static void saveResChoice(Opzione o) throws ClassNotFoundException, SQLException {
+	 String stmt = "UPDATE opzioni SET checked = '" + o.isChecked() + "' WHERE id = " + o.getId();
+	 
+		try {
+			DBUtil.dbExecuteUpdate(stmt);
+		} catch (SQLException e) {
+			System.out.println("SQL select operation has been failed: " + e);
+			throw e;
+		}
+	 }
+	 public static void resetChoice(Opzione o, long id) throws ClassNotFoundException, SQLException {
+		 String stmt = "UPDATE opzioni SET checked = 'false' WHERE id_risposta = " + id;
+	 
+		 try {
+			DBUtil.dbExecuteUpdate(stmt);
+		 } catch (SQLException e) {
+			System.out.println("SQL select operation has been failed: " + e);
+			throw e;
+		 } 
+	 }
 	
 }

@@ -1,6 +1,7 @@
 package it.ncsnetwork.EciDesktop.controller;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -133,12 +134,27 @@ public class QuestionnaireController {
 	}
 	// crea la domanda a risposta aperta
 	public void loadOpenQuestion(Domanda d) {
+		Risposta r = d.getRisposta();
 		
 		Text t = new Text();
 		t.setText(d.getTesto());
-		//t.setId("question");
 		createTemplateQuestion().getChildren().add(t);
-		TextArea ta = new TextArea();
+		
+		TextArea ta = new TextArea(r.getTestoRisposta());
+		
+		// salva sul db la risposta
+		ta.focusedProperty().addListener((obs, oldVal, newVal) -> {
+			//System.out.println(newVal ? "Focused" : "Unfocused")
+		    if (!newVal) {
+		    	try {
+		    		r.setTestoRisposta(ta.getText());
+					QuestionarioDAO.saveResText(r);
+				} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
+				}
+		    }
+		});
+		
 		ta.setPrefHeight(40);
 		createTemplateQuestion().getChildren().add(ta);
 	}
@@ -148,16 +164,40 @@ public class QuestionnaireController {
 		Risposta r = d.getRisposta();
 		Text t = new Text();
 		t.setText(d.getTesto());
-		//t.setId("question");
 		createTemplateQuestion().getChildren().add(t);
 		HBox hb = new HBox();
 		hb.setSpacing(20);
 		//Label opErr = new Label();
 		createTemplateQuestion().getChildren().add(hb);
 		//createTemplateQuestion().getChildren().add(opErr);
-		TextField input1 = new TextField();
-		TextField input2 = new TextField();
-		TextField output = new TextField();
+		TextField output = new TextField(r.getRisultato());
+		TextField input1 = new TextField(r.getInput1());
+		// salva sul db la risposta
+		input1.focusedProperty().addListener((obs, oldVal, newVal) -> {
+		    if (!newVal) {
+		    	try {
+		    		r.setInput1(input1.getText());
+		    		r.setRisultato(output.getText());
+					QuestionarioDAO.saveResFormula(r);
+				} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
+				}
+		    }
+		});
+		TextField input2 = new TextField(r.getInput2());
+		// salva sul db la risposta
+		input2.focusedProperty().addListener((obs, oldVal, newVal) -> {
+		    if (!newVal) {
+		    	try {
+		    		r.setInput2(input2.getText());
+		    		r.setRisultato(output.getText());
+					QuestionarioDAO.saveResFormula(r);
+				} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
+				}
+		    }
+		});
+		
 		
 		// evento per fare la somma
 		EventHandler<KeyEvent> somma = new EventHandler<KeyEvent>() {
@@ -204,18 +244,18 @@ public class QuestionnaireController {
 		gridpane.add(new Label(r.getLabelRisultato()), 4, 0);
 		gridpane.add(input1, 0, 1);
 		gridpane.add(input2, 2, 1);
-		gridpane.add(new Label("="), 3, 1);
+		gridpane.add(new Label(" = "), 3, 1);
 		gridpane.add(output, 4, 1);			
 		if (r.getOperatore().equals(config.SOMMA)) {
-			gridpane.add(new Label("+"), 1, 1);
+			gridpane.add(new Label(" + "), 1, 1);
 			input1.setOnKeyReleased(somma);
 			input2.setOnKeyReleased(somma);
 		} else if (r.getOperatore().equals(config.MOLTIPLICAZIONE)) {
-			gridpane.add(new Label("X"), 1, 1);
+			gridpane.add(new Label(" X "), 1, 1);
 			input1.setOnKeyReleased(moltiplicazione);
 			input2.setOnKeyReleased(moltiplicazione);
 		}
-
+		
 		hb.getChildren().add(gridpane);
 	}
 	// crea la domanda a scelta singola
@@ -235,6 +275,21 @@ public class QuestionnaireController {
 		for (Opzione o: r.getOpzioni()) {
 			RadioButton rb = new RadioButton(o.getTesto());
 			rb.setToggleGroup(group);
+			rb.setSelected(o.isChecked());
+			// salva sul db la risposta
+			rb.focusedProperty().addListener((obs, oldVal, newVal) -> {
+			    if (!newVal) {
+			    	try {
+			    		o.setChecked(rb.isSelected());
+			    		QuestionarioDAO.resetChoice(o, r.getId());
+						QuestionarioDAO.saveResChoice(o);
+					} catch (ClassNotFoundException | SQLException e) {
+						e.printStackTrace();
+					}
+			    }
+			});
+			String id = Double.toString(o.getId());
+			rb.setId(id);
 			hb.getChildren().add(rb);
 		}
 	}
@@ -251,8 +306,22 @@ public class QuestionnaireController {
 		createTemplateQuestion().getChildren().add(hb);
 	
 		for (Opzione o: r.getOpzioni()) {
-			CheckBox rb = new CheckBox(o.getTesto());
-			hb.getChildren().add(rb);
+			CheckBox cb = new CheckBox(o.getTesto());
+			cb.setSelected(o.isChecked());
+			// salva sul db la risposta
+			cb.focusedProperty().addListener((obs, oldVal, newVal) -> {
+			    if (!newVal) {
+			    	try {
+			    		o.setChecked(cb.isSelected());
+						QuestionarioDAO.saveResChoice(o);
+					} catch (ClassNotFoundException | SQLException e) {
+						e.printStackTrace();
+					}
+			    }
+			});
+			String id = Double.toString(o.getId());
+			cb.setId(id);
+			hb.getChildren().add(cb);
 		}
 	}
 	//carica il questionario tutto insieme
@@ -311,6 +380,7 @@ public class QuestionnaireController {
 	
 	@FXML
 	public void avanti(ActionEvent e) throws IOException, ClassNotFoundException, SQLException {
+		//cambia domanda
 		reportBox.getChildren().clear();
 		if (indice == questionario.size()-2) {
         	avanti.setVisible(false);
@@ -320,17 +390,13 @@ public class QuestionnaireController {
         	indice++;
         }
 		String ind = Integer.toString(indice+1);
-		comboBox.setValue(ind);
-		//loadQuestion();		
-		
-		//salva risposte sul db
-		
+		comboBox.setValue(ind);		
 
-		//System.out.print(getQuestionnaire());
 		//ReportDAO.changeState(1);
 	}
 	@FXML
 	public void indietro(ActionEvent e) throws IOException {
+		//cambia domanda	
 		reportBox.getChildren().clear();
         if (indice == 1) {
         	indietro.setVisible(false);
@@ -340,11 +406,7 @@ public class QuestionnaireController {
         	indice--;
         }
 		String ind = Integer.toString(indice+1);
-		comboBox.setValue(ind);
-		//loadQuestion();
-		
-		//salva risposte sul db
-		
+		comboBox.setValue(ind);	
 		
 	}
 	
@@ -472,8 +534,7 @@ public class QuestionnaireController {
 				addAllDescendents((Parent) node, nodes);
 		}
 	}
-*/
-	
+*/	
 	public void logout(ActionEvent event) throws ClassNotFoundException, SQLException {
 		config c = new config();
 		c.logout(menuBar);
