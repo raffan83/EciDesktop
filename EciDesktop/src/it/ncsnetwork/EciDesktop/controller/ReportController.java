@@ -204,7 +204,6 @@ public class ReportController {
 
 							QuestionnaireController controller = loader.getController();
 							controller.setData(selectedInterv, selectedState, selectedUser);
-							controller.createQuest();
 
 							Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
 							window.setScene(tableViewScene);

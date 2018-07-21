@@ -55,7 +55,7 @@ public class QuestionarioDAO {
 		 String selectStmt = "SELECT domande.*, risposte.*\r\n" + 
 		 		"FROM domande\r\n" + 
 		 		"INNER JOIN risposte ON domande.id=risposte.id_domanda\r\n" + 
-		 		"WHERE id_report="+2+"\r\n" + 
+		 		"WHERE id_report="+Report.reportId+"\r\n" + 
 		 		"ORDER BY posizione;";
 		
 			try {

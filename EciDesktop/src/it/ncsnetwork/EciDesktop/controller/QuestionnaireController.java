@@ -33,6 +33,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -59,6 +60,7 @@ public class QuestionnaireController {
 	private int selectedState;
 	private User selectedUser;
 	private int indice = 0;
+	private int iDomandaVuota = 1;
 	private ObservableList<Domanda> questionario = FXCollections.observableArrayList();
 	
 	@FXML private VBox reportBox;
@@ -135,9 +137,11 @@ public class QuestionnaireController {
 	// crea la domanda a risposta aperta
 	public void loadOpenQuestion(Domanda d) {
 		Risposta r = d.getRisposta();
-		
-		Text t = new Text();
-		t.setText(d.getTesto());
+		Label t = new Label();
+		t.setMaxWidth(800);
+		t.setWrapText(true);
+		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
+		else t.setText(indice + 1 + ". " + d.getTesto());
 		createTemplateQuestion().getChildren().add(t);
 		
 		TextArea ta = new TextArea(r.getTestoRisposta());
@@ -162,8 +166,11 @@ public class QuestionnaireController {
 	public void loadFormula(Domanda d) {
 		
 		Risposta r = d.getRisposta();
-		Text t = new Text();
-		t.setText(d.getTesto());
+		Label t = new Label();
+		t.setMaxWidth(800);
+		t.setWrapText(true);
+		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
+		else t.setText(indice + 1 + ". " + d.getTesto());
 		createTemplateQuestion().getChildren().add(t);
 		HBox hb = new HBox();
 		hb.setSpacing(20);
@@ -262,8 +269,11 @@ public class QuestionnaireController {
 	public void loadRadioButton(Domanda d) throws IOException {
 		
 		Risposta r = d.getRisposta();
-		Text t = new Text();
-		t.setText(d.getTesto());
+		Label t = new Label();
+		t.setMaxWidth(800);
+		t.setWrapText(true);
+		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
+		else t.setText(indice + 1 + ". " + d.getTesto());
 		//t.setId("question");
 		createTemplateQuestion().getChildren().add(t);
 		
@@ -276,6 +286,7 @@ public class QuestionnaireController {
 			RadioButton rb = new RadioButton(o.getTesto());
 			rb.setToggleGroup(group);
 			rb.setSelected(o.isChecked());
+			//System.out.println(o.isChecked());
 			// salva sul db la risposta
 			rb.focusedProperty().addListener((obs, oldVal, newVal) -> {
 			    if (!newVal) {
@@ -297,10 +308,13 @@ public class QuestionnaireController {
 	public void loadCheckBox(Domanda d) throws IOException {
 		
 		Risposta r = d.getRisposta();
-		Text t = new Text();
-		t.setText(d.getTesto());
-		//t.setId("question");
+		Label t = new Label();
+		t.setMaxWidth(800);
+		t.setWrapText(true);
+		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
+		else t.setText(indice + 1 + ". " + d.getTesto());
 		createTemplateQuestion().getChildren().add(t);
+		
 		HBox hb = new HBox();
 		hb.setSpacing(20);
 		createTemplateQuestion().getChildren().add(hb);
@@ -344,7 +358,11 @@ public class QuestionnaireController {
 	
 	// carica la domanda secondo l'indice
 	public void loadQuestion() throws IOException {
-		
+		try {
+			searchDomande();
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
 		Domanda d = questionario.get(indice);
 		Risposta risposta = d.getRisposta();
 		if (risposta.getTipo().equals(config.RES_TEXT)) {
@@ -359,12 +377,41 @@ public class QuestionnaireController {
 			}
 		}
 	}
+	
+	private boolean isCompleto() throws IOException {
+		iDomandaVuota = 1;
+		for (Domanda d: questionario) {
+			if (d.isObbligatoria()) {
+				Risposta risposta = d.getRisposta();
+				if (risposta.getTipo().equals(config.RES_TEXT)) {
+					String risp = risposta.getTestoRisposta();
+					if(risp.isEmpty()) return false;
+
+				} else if (risposta.getTipo().equals(config.RES_FORMULA)) {
+					String ris = risposta.getRisultato();
+					if(ris.isEmpty() || ris.equals("err")) return false;
+					
+				} else if (risposta.getTipo().equals(config.RES_CHOICE)) {
+					boolean compl = false;
+					for (Opzione o : risposta.getOpzioni()) {
+						if (o.isChecked()) compl = true;
+					}
+					if (!compl) return false;
+				}
+			}
+			iDomandaVuota++;
+		}
+		return true;
+	}
 		
 	
 	
 	public void initialize() throws IOException, ClassNotFoundException, SQLException {	
-		searchDomande();
+		//searchDomande();
 		loadQuestion();
+		/*for (Domanda d : questionario) {
+			completo.add(!d.isObbligatoria());
+		}*/
 		indietro.setVisible(false);
         comboBox.getItems().addAll(comboItems(questionario.size()));
         comboBox.setPromptText("1");
@@ -392,7 +439,7 @@ public class QuestionnaireController {
 		String ind = Integer.toString(indice+1);
 		comboBox.setValue(ind);		
 
-		//ReportDAO.changeState(1);
+		ReportDAO.changeState(1);
 	}
 	@FXML
 	public void indietro(ActionEvent e) throws IOException {
@@ -431,9 +478,15 @@ public class QuestionnaireController {
 	}
 
 	public void completeReport(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
-		//System.out.print(getQuestionnaire());
-		ReportDAO.changeState(2);
-		goBack(event);
+		if(isCompleto()) {
+			ReportDAO.changeState(2);
+			goBack(event);
+		} else {
+			//alert
+			config.dialog(AlertType.WARNING, "Impossibile completare il verbale.\n"
+					+ "La domanda numero " + iDomandaVuota + " è obbligatoria.");
+		}
+
 	}
 
 /*	public Map<String, Questionnaire> getQuestionnaire() {
