@@ -54,9 +54,8 @@ import javafx.util.Callback;
 
 public class InterventionController {
 
-	private int selectedState = 3;
+	private int selectedState = 4;
 	private User selectedUser;
-	//private static User user;
 	
 	@FXML private TableView interventionTable;
 	@FXML private TableColumn<Intervention, Long> idCol;
@@ -66,6 +65,7 @@ public class InterventionController {
 	@FXML private TableColumn<Intervention, String> codCategoriaCol;
 	@FXML private TableColumn<Intervention, String> codVerificaCol;
 	@FXML private TableColumn<Intervention, String> detailCol;
+	@FXML private TableColumn<Intervention, String> inviaCol;
 	@FXML private ComboBox comboBox;
 	@FXML private ImageView imgDownload;
 	@FXML private MenuBar menuBar;
@@ -117,10 +117,12 @@ public class InterventionController {
 		for (Object item : interventionTable.getItems()) {
 			String stateText = ((Intervention) item).getStatoLbl().getText();
 			((Intervention) item).getStatoLbl().setText(stateText.toUpperCase());
-			if (stateText == "Completo")
+			if (stateText == Intervention.STATO_2)
 				((Intervention) item).getStatoLbl().getStyleClass().add("completo");
-			else if (stateText == "In lavorazione") 
+			else if (stateText == Intervention.STATO_1) 
 				((Intervention) item).getStatoLbl().getStyleClass().add("inLavorazione");
+			else if (stateText == Intervention.STATO_3) 
+				((Intervention) item).getStatoLbl().getStyleClass().add("inviato");
 			else ((Intervention) item).getStatoLbl().getStyleClass().add("daCompilare");
 			
 			((Intervention) item).getDetailBtn().getStyleClass().add("dettagli");	
@@ -165,14 +167,16 @@ public class InterventionController {
 		codCategoriaCol.setCellValueFactory(cellData -> cellData.getValue().codCategoriaProperty());
 		codVerificaCol.setCellValueFactory(cellData -> cellData.getValue().codVerificaProperty());
 		detailCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("detailBtn"));
+		inviaCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("inviaInterv"));
 
 		idCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
-		sedeCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.35));
-		dataCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
-		statoCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.12));
+		sedeCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.33));
+		dataCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.09));
+		statoCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
 		codCategoriaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
 		codVerificaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.12));
-		detailCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.08));
+		detailCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.06));
+		inviaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.06));
 		
 		// popola la tabella
 		searchInterventions();
@@ -182,7 +186,7 @@ public class InterventionController {
 		setCellHeight();
 	
         //configura la select per filtrare lo stato
-        comboBox.getItems().addAll("Tutti","Da compilare","In lavorazione","Completo");
+        comboBox.getItems().addAll("Tutti",Intervention.STATO_0,Intervention.STATO_1,Intervention.STATO_2,Intervention.STATO_3);
         comboBox.setPromptText("Tutti");
 
 	}
@@ -194,10 +198,11 @@ public class InterventionController {
 	
 	// imposta il valore del filtro slezionato
 	public void selectState(ActionEvent actionEvent) throws ClassNotFoundException, SQLException {
-		selectedState = 3;
-		if(comboBox.getValue().toString() == "Da compilare") selectedState = 0;
-		else if(comboBox.getValue().toString() == "In lavorazione") selectedState = 1;
-		else if(comboBox.getValue().toString() == "Completo") selectedState = 2;
+		selectedState = 4;
+		if(comboBox.getValue().toString() == Intervention.STATO_0) selectedState = 0;
+		else if(comboBox.getValue().toString() == Intervention.STATO_1) selectedState = 1;
+		else if(comboBox.getValue().toString() == Intervention.STATO_2) selectedState = 2;
+		else if(comboBox.getValue().toString() == Intervention.STATO_3) selectedState = 3;
 		
 		searchSelectedState(selectedState);
 	}
@@ -211,9 +216,10 @@ public class InterventionController {
 			setDetailAndState();
 			setCellHeight();
 	        String str = "Tutti";
-	        if (selectedState == 0) str = "Da compilare";
-	        else if (selectedState == 1) str = "In lavorazione";
-	        else if (selectedState == 2) str = "Completo";
+	        if (selectedState == 0) str = Intervention.STATO_0;
+	        else if (selectedState == 1) str = Intervention.STATO_1;
+	        else if (selectedState == 2) str = Intervention.STATO_2;
+	        else if (selectedState == 3) str = Intervention.STATO_3;
 	        comboBox.setPromptText(str);
 		} catch (SQLException e) {
 			System.out.println("Error occurred while getting interventions information from DB.\n" + e);
@@ -348,9 +354,7 @@ public class InterventionController {
 	                	JSONObject domanda = (JSONObject) dom;
 	                	Domanda d = new Domanda();
 	                	long idDomanda = (long) domanda.get("id");
-	                	System.out.println(idDomanda);
 						d.setId(idDomanda);
-						System.out.println(d.getId());
 						d.setTesto((String) domanda.get("testo"));
 						d.setObbligatoria((boolean) domanda.get("obbligatoria"));
 						d.setPosizione((long) domanda.get("posizione"));
@@ -406,6 +410,7 @@ public class InterventionController {
 			config c = new config();
 			c.logout(menuBar);
 	}
+	
 	
 
 }

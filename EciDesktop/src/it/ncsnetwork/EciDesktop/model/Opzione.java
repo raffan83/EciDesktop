@@ -5,12 +5,12 @@ import javafx.beans.property.StringProperty;
 
 public class Opzione {
 	private long id;
-	private SimpleStringProperty testo;
-	private long posizione;
-	private boolean checked;
+	private String testo;
+	private Long posizione;
+	private boolean choice;
 	
 	public Opzione() {
-		this.testo = new SimpleStringProperty();		
+		//this.testo = new SimpleStringProperty();		
 	}
 
 	public long getId() {
@@ -22,16 +22,16 @@ public class Opzione {
 	}
 	
 	public String getTesto() {
-		return testo.get();
+		return testo;
 	}
 
 	public void setTesto(String testo) {
-		this.testo.set(testo);
+		this.testo=testo;
 	}
 
-	public StringProperty testoProperty() {
+	/*public StringProperty testoProperty() {
 		return testo;
-	}
+	}*/
 
 	public long getPosizione() {
 		return posizione;
@@ -42,11 +42,11 @@ public class Opzione {
 	}
 
 	public boolean isChecked() {
-		return checked;
+		return choice;
 	}
 
 	public void setChecked(boolean checked) {
-		this.checked = checked;
+		this.choice = checked;
 	}
 	
 }

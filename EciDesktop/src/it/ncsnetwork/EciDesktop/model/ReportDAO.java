@@ -35,7 +35,8 @@ public class ReportDAO {
 			report.setCodVerifica(rs.getString("codice_verifica"));
 			report.setCodCategoria(rs.getString("codice_categoria"));
 			report.setStatoLbl(rs.getInt("stato"));
-			if (rs.getInt("stato") == 2) report.setNullCompleteRep();
+			if (rs.getInt("stato") == 3) report.setNullCompleteRep();
+			if (rs.getInt("stato") != 2) report.setNullInviaRep();
 
 			reportList.add(report);
 		}

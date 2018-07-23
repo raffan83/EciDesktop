@@ -2,41 +2,37 @@ package it.ncsnetwork.EciDesktop.model;
 
 import java.util.ArrayList;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
 public class Risposta {
 	private long id;
-	private String tipo;
+	private String type;
 	//RES_TEXT
-	private SimpleStringProperty testoRisposta;
+	private String valore;
 	//RES_FORMULA
-	private SimpleStringProperty label1;
-	private SimpleStringProperty input1;
-	private SimpleStringProperty label2;
-	private SimpleStringProperty input2;
+	private String label1;
+	private String valore_1;
+	private String label2;
+	private String valore_2;
 	private String operatore;
-	private SimpleStringProperty labelRisultato;
-	private SimpleStringProperty risultato;
+	private String labelRisultato;
+	private String risultato;
 	//RES_CHOICE
-	private boolean multipla;
-	private ArrayList<Opzione> opzioni = new ArrayList<Opzione>();
+	private Boolean multipla;
+	private ArrayList<Opzione> scelte;
 	
 	public Risposta() {
-		this.testoRisposta = new SimpleStringProperty();
+		
+		/*this.testoRisposta = new SimpleStringProperty();
 		this.label1 = new SimpleStringProperty();
 		this.input1 = new SimpleStringProperty();
 		this.label2 = new SimpleStringProperty();
 		this.input2 = new SimpleStringProperty();
 		this.labelRisultato = new SimpleStringProperty();
-		this.risultato = new SimpleStringProperty();	
+		this.risultato = new SimpleStringProperty();*/	
 	}
 	
 	public Risposta(long id, ArrayList<Opzione> opzioni) {
 		this.id = id;
-		this.opzioni = opzioni;
+		this.scelte = opzioni;
 	}
 	
 	public long getId() {
@@ -47,72 +43,72 @@ public class Risposta {
 	}
 
 	public String getTipo() {
-		return tipo;
+		return type;
 	}
 
 	public void setTipo(String tipo) {
-		this.tipo = tipo;
+		this.type = tipo;
 	}
 	
 	public String getTestoRisposta() {
-		return testoRisposta.get();
+		return valore;
 	}
 
 	public void setTestoRisposta(String testoRisposta) {
-		this.testoRisposta.set(testoRisposta);
+		this.valore=testoRisposta;
 	}
 
-	public StringProperty testoRispostaProperty() {
+	/*public StringProperty testoRispostaProperty() {
 		return testoRisposta;
-	}
+	}*/
 	
 	public String getLabel1() {
-		return label1.get();
+		return label1;
 	}
 
 	public void setLabel1(String label1) {
-		this.label1.set(label1);
+		this.label1 = label1;
 	}
 
-	public StringProperty label1Property() {
+	/*public StringProperty label1Property() {
 		return label1;
-	}
+	}*/
 	
 	public String getInput1() {
-		return input1.get();
+		return valore_1;
 	}
 
 	public void setInput1(String input1) {
-		this.input1.set(input1);
+		this.valore_1=input1;
 	}
 
-	public StringProperty input1Property() {
+	/*public StringProperty input1Property() {
 		return input1;
-	}
+	}*/
 	
 	public String getLabel2() {
-		return label2.get();
+		return label2;
 	}
 
 	public void setLabel2(String label2) {
-		this.label2.set(label2);
+		this.label2=label2;
 	}
 
-	public StringProperty label2Property() {
+	/*public StringProperty label2Property() {
 		return label2;
-	}
+	}*/
 	
 	public String getInput2() {
-		return input2.get();
+		return valore_2;
 	}
 
 	public void setInput2(String input2) {
-		this.input2.set(input2);
+		this.valore_2=input2;
 	}
 
-	public StringProperty input2Property() {
+	/*public StringProperty input2Property() {
 		return input2;
-	}
+	}*/
 
 	public String getOperatore() {
 		return operatore;
@@ -123,28 +119,28 @@ public class Risposta {
 	}
 	
 	public String getLabelRisultato() {
-		return labelRisultato.get();
+		return labelRisultato;
 	}
 
 	public void setLabelRisultato(String labelRisultato) {
-		this.labelRisultato.set(labelRisultato);
+		this.labelRisultato=labelRisultato;
 	}
 
-	public StringProperty labelRisultatoProperty() {
+	/*public StringProperty labelRisultatoProperty() {
 		return labelRisultato;
-	}
+	}*/
 	
 	public String getRisultato() {
-		return risultato.get();
+		return risultato;
 	}
 
 	public void setRisultato(String risultato) {
-		this.risultato.set(risultato);
+		this.risultato=risultato;
 	}
 
-	public StringProperty risultatoProperty() {
+	/*public StringProperty risultatoProperty() {
 		return risultato;
-	}
+	}*/
 
 	public boolean isMultipla() {
 		return multipla;
@@ -155,11 +151,19 @@ public class Risposta {
 	}
 
 	public ArrayList<Opzione> getOpzioni() {
-		return opzioni;
+		return scelte;
 	}
 
 	public void setOpzioni(ArrayList<Opzione> opzioni) {
-		this.opzioni = opzioni;
+		this.scelte = opzioni;
+	}
+
+	public String getValore() {
+		return valore;
+	}
+
+	public void setValore(String valore) {
+		this.valore = valore;
 	}
 
 }

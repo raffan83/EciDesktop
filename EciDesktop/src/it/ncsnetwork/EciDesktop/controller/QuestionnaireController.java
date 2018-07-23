@@ -415,6 +415,7 @@ public class QuestionnaireController {
 		indietro.setVisible(false);
         comboBox.getItems().addAll(comboItems(questionario.size()));
         comboBox.setPromptText("1");
+        
 	}
 	
 	private ObservableList<Integer> comboItems(int n){

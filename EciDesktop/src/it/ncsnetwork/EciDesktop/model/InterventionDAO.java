@@ -32,13 +32,13 @@ public class InterventionDAO {
 			interv.setId(rs.getInt("id"));
 			interv.setSede(rs.getString("sede"));
 			interv.setDataCreazione(rs.getString("data_creazione"));
-			interv.setStato(rs.getInt("stato"));
 			interv.setStatoLbl(rs.getInt("stato"));
 			interv.setCodCategoria(rs.getString("codice_categoria"));
 			interv.setDescrCategoria(rs.getString("descrizione_categoria"));
 			interv.setCodVerifica(rs.getString("codice_verifica"));
 			interv.setDescrVerifica(rs.getString("descrizione_verifica"));
 			interv.setNote(rs.getString("note"));
+			if (rs.getInt("stato") != 2) interv.setNullInviaInterv();
 
 			intervList.add(interv);
 		}
@@ -83,7 +83,7 @@ public class InterventionDAO {
 		
 		String selectStmt = "SELECT * FROM intervention WHERE user_id = " + User.getUserId() + " ORDER BY stato";
 		
-		if (stato != 3) {		
+		if (stato != 4) {		
 			selectStmt = "SELECT * FROM intervention WHERE stato = " + stato + " AND user_id = " + User.getUserId();
 		}	
 		try {

@@ -121,6 +121,16 @@
 	-fx-border-radius:3px;
 	-fx-font-weight: bold;
 }
+.inviato {
+	-fx-padding: 2 5 2 5;
+	-fx-font-size: 7pt;
+	-fx-text-fill: white; 
+    /*-fx-background-color: CONRFLOWERBLUE;*/
+    -fx-background-color: BLUE;
+	-fx-background-radius: 3px;
+	-fx-border-radius:3px;
+	-fx-font-weight: bold;
+}
 
 
 /*******************************************************************************
