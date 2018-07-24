@@ -1,6 +1,5 @@
 package it.ncsnetwork.EciDesktop.controller;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -10,12 +9,16 @@ import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import com.google.gson.Gson;
 
 import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.model.Domanda;
@@ -26,6 +29,7 @@ import it.ncsnetwork.EciDesktop.model.Opzione;
 import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
 import it.ncsnetwork.EciDesktop.model.Risposta;
+import it.ncsnetwork.EciDesktop.model.RisposteIntervento;
 import it.ncsnetwork.EciDesktop.model.User;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -37,6 +41,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
@@ -153,6 +158,23 @@ public class InterventionController {
 					}
 				}
 			});
+			
+			if (((Intervention) item).getInviaInterv() instanceof Button) {
+				((Intervention) item).getInviaInterv().getStyleClass().add("invia");	
+				((Intervention) item).getInviaInterv().setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent e) {
+						long intervId = ((Intervention) item).getId();
+						Intervention.setIntervId(intervId);
+	
+						try {
+							getJson2();
+						} catch (ClassNotFoundException | SQLException e1) {
+							e1.printStackTrace();
+						}
+					}
+				});
+			}
 		}
 	}
 	
@@ -170,8 +192,8 @@ public class InterventionController {
 		inviaCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("inviaInterv"));
 
 		idCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
-		sedeCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.33));
-		dataCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.09));
+		sedeCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.32));
+		dataCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
 		statoCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
 		codCategoriaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
 		codVerificaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.12));
@@ -411,6 +433,38 @@ public class InterventionController {
 			c.logout(menuBar);
 	}
 	
+	public void getJson() throws ClassNotFoundException, SQLException {
+		String json = config.risposteInterventiJson();
+		sendJson(json);
+	}
 	
+	public void getJson2() throws ClassNotFoundException, SQLException {
+		String json = config.risposteInterventiJson2();
+		sendJson(json);
+	}
+	
+	public void sendJson(String json) throws ClassNotFoundException, SQLException {
+		if (config.isConnected()) {
+			
+			Client client = ClientBuilder.newClient();
+			WebTarget target = client.target(config.URL_API.concat("intervento"));
+	
+			Response response = target.request().header("X-ECI-Auth", selectedUser.getAccessToken()).post(Entity.entity(json, MediaType.APPLICATION_JSON));
+
+			System.out.println("Response code: " + response.getStatus());
+			
+			//cambia stato
+			if (response.getStatus() == 200) {
+				// cambio stato
+				// ricarica pagina
+			} else {
+				//alert errore, torna alla login
+			}
+			
+		} else {
+			// alert nessuna connessione
+		}
+			
+	}
 
 }

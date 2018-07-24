@@ -283,58 +283,11 @@ public class ReportController {
 		c.logout(menuBar);
 	}
 	
-	public String toJson() throws ClassNotFoundException, SQLException {
-		
-		ObservableList<Domanda> domande = FXCollections.observableArrayList();
-		try {
-			domande = QuestionarioDAO.searchDomande();
-		} catch (SQLException e) {
-			System.out.println("Error occurred while getting questions information from DB.\n" + e);
-			throw e;
-		}
-		RisposteVerbale risposte = new RisposteVerbale();
-		ArrayList<Risposta> rispList = new ArrayList<Risposta>();
-
-		for (Domanda d: domande) {
-			
-			Risposta risp = d.getRisposta();
-			Risposta r = new Risposta();
-			
-			r.setId(risp.getId());
-			r.setTipo(risp.getTipo());
-			if(risp.getTipo().equals(config.RES_TEXT)) {
-				r.setTestoRisposta(risp.getTestoRisposta());
-			} else if (risp.getTipo().equals(config.RES_FORMULA)) {
-				r.setInput1(risp.getInput1());
-				r.setInput2(risp.getInput2());
-				r.setRisultato(risp.getRisultato());
-			} else if (risp.getTipo().equals(config.RES_CHOICE)) {
-				ArrayList<Opzione> scelte = new ArrayList<Opzione>();
-				for(Opzione o: risp.getOpzioni()) {
-					Opzione opzione = new Opzione();
-					opzione.setId(o.getId());
-					opzione.setChecked(o.isChecked());
-					scelte.add(opzione);
-				}
-				r.setOpzioni(scelte);
-			}
-
-			rispList.add(r);
-
-		}
-			risposte.setVerbale_id(Report.getReportId());
-			risposte.setRisposte(rispList);
-
-			Gson gson = new Gson();
-			String json = gson.toJson(risposte);
-			
-			return json;
-	}
-	
 	public void sendJson() throws ClassNotFoundException, SQLException {
-		if (config.isConnected()) { // login chiamata rest
-			String json = toJson();
-			System.out.println(json);
+		if (config.isConnected()) {
+			
+			String json = config.risposteVerbaleJson();
+			
 			Client client = ClientBuilder.newClient();
 			WebTarget target = client.target(config.URL_API.concat("verbale"));
 	
@@ -345,8 +298,15 @@ public class ReportController {
 			//cambia stato
 			if (response.getStatus() == 200) {
 				ReportDAO.changeState(3);
+				searchReports();
+				setCompleteAndState();
+				setCellHeight();	
+			} else {
+				//alert errore, torna alla login
 			}
 			
+		} else {
+			// alert nessuna connessione
 		}
 	}
 	

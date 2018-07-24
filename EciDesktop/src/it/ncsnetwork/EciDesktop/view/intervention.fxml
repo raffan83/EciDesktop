@@ -93,6 +93,15 @@
                   <Font size="24.0" />
                </font>
             </Label>
+            <Button alignment="CENTER" layoutX="497.0" layoutY="8.0" mnemonicParsing="false" onAction="#getJson" prefHeight="35.0" prefWidth="168.0" styleClass="btn" text="Invia interventi completi">
+               <graphic>
+                  <ImageView fx:id="imgDownload1" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../img/send.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
          </children>
       </AnchorPane>
       <Separator prefHeight="3.0" prefWidth="900.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0" />

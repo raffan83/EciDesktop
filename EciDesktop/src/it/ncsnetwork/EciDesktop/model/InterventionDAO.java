@@ -104,6 +104,62 @@ public class InterventionDAO {
 		
 		DBUtil.dbExecuteUpdate(stmt);
 	}
+	
+	public static ObservableList<Long> serchIntervCompleto(long idInterv) throws SQLException, ClassNotFoundException {
+		String stmt = "SELECT report.id "
+				+ "FROM intervention "
+				+ "INNER JOIN report ON intervention.id = report.intervention_id "
+				+ "WHERE intervention.id="+idInterv+" AND intervention.user_id=" + User.getUserId();
+		
+		try {
+			ResultSet rs = DBUtil.dbExecuteQuery(stmt);
+			ObservableList<Long> verbali = getReportIdList(rs);
+			return verbali;
+		} catch (SQLException e) {
+			System.out.println("SQL select operation has been failed: " + e);
+			throw e;
+		}
+		
+	}
 
+	private static ObservableList<Long> getReportIdList(ResultSet rs) throws SQLException {
+
+		ObservableList<Long> verbali = FXCollections.observableArrayList();
+
+		while (rs.next()) {
+			long id = rs.getInt("id");
+			verbali.add(id);
+		}
+		return verbali;
+	}
+	
+	
+	public static ObservableList<Long> serchIntervCompleti() throws SQLException, ClassNotFoundException {
+		String stmt = "SELECT id FROM intervention WHERE user_id=" + User.getUserId() + " AND stato = 2";
+		
+		try {
+			ResultSet rs = DBUtil.dbExecuteQuery(stmt);
+			ObservableList<Long> interventi = getIntervIdList(rs);
+			return interventi;
+		} catch (SQLException e) {
+			System.out.println("SQL select operation has been failed: " + e);
+			throw e;
+		}
+		
+	}
+
+	private static ObservableList<Long> getIntervIdList(ResultSet rs) throws SQLException {
+
+		ObservableList<Long> interventi = FXCollections.observableArrayList();
+
+		while (rs.next()) {
+			long id = rs.getInt("id");
+			interventi.add(id);
+		}
+		return interventi;
+	}
+	
+	
+	
 		
 }
