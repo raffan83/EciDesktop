@@ -1,39 +1,36 @@
 package it.ncsnetwork.EciDesktop.model;
 
-import java.time.LocalDate;
-
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.scene.image.ImageView;
 
 public class Report {
-
+	public final static String STATO_0 = "Da compilare";
+	public final static String STATO_1 = "In lavorazione";
+	public final static String STATO_2 = "Completo";
+	public final static String STATO_3 = "Inviato";
+	static long reportId;
+	
 	private SimpleLongProperty id;
 	private SimpleStringProperty descrVerifica;
 	private SimpleStringProperty codVerifica;
 	private SimpleStringProperty codCategoria;
 	private Label statoLbl;
 	private Button completeRep;
+	private Button inviaRep;
 	private SimpleLongProperty intervId;
-
-	static long reportId;
-
+	
 	public Report() {
 		this.id = new SimpleLongProperty();
 		this.descrVerifica = new SimpleStringProperty();
 		this.codVerifica = new SimpleStringProperty();
 		this.codCategoria = new SimpleStringProperty();
-		this.statoLbl = new Label("Da compilare");
+		this.statoLbl = new Label(STATO_0);
 		this.completeRep = new Button("");
+		this.inviaRep = new Button("Invia");
 		this.intervId = new SimpleLongProperty();
 	}
 
@@ -94,9 +91,11 @@ public class Report {
 
 	public void setStatoLbl(int i) {
 		if (i == 1)
-			this.statoLbl.setText("In lavorazione");
+			this.statoLbl.setText(STATO_1);
 		else if (i == 2)
-			this.statoLbl.setText("Completo");
+			this.statoLbl.setText(STATO_2);
+		else if (i == 3)
+			this.statoLbl.setText(STATO_3);
 	}
 
 	// completeReport
@@ -132,6 +131,18 @@ public class Report {
 
 	public static void setReportId(long i) {
 		reportId = i;
+	}
+// invia verbale
+	public Button getInviaRep() {
+		return inviaRep;
+	}
+
+	public void setInviaRep(Button inviaRep) {
+		this.inviaRep = inviaRep;
+	}
+	
+	public void setNullInviaRep() {
+		this.inviaRep = null;
 	}
 
 }

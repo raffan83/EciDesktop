@@ -121,6 +121,7 @@
                  <TableColumn fx:id="codCategoriaCol" maxWidth="456.0000305175781" minWidth="0.0" prefWidth="121.0" text="Codice &#10;Categoria" />
                   <TableColumn fx:id="codVerificaCol" prefWidth="221.0" text="Codice &#10;Verifica" />
                   <TableColumn fx:id="detailCol" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="125.0" />
+                  <TableColumn fx:id="inviaCol" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="125.0" />
               </columns>
             </TableView>
          </children>

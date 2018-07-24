@@ -1,5 +1,6 @@
 package it.ncsnetwork.EciDesktop.controller;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -17,12 +18,15 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import it.ncsnetwork.EciDesktop.Utility.config;
+import it.ncsnetwork.EciDesktop.model.Domanda;
+import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
+import it.ncsnetwork.EciDesktop.model.Opzione;
 import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
+import it.ncsnetwork.EciDesktop.model.Risposta;
 import it.ncsnetwork.EciDesktop.model.User;
-import it.ncsnetwork.EciDesktop.model.UserDAO;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,6 +36,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
@@ -49,9 +54,8 @@ import javafx.util.Callback;
 
 public class InterventionController {
 
-	private int selectedState = 3;
-
-	private static User user;
+	private int selectedState = 4;
+	private User selectedUser;
 	
 	@FXML private TableView interventionTable;
 	@FXML private TableColumn<Intervention, Long> idCol;
@@ -61,11 +65,20 @@ public class InterventionController {
 	@FXML private TableColumn<Intervention, String> codCategoriaCol;
 	@FXML private TableColumn<Intervention, String> codVerificaCol;
 	@FXML private TableColumn<Intervention, String> detailCol;
+	@FXML private TableColumn<Intervention, String> inviaCol;
 	@FXML private ComboBox comboBox;
 	@FXML private ImageView imgDownload;
 	@FXML private MenuBar menuBar;
 	@FXML private Menu usernameMenu;
 	@FXML private Label usernameMenuLbl;
+	
+	
+	public void initData(User user) {
+		selectedUser = user;
+		usernameMenu.setText(selectedUser.getUsername());
+		usernameMenuLbl.setText(selectedUser.getUsername());
+		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
+	}
 	
 	@FXML
 	private void searchInterventions() throws SQLException, ClassNotFoundException {
@@ -104,10 +117,12 @@ public class InterventionController {
 		for (Object item : interventionTable.getItems()) {
 			String stateText = ((Intervention) item).getStatoLbl().getText();
 			((Intervention) item).getStatoLbl().setText(stateText.toUpperCase());
-			if (stateText == "Completo")
+			if (stateText == Intervention.STATO_2)
 				((Intervention) item).getStatoLbl().getStyleClass().add("completo");
-			else if (stateText == "In lavorazione") 
+			else if (stateText == Intervention.STATO_1) 
 				((Intervention) item).getStatoLbl().getStyleClass().add("inLavorazione");
+			else if (stateText == Intervention.STATO_3) 
+				((Intervention) item).getStatoLbl().getStyleClass().add("inviato");
 			else ((Intervention) item).getStatoLbl().getStyleClass().add("daCompilare");
 			
 			((Intervention) item).getDetailBtn().getStyleClass().add("dettagli");	
@@ -126,7 +141,7 @@ public class InterventionController {
 
 						// invio i dettagli dell'intervento alla pagina verbali
 						ReportController controller = loader.getController();
-						controller.initData((Intervention) item, selectedState, usernameMenu.getText());
+						controller.initData((Intervention) item, selectedState, selectedUser);
 
 						Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
 						window.setWidth(Control.USE_COMPUTED_SIZE);
@@ -152,35 +167,26 @@ public class InterventionController {
 		codCategoriaCol.setCellValueFactory(cellData -> cellData.getValue().codCategoriaProperty());
 		codVerificaCol.setCellValueFactory(cellData -> cellData.getValue().codVerificaProperty());
 		detailCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("detailBtn"));
+		inviaCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("inviaInterv"));
 
 		idCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
-		sedeCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.35));
-		dataCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
-		statoCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.12));
+		sedeCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.33));
+		dataCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.09));
+		statoCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
 		codCategoriaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
 		codVerificaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.12));
-		detailCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.08));
+		detailCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.06));
+		inviaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.06));
 		
 		// popola la tabella
 		searchInterventions();
 		
-		//imposta il nome utente
-		try {
-			user = UserDAO.getUser();
-		} catch (ClassNotFoundException | SQLException e1) {
-			e1.printStackTrace();
-		}
-		
-		usernameMenu.setText(user.getUsername());
-		usernameMenuLbl.setText(user.getUsername());
-		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
-	
 		// imposta il button dettagli cliccabile e il colore allo stato e l'altezza righe
 		setDetailAndState();
 		setCellHeight();
 	
         //configura la select per filtrare lo stato
-        comboBox.getItems().addAll("Tutti","Da compilare","In lavorazione","Completo");
+        comboBox.getItems().addAll("Tutti",Intervention.STATO_0,Intervention.STATO_1,Intervention.STATO_2,Intervention.STATO_3);
         comboBox.setPromptText("Tutti");
 
 	}
@@ -192,10 +198,11 @@ public class InterventionController {
 	
 	// imposta il valore del filtro slezionato
 	public void selectState(ActionEvent actionEvent) throws ClassNotFoundException, SQLException {
-		selectedState = 3;
-		if(comboBox.getValue().toString() == "Da compilare") selectedState = 0;
-		else if(comboBox.getValue().toString() == "In lavorazione") selectedState = 1;
-		else if(comboBox.getValue().toString() == "Completo") selectedState = 2;
+		selectedState = 4;
+		if(comboBox.getValue().toString() == Intervention.STATO_0) selectedState = 0;
+		else if(comboBox.getValue().toString() == Intervention.STATO_1) selectedState = 1;
+		else if(comboBox.getValue().toString() == Intervention.STATO_2) selectedState = 2;
+		else if(comboBox.getValue().toString() == Intervention.STATO_3) selectedState = 3;
 		
 		searchSelectedState(selectedState);
 	}
@@ -209,9 +216,10 @@ public class InterventionController {
 			setDetailAndState();
 			setCellHeight();
 	        String str = "Tutti";
-	        if (selectedState == 0) str = "Da compilare";
-	        else if (selectedState == 1) str = "In lavorazione";
-	        else if (selectedState == 2) str = "Completo";
+	        if (selectedState == 0) str = Intervention.STATO_0;
+	        else if (selectedState == 1) str = Intervention.STATO_1;
+	        else if (selectedState == 2) str = Intervention.STATO_2;
+	        else if (selectedState == 3) str = Intervention.STATO_3;
 	        comboBox.setPromptText(str);
 		} catch (SQLException e) {
 			System.out.println("Error occurred while getting interventions information from DB.\n" + e);
@@ -220,42 +228,61 @@ public class InterventionController {
 	}
 	
 	@FXML
-	private void downloadInterventions(ActionEvent event) {
+	private void downloadInterventions(ActionEvent event) throws ClassNotFoundException {
 		// imposta la gif di caricamento
 		new Thread(() -> {
 		    Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/load.gif")));	
 		
-		
-		/*User user = new User();
-		try {
-			user = UserDAO.getUser();
-		} catch (ClassNotFoundException | SQLException e1) {
-			e1.printStackTrace();
-		}*/
-		String username = user.getUsername();
-		String password = user.getPassword();
-		
-		username = "xxx";
-		password = "macrosolution";
-		//chiamata get
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080/PortalECI/rest/intervento?username="+username+"&password="+password+"&action=download");
-         
-        Response response = target.request().get();
-        System.out.println("Response code: " + response.getStatus());
+
+		//verifica connessione
+		if (config.isConnected()) {
+			
+			//chiamata get
+	        Client client = ClientBuilder.newClient();
+	        WebTarget target = client.target(config.URL_API.concat("intervento?action=download"));
+	        
+	        Response response = target.request().header("X-ECI-Auth", selectedUser.getAccessToken()).get();
+	        System.out.println("Response code: " + response.getStatus());
+	        
+	        if (response.getStatus() == 200) {
+	        
+		        String s = response.readEntity(String.class);
+		        System.out.println(s);
+		        
+		        ParseJsonInterventi(s);
+		        
+				// ripopola la tabella
+				try {
+					searchInterventions();
+				} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
+				}
+				// imposta il button dettagli cliccabile e l'altezza righe
+				setDetailAndState();
+				setCellHeight(); 
+		             
+	        } else {
+	        	Platform.runLater(()-> config.dialogLogout(AlertType.ERROR, "Impossibile scaricare i nuovi interventi.", menuBar));
+	        }
+	        
+		} else {
+			Platform.runLater(()-> config.dialog(AlertType.WARNING, "Nessuna connessione"));
+		}
+        // ripristina l'immagine di default
+        Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/download2.png")));
+		}).start();
+
         
-       String s = response.readEntity(String.class);
-        System.out.println(s);
-        
-        JSONParser parser = new JSONParser();
+	}
+	
+	// parsa il json degli interventi e salva sul db
+	private void ParseJsonInterventi(String s) {
+		
+		JSONParser parser = new JSONParser();
         
         try {
         	Object obj = parser.parse(s);
-        	/*JSONObject jsonObject = (JSONObject) obj;*/
-        	
-        	/*JSONArray interventi = (JSONArray) jsonObject.get("listaInterventi");*/
-        	
-        	/*Object obj = parser.parse(new FileReader("interventi.txt"));*/
+        	//Object obj = parser.parse(new FileReader("interventi.txt")); // per fare test
         	
         	JSONArray interventi = (JSONArray) obj;
         	for (Object intervento : interventi) {
@@ -263,19 +290,15 @@ public class InterventionController {
             	JSONObject interv = (JSONObject) intervento;
             	
             	// id
-            	Long id = (Long) interv.get("id");
-            	
+            	long id = (long) interv.get("id");           	
             	// data creazione
-            	Long data = (Long) interv.get("dataCreazione");
+            	long data = (long) interv.get("dataCreazione");
     			DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
     			String dataCreazione = df.format(data);
-    			
     			// sede
-    			String sede = (String) interv.get("nome_sede");
-    			
+    			String sede = (String) interv.get("nome_sede");   			
     			// id commessa
-    			String idCommessa = (String) interv.get("idCommessa");
-
+    			//String idCommessa = (String) interv.get("idCommessa");
     			// tipo verifica
     			JSONArray tipoVerifica = (JSONArray) interv.get("tipo_verifica");
     			String descrizioneTipo="", codiceTipo="", descrizioneCat="", codiceCat="";
@@ -301,60 +324,95 @@ public class InterventionController {
 		    			codiceCat += ", " + codCat;
 	    			} 
 	    			count++;
-        	 }
-    			
-			//salva sul db i nuovi interventi
-			Intervention i = new Intervention();
-			i.setId(id);
-			i.setDataCreazione(dataCreazione);
-			i.setSede(sede);
-			i.setDescrVerifica(descrizioneTipo);
-			i.setCodVerifica(codiceTipo);
-			i.setDescrCategoria(descrizioneCat);
-			i.setCodCategoria(codiceCat);
-			InterventionDAO.saveJSON(i);
+    			}
+    				
+				//salva sul db i nuovi interventi
+				Intervention i = new Intervention();
+				i.setId(id);
+				i.setDataCreazione(dataCreazione);
+				i.setSede(sede);
+				i.setDescrVerifica(descrizioneTipo);
+				i.setCodVerifica(codiceTipo);
+				i.setDescrCategoria(descrizioneCat);
+				i.setCodCategoria(codiceCat);
+				InterventionDAO.saveJSON(i);
 			
 			
-			// salvo i verbali
-			JSONArray verbali = (JSONArray) interv.get("verbali");
-			for (Object v : verbali) {
-				JSONObject verb = (JSONObject) v;
-				Long idVerb = (Long) verb.get("id");
-				String codVerVerb = (String) verb.get("codiceVerifica");
-				String codCatVerb = (String) verb.get("codiceCategoria");
-				String descrVerVerb = (String) verb.get("descrizioneVerifica");
+				// salvo i verbali
+				JSONArray verbali = (JSONArray) interv.get("verbali");
+				for (Object v : verbali) {
+					JSONObject verb = (JSONObject) v;
+					Report r = new Report();
+					long idVerb = (long) verb.get("id");
+					r.setId(idVerb);
+					r.setCodVerifica((String) verb.get("codiceVerifica"));
+					r.setCodCategoria((String) verb.get("codiceCategoria"));
+					r.setDescrVerifica((String) verb.get("descrizioneVerifica"));
+					ReportDAO.saveJSON(r, id);
 					
-				//salva sul db i verbali
-				Report r = new Report();
-				r.setId(idVerb);
-				r.setCodVerifica(codVerVerb);
-				r.setCodCategoria(codCatVerb);
-				r.setDescrVerifica(descrVerVerb);
-				ReportDAO.saveJSON(r, id);
-			}
+					//domande
+					JSONArray domande = (JSONArray) verb.get("domande");
+					for (Object dom : domande) {	
+	                	JSONObject domanda = (JSONObject) dom;
+	                	Domanda d = new Domanda();
+	                	long idDomanda = (long) domanda.get("id");
+						d.setId(idDomanda);
+						d.setTesto((String) domanda.get("testo"));
+						d.setObbligatoria((boolean) domanda.get("obbligatoria"));
+						d.setPosizione((long) domanda.get("posizione"));
+						QuestionarioDAO.saveJSONDomande(d, idVerb);
+	                	
+						// risposte
+						Risposta risp = new Risposta();	                	
+	                	JSONObject risposta = (JSONObject) domanda.get("risposta");
+	                	long idRisposta = (long) risposta.get("id");
+	                	risp.setId(idRisposta);
+	                	String tipoRisposta = (String) risposta.get("tipo");
+	                	risp.setTipo(tipoRisposta);
+	                	//RES_TEXT
+	                	if (tipoRisposta.equals(config.RES_TEXT)){
+	                		QuestionarioDAO.saveJSONResText(risp, idDomanda);
+	                	}
+	                	// RES_FORMULA
+	                	else if (tipoRisposta.equals(config.RES_FORMULA)) {
+	                		risp.setLabel1((String) risposta.get("label1"));
+	                		risp.setLabel2((String) risposta.get("label2"));
+	                		risp.setOperatore((String) risposta.get("operatore"));
+	                		risp.setLabelRisultato((String) risposta.get("label_risultato"));
+	                		QuestionarioDAO.saveJSONResFormula(risp, idDomanda);		
+	                	}
+                		// RES_CHOICE
+	                	else if (tipoRisposta.equals(config.RES_CHOICE)) {
+	                		risp.setMultipla((boolean) risposta.get("multipla"));
+	                		QuestionarioDAO.saveJSONResChoice(risp, idDomanda);
+	                		
+	                		JSONArray opzioni = (JSONArray) risposta.get("opzioni");
+	    					for (Object op : opzioni) {
+	    						JSONObject opzione = (JSONObject) op;
+	    						Opzione o = new Opzione();
+	    						o.setId((long) opzione.get("id"));
+	    						o.setTesto((String) opzione.get("testo"));
+	    						o.setPosizione((long) opzione.get("posizione"));
+	    						QuestionarioDAO.saveJSONOpzioni(o, idRisposta);
+	    					}
+	                	}	
+					}
+					
+				}
 			
-        }
-		// ripopola la tabella
-		searchInterventions();
-		
-		// imposta il button dettagli cliccabile e l'altezza righe
-		setDetailAndState();
-		setCellHeight(); 	
+        	}	
         	
         } catch (Exception e) {
 			e.printStackTrace();
-		}     
-        
-        // ripristina l'immagine di default
-        Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/download.png")));
-		}).start();
-        
+		}
 	}
 	
-	public void logout(ActionEvent event) throws ClassNotFoundException {
+	
+	public void logout() throws ClassNotFoundException {
 			config c = new config();
 			c.logout(menuBar);
 	}
+	
 	
 
 }

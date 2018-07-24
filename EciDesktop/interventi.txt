@@ -1,1 +1,187 @@
-[{"id": 108,"dataCreazione": 1531385964000,"idSede": 0,"id_cliente": 1703,"nome_sede": "ECI S.P.A. ENTE DI CERTIFICAZIONE & ISPEZIONE - VIA TOFARO 42/F - SORA (FR)","idCommessa": "ECI_EAE_0001/17","user": {},"statoIntervento": {},"company": {},"tecnico_verificatore": {},"tipo_verifica": [{"id": 3,"categoria": {"id": 2,"descrizione": "VERIFICA ","codice": "VAL"},"descrizione": "SCSP","codice": "SCSP"},{"id": 1,"categoria": {"id": 1,"descrizione": "VERIFICA IMPIANTI ELETTRICI","codice": "VIE"},"descrizione": "IMPIANTI ELETTRICI","codice": "DPR-462-IE"}],"verbali": [{"id": 27,"codiceVerifica": "SCSP","codiceCategoria": "VAL","descrizioneVerifica": "VERIFICA - SCSP","domande": []},{"id": 28,"codiceVerifica": "DPR-462-IE","codiceCategoria": "VIE","descrizioneVerifica": "VERIFICA IMPIANTI ELETTRICI - IMPIANTI ELETTRICI","domande": []}]}]
+[
+   {
+      "id":126,
+      "dataCreazione":1531999061000,
+      "idSede":0,
+      "id_cliente":1703,
+      "nome_sede":"ECI S.P.A. ENTE DI CERTIFICAZIONE & ISPEZIONE - VIA TOFARO 42/F - SORA (FR)",
+      "idCommessa":"ECI_EAA_0001/17",
+      "user":{
+         "id":13,
+         "user":"macrosolution",
+         "nominativo":"Macro Solution",
+         "nome":"Macro",
+         "cognome":"Solution",
+         "indirizzo":"-",
+         "comune":"-",
+         "cap":"0",
+         "EMail":"info@macrosolution.it",
+         "telefono":"0",
+         "company":{
+            "id":1,
+            "denominazione":"ECI S.p.A",
+            "pIva":"01234567891",
+            "indirizzo":"Via Verdi 11",
+            "comune":"Roma",
+            "cap":"00121",
+            "mail":"info@azienda_aff_01.com",
+            "telefono":"0206598755",
+            "codAffiliato":"002"
+         },
+         "tipoutente":"2",
+         "ruoli":[
+            {
+               "sigla":"OP",
+               "descrizione":"Operatore"
+            },
+            {
+               "sigla":"PR",
+               "descrizione":"Prova Permesso"
+            },
+            {
+               "sigla":"RS",
+               "descrizione":"Responsabile Operativo"
+            },
+            {
+               "sigla":"G1",
+               "descrizione":"Guest Account1"
+            },
+            {
+               "sigla":"AM",
+               "descrizione":"Amministratore"
+            }
+         ]
+      },
+      "statoIntervento":{
+         "id":2,
+         "descrizione":"SCARICATO"
+      },
+      "company":{
+         "id":1,
+         "denominazione":"ECI S.p.A",
+         "pIva":"01234567891",
+         "indirizzo":"Via Verdi 11",
+         "comune":"Roma",
+         "cap":"00121",
+         "mail":"info@azienda_aff_01.com",
+         "telefono":"0206598755",
+         "codAffiliato":"002"
+      },
+      "tecnico_verificatore":{
+         "id":12,
+         "user":"xxx",
+         "nominativo":"test",
+         "nome":"test2",
+         "cognome":"tst2",
+         "indirizzo":null,
+         "comune":null,
+         "cap":null,
+         "EMail":null,
+         "telefono":null,
+         "company":{
+            "id":1,
+            "denominazione":"ECI S.p.A",
+            "pIva":"01234567891",
+            "indirizzo":"Via Verdi 11",
+            "comune":"Roma",
+            "cap":"00121",
+            "mail":"info@azienda_aff_01.com",
+            "telefono":"0206598755",
+            "codAffiliato":"002"
+         },
+         "tipoutente":"2"
+      },
+      "tipo_verifica":[
+         {
+            "id":1,
+            "categoria":{
+               "id":1,
+               "descrizione":"VERIFICA IMPIANTI ELETTRICI",
+               "codice":"VIE"
+            },
+            "descrizione":"IMPIANTI ELETTRICI",
+            "codice":"DPR-462-IE"
+         }
+      ],
+      "verbali":[
+         {
+            "id":2,
+            "codiceVerifica":"DPR-462-IE",
+            "codiceCategoria":"VIE",
+            "descrizioneVerifica":"VERIFICA IMPIANTI ELETTRICI - IMPIANTI ELETTRICI",
+            "domande":[
+               {
+                  "id":53,
+                  "testo":"domanda 1",
+                  "obbligatoria":false,
+                  "posizione":0,
+                  "risposta":{
+                     "id":53,
+                     "tipo":"RES_CHOICE",
+                     "multipla":false,
+                     "opzioni":[
+                        {
+                           "id":54,
+                           "testo":"con mut2",
+                           "posizione":1
+                        },
+                        {
+                           "id":56,
+                           "testo":"con mut1",
+                           "posizione":0
+                        }
+                     ]
+                  }
+               },
+               {
+                  "id":60,
+                  "testo":"dom4",
+                  "obbligatoria":false,
+                  "posizione":3,
+                  "risposta":{
+                     "id":59,
+                     "tipo":"RES_CHOICE",
+                     "multipla":true,
+                     "opzioni":[
+                        {
+                           "id":58,
+                           "testo":"no mut 1",
+                           "posizione":0
+                        },
+                        {
+                           "id":60,
+                           "testo":"no mut 2",
+                           "posizione":1
+                        }
+                     ]
+                  }
+               },
+               {
+                  "id":56,
+                  "testo":"dom2",
+                  "obbligatoria":false,
+                  "posizione":1,
+                  "risposta":{
+                     "id":56,
+                     "tipo":"RES_TEXT"
+                  }
+               },
+               {
+                  "id":58,
+                  "testo":"domanda3",
+                  "obbligatoria":false,
+                  "posizione":2,
+                  "risposta":{
+                     "id":57,
+                     "tipo":"RES_FORMULA",
+                     "label1":"1",
+                     "label2":"2",
+                     "operatore":"Somma",
+                     "label_risultato":"3"
+                  }
+               }
+            ]
+         }
+      ]
+   }
+]

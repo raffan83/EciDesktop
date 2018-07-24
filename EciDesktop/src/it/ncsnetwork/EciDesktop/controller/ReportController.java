@@ -5,11 +5,29 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.glassfish.jersey.client.ClientResponse;
+
+import com.google.gson.Gson;
+
 import it.ncsnetwork.EciDesktop.Utility.config;
+import it.ncsnetwork.EciDesktop.model.Domanda;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
+import it.ncsnetwork.EciDesktop.model.Opzione;
+import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
 import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
+import it.ncsnetwork.EciDesktop.model.Risposta;
+import it.ncsnetwork.EciDesktop.model.RisposteVerbale;
+import it.ncsnetwork.EciDesktop.model.User;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -38,6 +56,7 @@ public class ReportController {
 
 	private Intervention selectedInterv;
 	private int selectedState;
+	private User selectedUser;
 
 	@FXML private TableView reportTable;
 	@FXML private TableColumn<Report, Long> idCol;
@@ -46,6 +65,7 @@ public class ReportController {
 	@FXML private TableColumn<Report, String> codCategoriaCol;
 	@FXML private TableColumn<Report, String> statoCol;
 	@FXML private TableColumn<Report, String> completeCol;
+	@FXML private TableColumn<Report, String> inviaCol;
 	@FXML private Label sedeLabel, dataLabel, codVerLabel, descrVerLabel, codCatLabel, descrCatLabel;
 	@FXML private Text note;
 	@FXML private Button modNoteBtn;
@@ -55,7 +75,7 @@ public class ReportController {
 	@FXML private HBox noteHBox;
 
 		
-	public void initData(Intervention interv, int state, String username) {
+	public void initData(Intervention interv, int state, User user) {
 		selectedInterv = interv;
 		sedeLabel.setText(selectedInterv.getSede());
 		dataLabel.setText(selectedInterv.getDataCreazione());
@@ -65,8 +85,9 @@ public class ReportController {
 		descrCatLabel.setText(selectedInterv.getDescrCategoria());
 		note.setText(selectedInterv.getNote());
 		selectedState = state;
-		usernameMenu.setText(username);
-		usernameMenuLbl.setText(username);
+		selectedUser = user;
+		usernameMenu.setText(selectedUser.getUsername());
+		usernameMenuLbl.setText(selectedUser.getUsername());
 		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
 	}
 
@@ -126,6 +147,7 @@ public class ReportController {
 		Scene tableViewScene = new Scene(tableViewParent);
 		InterventionController controller = loader.getController();
 		controller.searchSelectedState(selectedState);
+		controller.initData(selectedUser);
 		Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		window.setScene(tableViewScene);
 		window.show();
@@ -151,19 +173,20 @@ public class ReportController {
 		codCategoriaCol.setCellValueFactory(cellData -> cellData.getValue().codCategoriaProperty());
 		statoCol.setCellValueFactory(new PropertyValueFactory<Report, String>("statoLbl"));
 		completeCol.setCellValueFactory(new PropertyValueFactory<Report, String>("completeRep"));
+		inviaCol.setCellValueFactory(new PropertyValueFactory<Report, String>("inviaRep"));
 		
-		idCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.14));
+		idCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
 		descrVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.32));
-		codVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.15));
-		codCategoriaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.14));
-		statoCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
-		completeCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.1));
+		codVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
+		codCategoriaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
+		statoCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
+		completeCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.09));
+		inviaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.09));
 
 		searchReports();
 
 		setCompleteAndState();
-		setCellHeight();
-			
+		setCellHeight();	
 	}
 
 	@FXML
@@ -174,15 +197,19 @@ public class ReportController {
 	@FXML
 	private void setCompleteAndState() {
 		for (Object item : reportTable.getItems()) {
+			// label stato verbale
 			if (((Report) item).getStatoLbl() instanceof Label) {
 				String stateText = ((Report) item).getStatoLbl().getText();
 				((Report) item).getStatoLbl().setText(stateText.toUpperCase());
-				if (stateText == "Completo")
+				if (stateText == Report.STATO_2)
 					((Report) item).getStatoLbl().getStyleClass().add("completo");
-				else if (stateText == "In lavorazione") 
+				else if (stateText == Report.STATO_1) 
 					((Report) item).getStatoLbl().getStyleClass().add("inLavorazione");
+				else if (stateText == Report.STATO_3) 
+					((Report) item).getStatoLbl().getStyleClass().add("inviato");
 				else ((Report) item).getStatoLbl().getStyleClass().add("daCompilare");
 			}
+			//button completa verbale
 			if (((Report) item).getCompleteRep() instanceof Button) {
 				((Report) item).getCompleteRep().getStyleClass().add("completaVerbale");
 				((Report) item).getCompleteRep().setOnAction(new EventHandler<ActionEvent>() {
@@ -199,8 +226,7 @@ public class ReportController {
 							Scene tableViewScene = new Scene(tableViewParent);
 
 							QuestionnaireController controller = loader.getController();
-							controller.setData(selectedInterv, selectedState, usernameMenu.getText());
-							controller.createQuest();
+							controller.setData(selectedInterv, selectedState, selectedUser);
 
 							Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
 							window.setScene(tableViewScene);
@@ -211,6 +237,24 @@ public class ReportController {
 					}
 				});
 			}
+			// button invia verbale
+			if (((Report) item).getInviaRep() instanceof Button) {
+				((Report) item).getInviaRep().getStyleClass().add("inviaVerbale");
+				((Report) item).getInviaRep().setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent e) {
+
+						long repId = ((Report) item).getId();
+						Report.setReportId(repId);						
+						try {
+							sendJson();
+						} catch (ClassNotFoundException | SQLException e1) {
+							e1.printStackTrace();
+						}
+					}
+				});
+			}
+					
 		}
 	}
 	
@@ -234,9 +278,76 @@ public class ReportController {
 		}
 	}
 	
-	public void logout(ActionEvent event) throws ClassNotFoundException {
+	public void logout(ActionEvent event) throws ClassNotFoundException, SQLException {
 		config c = new config();
 		c.logout(menuBar);
-}
+	}
+	
+	public String toJson() throws ClassNotFoundException, SQLException {
+		
+		ObservableList<Domanda> domande = FXCollections.observableArrayList();
+		try {
+			domande = QuestionarioDAO.searchDomande();
+		} catch (SQLException e) {
+			System.out.println("Error occurred while getting questions information from DB.\n" + e);
+			throw e;
+		}
+		RisposteVerbale risposte = new RisposteVerbale();
+		ArrayList<Risposta> rispList = new ArrayList<Risposta>();
+
+		for (Domanda d: domande) {
+			
+			Risposta risp = d.getRisposta();
+			Risposta r = new Risposta();
+			
+			r.setId(risp.getId());
+			r.setTipo(risp.getTipo());
+			if(risp.getTipo().equals(config.RES_TEXT)) {
+				r.setTestoRisposta(risp.getTestoRisposta());
+			} else if (risp.getTipo().equals(config.RES_FORMULA)) {
+				r.setInput1(risp.getInput1());
+				r.setInput2(risp.getInput2());
+				r.setRisultato(risp.getRisultato());
+			} else if (risp.getTipo().equals(config.RES_CHOICE)) {
+				ArrayList<Opzione> scelte = new ArrayList<Opzione>();
+				for(Opzione o: risp.getOpzioni()) {
+					Opzione opzione = new Opzione();
+					opzione.setId(o.getId());
+					opzione.setChecked(o.isChecked());
+					scelte.add(opzione);
+				}
+				r.setOpzioni(scelte);
+			}
+
+			rispList.add(r);
+
+		}
+			risposte.setVerbale_id(Report.getReportId());
+			risposte.setRisposte(rispList);
+
+			Gson gson = new Gson();
+			String json = gson.toJson(risposte);
+			
+			return json;
+	}
+	
+	public void sendJson() throws ClassNotFoundException, SQLException {
+		if (config.isConnected()) { // login chiamata rest
+			String json = toJson();
+			System.out.println(json);
+			Client client = ClientBuilder.newClient();
+			WebTarget target = client.target(config.URL_API.concat("verbale"));
+	
+			Response response = target.request().header("X-ECI-Auth", selectedUser.getAccessToken()).post(Entity.entity(json, MediaType.APPLICATION_JSON));
+
+			System.out.println("Response code: " + response.getStatus());
+			
+			//cambia stato
+			if (response.getStatus() == 200) {
+				ReportDAO.changeState(3);
+			}
+			
+		}
+	}
 	
 }

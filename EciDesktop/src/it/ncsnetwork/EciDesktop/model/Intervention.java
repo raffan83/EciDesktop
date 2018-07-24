@@ -1,8 +1,6 @@
 package it.ncsnetwork.EciDesktop.model;
 
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.LongProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -10,10 +8,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
 public class Intervention {
+	public final static String STATO_0 = "Da compilare";
+	public final static String STATO_1 = "In lavorazione";
+	public final static String STATO_2 = "Completo";
+	public final static String STATO_3 = "Inviato";
+	static long intervId;
+	
 	private SimpleLongProperty id;
 	private SimpleStringProperty sede;
 	private SimpleStringProperty dataCreazione;
-	private String stato;
 	private Label statoLbl;
 	private SimpleStringProperty codCategoria;
 	private SimpleStringProperty descrCategoria;
@@ -21,21 +24,20 @@ public class Intervention {
 	private SimpleStringProperty descrVerifica;
 	private SimpleStringProperty note;
 	private Button detailBtn;
-
-	static long intervId;
+	private Button inviaInterv;
 
 	public Intervention() {
 		this.id = new SimpleLongProperty();
 		this.sede = new SimpleStringProperty();
 		this.dataCreazione = new SimpleStringProperty();
-		this.stato = new String("Da compilare");
-		this.statoLbl = new Label("Da compilare");
+		this.statoLbl = new Label(STATO_0);
 		this.codCategoria = new SimpleStringProperty();
 		this.descrCategoria = new SimpleStringProperty();
 		this.codVerifica = new SimpleStringProperty();
 		this.descrVerifica = new SimpleStringProperty();
 		this.note = new SimpleStringProperty();
 		this.detailBtn = new Button("");
+		this.inviaInterv = new Button("Invia");
 
 	}
 
@@ -76,18 +78,6 @@ public class Intervention {
 
 	public StringProperty dataCreazioneProperty() {
 		return dataCreazione;
-	}
-
-	// stato
-	public String getStato() {
-		return stato;
-	}
-
-	public void setStato(int i) {
-		if (i == 1)
-			this.stato = "In lavorazione";
-		else if (i == 2)
-			this.stato = "Completo";
 	}
 
 	// codice categoria
@@ -171,9 +161,11 @@ public class Intervention {
 
 	public void setStatoLbl(int i) {
 		if (i == 1)
-			this.statoLbl.setText("In lavorazione");
+			this.statoLbl.setText(STATO_1);
 		else if (i == 2)
-			this.statoLbl.setText("Completo");
+			this.statoLbl.setText(STATO_2);
+		else if (i == 3)
+			this.statoLbl.setText(STATO_3);
 	}
 
 	// intervId
@@ -185,5 +177,17 @@ public class Intervention {
 		intervId = i;
 	}
 	
+	// button invia intervento
+	public Button getInviaInterv() {
+		return inviaInterv;
+	}
+
+	public void setInviaInterv(Button inviaInterv) {
+		this.inviaInterv = inviaInterv;
+	}
+	
+	public void setNullInviaInterv() {
+		this.inviaInterv = null;
+	}
 
 }

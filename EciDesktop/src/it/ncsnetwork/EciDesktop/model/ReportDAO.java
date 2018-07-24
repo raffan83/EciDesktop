@@ -10,8 +10,8 @@ import javafx.collections.ObservableList;
 public class ReportDAO {
 
 	public static ObservableList<Report> searchReports() throws SQLException, ClassNotFoundException {
-		long intervId = Intervention.getIntervId();
-		String selectStmt = "SELECT * FROM report WHERE intervention_id = " + intervId;
+
+		String selectStmt = "SELECT * FROM report WHERE intervention_id = " + Intervention.getIntervId();
 
 		try {
 			ResultSet rs = DBUtil.dbExecuteQuery(selectStmt);
@@ -35,7 +35,8 @@ public class ReportDAO {
 			report.setCodVerifica(rs.getString("codice_verifica"));
 			report.setCodCategoria(rs.getString("codice_categoria"));
 			report.setStatoLbl(rs.getInt("stato"));
-			if (rs.getInt("stato") == 2) report.setNullCompleteRep();
+			if (rs.getInt("stato") == 3) report.setNullCompleteRep();
+			if (rs.getInt("stato") != 2) report.setNullInviaRep();
 
 			reportList.add(report);
 		}
@@ -43,9 +44,8 @@ public class ReportDAO {
 	}
 
 	public static void changeState(int s) throws ClassNotFoundException, SQLException {
-		long reportId = Report.getReportId();
 		
-		String stmt = "UPDATE report SET stato = " + s + " WHERE id = " + reportId;
+		String stmt = "UPDATE report SET stato = " + s + " WHERE id = " + Report.getReportId();
 		DBUtil.dbExecuteUpdate(stmt);
 	}
 	
