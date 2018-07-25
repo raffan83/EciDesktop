@@ -1,3 +1,15 @@
+* {
+    primary-color: #9d201d;
+}
+
+.button {
+	-fx-focus-color: primary-color;
+	-fx-faint-focus-color: transparent;
+	    -fx-background-radius: 3px;
+	-fx-border-radius:3px;
+	-fx-cursor: hand;
+}
+
 /*******************************************************************************
  *                                                                             *
  * tables                                             						*
@@ -17,27 +29,15 @@
  * Button Scarica nuovi interventi                                             *
  *                                                                             *
  ******************************************************************************/
+/*
 .btn{
-    /*-fx-border-color : transparent;
-    -fx-background-color: #299bb4;
-    -fx-text-fill: white;*/
-    -fx-background-radius: 3px;
-	-fx-border-radius:3px;
-	-fx-focus-color: #9d201d;
-	-fx-faint-focus-color: transparent;
 }
 
-.btn:hover{
-    /*-fx-background-color: #699ca7;
-    -fx-text-fill: white;*/
-    -fx-cursor: hand;
-    
-}
-/*.btn:pressed, .btn:default:hover:pressed{
+.btn:pressed, .btn:default:hover:pressed{
   -fx-background-color: black;
   -fx-text-fill: white;
-}*/
-
+}
+*/
 
 /*******************************************************************************
  *                                                                             *
@@ -65,8 +65,8 @@
 
 .dettagli:hover{
 	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/detail.png");
-  	-fx-background-color: #9d201d;
-  	-fx-border-color: #9d201d;
+  	-fx-background-color: primary-color;
+  	-fx-border-color: primary-color;
    	-fx-cursor: hand;
 
 }
@@ -141,7 +141,7 @@
 
 .combo-box{
 	-fx-cursor: hand;
-	-fx-focus-color: #9d201d;
+	-fx-focus-color: primary-color;
 	-fx-faint-focus-color: transparent;
 }
 .combo-box .cell{
@@ -169,8 +169,8 @@
 
 .completaVerbale:hover{
 	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/completa4.png");
-  	-fx-background-color: #9d201d;
-  	-fx-border-color: #9d201d;
+  	-fx-background-color: primary-color;
+  	-fx-border-color: primary-color;
    	-fx-cursor: hand;
     -fx-background-radius: 30px;
 	-fx-border-radius:15px;
@@ -237,7 +237,28 @@
 .userMenu .button{
 	-fx-cursor: hand;
 }
-
+/*******************************************************************************
+ *                                                                             *
+ * button invia                                         *
+ *                                                                             *
+ ******************************************************************************/
+ #reportTable #inviaCol {
+	-fx-alignment: CENTER;
+}
+ #interventionTable #inviaCol {
+	-fx-alignment: CENTER;
+}
+.invia {
+	-fx-cursor: hand;
+}
+/*******************************************************************************
+ *                                                                             *
+ * questionario                                         *
+ *                                                                             *
+ ******************************************************************************/
+#reportBox {
+	-fx-font-size: 12pt;
+}
 
 
 

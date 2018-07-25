@@ -237,7 +237,7 @@ public class ReportController {
 			}
 			// button invia verbale
 			if (((Report) item).getInviaRep() instanceof Button) {
-				((Report) item).getInviaRep().getStyleClass().add("inviaVerbale");
+				((Report) item).getInviaRep().getStyleClass().add("invia");
 				((Report) item).getInviaRep().setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent e) {

@@ -1,7 +1,6 @@
 package it.ncsnetwork.EciDesktop.controller;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -9,21 +8,13 @@ import javafx.event.EventHandler;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
 import it.ncsnetwork.EciDesktop.Utility.config;
-import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition;
-import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition1;
 import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
 import it.ncsnetwork.EciDesktop.model.Domanda;
 import it.ncsnetwork.EciDesktop.model.Intervention;
-import it.ncsnetwork.EciDesktop.model.InterventionDAO;
 import it.ncsnetwork.EciDesktop.model.Opzione;
 import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
-import it.ncsnetwork.EciDesktop.model.Questionnaire;
+
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
 import it.ncsnetwork.EciDesktop.model.Risposta;
 import it.ncsnetwork.EciDesktop.model.User;
@@ -37,7 +28,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -46,13 +36,18 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
+
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.scene.paint.Color;
+
 import javafx.stage.Stage;
+
+import javafx.scene.control.*;
+
+import javafx.util.Callback;
 
 public class QuestionnaireController {
 
@@ -66,7 +61,7 @@ public class QuestionnaireController {
 	@FXML private VBox reportBox;
 	
 	@FXML private Button indietro, avanti;
-	@FXML private ComboBox comboBox;
+	@FXML private ComboBox<String> comboBox;
 	
 	@FXML private String user;
 	@FXML private MenuBar menuBar;
@@ -274,7 +269,7 @@ public class QuestionnaireController {
 		//t.setId("question");
 		createTemplateQuestion().getChildren().add(t);
 		
-		HBox hb = new HBox();
+		VBox hb = new VBox();
 		hb.setSpacing(20);
 		createTemplateQuestion().getChildren().add(hb);
 		
@@ -312,7 +307,7 @@ public class QuestionnaireController {
 		else t.setText(indice + 1 + ". " + d.getTesto());
 		createTemplateQuestion().getChildren().add(t);
 		
-		HBox hb = new HBox();
+		VBox hb = new VBox();
 		hb.setSpacing(20);
 		createTemplateQuestion().getChildren().add(hb);
 	
@@ -384,7 +379,7 @@ public class QuestionnaireController {
 					if(r.getTestoRisposta() == null || r.getTestoRisposta().isEmpty()) return false;
 
 				} else if (r.getTipo().equals(config.RES_FORMULA)) {
-					if(r.getTestoRisposta() == null || r.getTestoRisposta().isEmpty() || r.getRisultato().equals("err")) return false;
+					if(r.getRisultato() == null || r.getRisultato().isEmpty() || r.getRisultato().equals("err")) return false;
 					
 				} else if (r.getTipo().equals(config.RES_CHOICE)) {
 					boolean compl = false;
@@ -408,13 +403,16 @@ public class QuestionnaireController {
 		indietro.setVisible(false);
         comboBox.getItems().addAll(comboItems(questionario.size()));
         comboBox.setPromptText("1");
+        setColor();
+
         
 	}
 	
-	private ObservableList<Integer> comboItems(int n){
-		ObservableList<Integer> list = FXCollections.observableArrayList();
+	private ObservableList<String> comboItems(int n){
+		ObservableList<String> list = FXCollections.observableArrayList();
 		for (int i=1; i <= n; i++) {
-			list.add(i);
+			String s = Integer.toString(i);
+			list.add(s);
 		}
 		return list;
 	}
@@ -431,10 +429,9 @@ public class QuestionnaireController {
         	indice++;
         }
 		String ind = Integer.toString(indice+1);
-		comboBox.setValue(ind);		
-
-		ReportDAO.changeState(1);
+		comboBox.setValue(ind);	
 	}
+	
 	@FXML
 	public void indietro(ActionEvent e) throws IOException {
 		//cambia domanda	
@@ -448,11 +445,10 @@ public class QuestionnaireController {
         }
 		String ind = Integer.toString(indice+1);
 		comboBox.setValue(ind);	
-		
 	}
 	
 	//combo box
-	public void selectDomanda(ActionEvent actionEvent) throws IOException {
+	public void selectDomanda(ActionEvent actionEvent) throws IOException, ClassNotFoundException, SQLException {
 		String s = comboBox.getValue().toString();
 		indice = Integer.parseInt(s) -1;
 		reportBox.getChildren().clear();
@@ -469,6 +465,10 @@ public class QuestionnaireController {
 			indietro.setVisible(true);
 			avanti.setVisible(true);
 		}
+		//imposta il colore
+		setColor();
+		//cambia stato
+		ReportDAO.changeState(1);
 	}
 
 	public void completeReport(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
@@ -585,6 +585,61 @@ public class QuestionnaireController {
 	public void logout(ActionEvent event) throws ClassNotFoundException, SQLException {
 		config c = new config();
 		c.logout(menuBar);
+	}
+	public int getComboBoxColor (String s) {
+		int i = Integer.parseInt(s) -1;
+		Domanda d = questionario.get(i);
+		
+			Risposta r = d.getRisposta();
+			if (r.getTipo().equals(config.RES_TEXT)) {
+				if(r.getTestoRisposta() == null || r.getTestoRisposta().isEmpty()) 
+					if (d.isObbligatoria()) return 0;
+					else return 1;
+
+			} else if (r.getTipo().equals(config.RES_FORMULA)) {
+				if(r.getRisultato() == null || r.getRisultato().isEmpty() || r.getRisultato().equals("err"))
+					if (d.isObbligatoria()) return 0;
+					else return 1;
+
+			} else if (r.getTipo().equals(config.RES_CHOICE)) {
+				boolean compl = false;
+				for (Opzione o : r.getOpzioni()) {
+					if (o.isChecked()) compl = true;
+				}
+				if (!compl) 
+					if (d.isObbligatoria()) return 0;
+					else return 1;
+			}
+		return 2;
+	}
+	
+	private void setColor() {
+		comboBox.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+			@Override public ListCell<String> call(ListView<String> param) {
+	            final ListCell<String> cell = new ListCell<String>() {
+	                //{ super.setPrefWidth(100);}    
+	                @Override public void updateItem(String item, boolean empty) {
+	                	super.updateItem(item, empty);
+                        if (item != null) {
+                            setText(item);    
+                            if (getComboBoxColor(item)==0) {
+                                setTextFill(Color.RED);
+                            }
+                            else if (getComboBoxColor(item)==2){
+                                setTextFill(Color.GREEN);
+                            }
+                            else {
+                                setTextFill(Color.BLACK);
+                            }
+                        }
+                        else {
+                            setText(null);
+                        }
+                    }
+	            };
+	            return cell;
+			}
+		});
 	}
 
 }
