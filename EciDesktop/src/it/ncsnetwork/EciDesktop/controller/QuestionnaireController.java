@@ -379,18 +379,16 @@ public class QuestionnaireController {
 		iDomandaVuota = 1;
 		for (Domanda d: questionario) {
 			if (d.isObbligatoria()) {
-				Risposta risposta = d.getRisposta();
-				if (risposta.getTipo().equals(config.RES_TEXT)) {
-					String risp = risposta.getTestoRisposta();
-					if(risp.isEmpty()) return false;
+				Risposta r = d.getRisposta();
+				if (r.getTipo().equals(config.RES_TEXT)) {
+					if(r.getTestoRisposta() == null || r.getTestoRisposta().isEmpty()) return false;
 
-				} else if (risposta.getTipo().equals(config.RES_FORMULA)) {
-					String ris = risposta.getRisultato();
-					if(ris.isEmpty() || ris.equals("err")) return false;
+				} else if (r.getTipo().equals(config.RES_FORMULA)) {
+					if(r.getTestoRisposta() == null || r.getTestoRisposta().isEmpty() || r.getRisultato().equals("err")) return false;
 					
-				} else if (risposta.getTipo().equals(config.RES_CHOICE)) {
+				} else if (r.getTipo().equals(config.RES_CHOICE)) {
 					boolean compl = false;
-					for (Opzione o : risposta.getOpzioni()) {
+					for (Opzione o : r.getOpzioni()) {
 						if (o.isChecked()) compl = true;
 					}
 					if (!compl) return false;
@@ -404,11 +402,9 @@ public class QuestionnaireController {
 	
 	
 	public void initialize() throws IOException, ClassNotFoundException, SQLException {	
-		//searchDomande();
+
 		loadQuestion();
-		/*for (Domanda d : questionario) {
-			completo.add(!d.isObbligatoria());
-		}*/
+
 		indietro.setVisible(false);
         comboBox.getItems().addAll(comboItems(questionario.size()));
         comboBox.setPromptText("1");
