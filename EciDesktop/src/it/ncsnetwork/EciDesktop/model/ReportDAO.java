@@ -47,23 +47,14 @@ public class ReportDAO {
 		
 		String stmt = "UPDATE report SET stato = " + s + " WHERE id = " + Report.getReportId();
 		DBUtil.dbExecuteUpdate(stmt);
+		
+		//aggiorna stato intervento
+		InterventionDAO.setState();
 	}
-	
-	// filtra verbali per stato
-	public static ObservableList<Report> searchIntervention(int stato) throws SQLException, ClassNotFoundException {
-		
-		String selectStmt = "SELECT * FROM report";
-		
-		if (stato != 3) {		
-			selectStmt = "SELECT * FROM intervention WHERE stato = " + stato; //+ " AND user_id = " + userId;
-		}
-		
-		try {
-			ResultSet rs = DBUtil.dbExecuteQuery(selectStmt);
-			ObservableList<Report> reportList = getReportList(rs);
-			return reportList;
-		} catch (SQLException e) {
-			throw e;
+	public static void updateStato(ObservableList<Long> listaVerbali) throws ClassNotFoundException, SQLException {
+		for (long id: listaVerbali) {
+			String stmt = "UPDATE report SET stato = 3 WHERE id = " + id;
+			DBUtil.dbExecuteUpdate(stmt);
 		}
 	}
 	

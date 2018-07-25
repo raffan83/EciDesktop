@@ -9,23 +9,8 @@ package it.ncsnetwork.EciDesktop.Utility;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.SQLException;
-import java.util.ArrayList;
-
-import com.google.gson.Gson;
-
 import it.ncsnetwork.EciDesktop.controller.InterventionController;
-import it.ncsnetwork.EciDesktop.model.Domanda;
-import it.ncsnetwork.EciDesktop.model.Intervention;
-import it.ncsnetwork.EciDesktop.model.InterventionDAO;
-import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
-import it.ncsnetwork.EciDesktop.model.Report;
-import it.ncsnetwork.EciDesktop.model.Risposta;
-import it.ncsnetwork.EciDesktop.model.RisposteIntervento;
-import it.ncsnetwork.EciDesktop.model.RisposteVerbale;
 import it.ncsnetwork.EciDesktop.model.User;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -166,116 +151,5 @@ public class config {
 		tb.setCellValueFactory(new PropertyValueFactory(a));
 	}
 */
-	
-	public static String risposteVerbaleJson() throws ClassNotFoundException, SQLException {
-		
-		ObservableList<Domanda> domande = FXCollections.observableArrayList();
-		try {
-			domande = QuestionarioDAO.searchRisposte(Report.getReportId());
-		} catch (SQLException e) {
-			System.out.println("Error occurred while getting questions information from DB.\n" + e);
-			throw e;
-		}
-		RisposteVerbale risposte = new RisposteVerbale();
-		ArrayList<Risposta> rispList = new ArrayList<Risposta>();
 
-		for (Domanda d: domande) {
-			
-			Risposta r = d.getRisposta();
-			rispList.add(r);
-
-		}
-			risposte.setVerbale_id(Report.getReportId());
-			risposte.setRisposte(rispList);
-			
-			Gson gson = new Gson();
-			String json = gson.toJson(risposte);
-			System.out.println(json);
-			
-			return json;
-	}
-	
-	public static String risposteInterventiJson() throws ClassNotFoundException, SQLException {
-		
-		ArrayList<RisposteIntervento> risposteInterventoList = new ArrayList<RisposteIntervento>();
-		
-		for (long idInterv: InterventionDAO.serchIntervCompleti()) {
-			ArrayList<RisposteVerbale> risposteVerbale = new ArrayList<RisposteVerbale>();
-			
-			for (long idVerb: InterventionDAO.serchIntervCompleto(idInterv)) {
-				ObservableList<Domanda> domande = FXCollections.observableArrayList();
-				try {
-					domande = QuestionarioDAO.searchRisposte(idVerb);
-				} catch (SQLException e) {
-					System.out.println("Error occurred while getting questions information from DB.\n" + e);
-					throw e;
-				}
-				
-				RisposteVerbale risposte = new RisposteVerbale();
-				ArrayList<Risposta> rispList = new ArrayList<Risposta>();
-				for (Domanda d: domande) {
-					Risposta r = d.getRisposta();
-					rispList.add(r);
-				}
-				risposte.setVerbale_id(idVerb);
-				risposte.setRisposte(rispList);
-				
-				risposteVerbale.add(risposte);
-			}
-			
-			RisposteIntervento risposteIntervento = new RisposteIntervento();
-			risposteIntervento.setIntervento_id(idInterv);
-			risposteIntervento.setRisposteVerbale(risposteVerbale);
-			
-			risposteInterventoList.add(risposteIntervento);
-			
-		}
-		
-		Gson gson = new Gson();
-		String json = gson.toJson(risposteInterventoList);
-		System.out.println(json);
-		
-		return json;
-	}
-	
-	public static String risposteInterventiJson2() throws ClassNotFoundException, SQLException {
-			
-		ArrayList<RisposteIntervento> risposteInterventoList = new ArrayList<RisposteIntervento>();
-		
-		ArrayList<RisposteVerbale> risposteVerbale = new ArrayList<RisposteVerbale>();
-			
-		for (long idVerb: InterventionDAO.serchIntervCompleto(Intervention.getIntervId())) {
-			ObservableList<Domanda> domande = FXCollections.observableArrayList();
-			try {
-				domande = QuestionarioDAO.searchRisposte(idVerb);
-			} catch (SQLException e) {
-				System.out.println("Error occurred while getting questions information from DB.\n" + e);
-				throw e;
-			}
-			
-			RisposteVerbale risposte = new RisposteVerbale();
-			ArrayList<Risposta> rispList = new ArrayList<Risposta>();
-			for (Domanda d: domande) {
-				Risposta r = d.getRisposta();
-				rispList.add(r);
-			}
-			risposte.setVerbale_id(idVerb);
-			risposte.setRisposte(rispList);
-			
-			risposteVerbale.add(risposte);
-		}
-		
-		RisposteIntervento risposteIntervento = new RisposteIntervento();
-		risposteIntervento.setIntervento_id(Intervention.getIntervId());
-		risposteIntervento.setRisposteVerbale(risposteVerbale);
-		
-		risposteInterventoList.add(risposteIntervento);
-		
-		Gson gson = new Gson();
-		String json = gson.toJson(risposteInterventoList);
-		System.out.println(json);
-		
-		return json;
-	}
-	
 }

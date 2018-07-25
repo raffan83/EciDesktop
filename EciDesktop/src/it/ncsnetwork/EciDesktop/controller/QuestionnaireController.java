@@ -104,9 +104,6 @@ public class QuestionnaireController {
 		// ricarica le info dell'intervento sulla pagina verbali
 		ReportController controller = loader.getController();
 		controller.initData(selectedInterv, selectedState, selectedUser);
-		
-		// aggiorno lo stato dell'intervento sul db
-		InterventionDAO.setState();
 
 		Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
 		window.setScene(tableViewScene);

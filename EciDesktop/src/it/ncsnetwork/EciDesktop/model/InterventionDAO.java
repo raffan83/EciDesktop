@@ -58,11 +58,12 @@ public class InterventionDAO {
 		int state0 = 0, state2 = 0;
 		for (int state : stateList) {
 			if (state == 1) break;
-			else if (state == 2) state2++;
+			else if (state == 2 || state == 3) state2++;
 			else if (state == 0) state0++;
 		}
 		if(state0 == stateList.size()) newState = 0;
-		else if (state2 == stateList.size()) newState = 2;
+		else if (state2 == stateList.size() && stateList.contains(2)) newState = 2;
+		else if (state2 == stateList.size()) newState = 3;
 		
 		String stmt = "UPDATE intervention SET stato = " + newState + " WHERE id = " + id;
 		DBUtil.dbExecuteUpdate(stmt);
@@ -157,6 +158,13 @@ public class InterventionDAO {
 			interventi.add(id);
 		}
 		return interventi;
+	}
+	
+	public static void updateStato(ObservableList<Long> listaInterventi) throws ClassNotFoundException, SQLException {
+		for (long id: listaInterventi) {
+			String stmt = "UPDATE intervention SET stato = 3 WHERE id = " + id;
+			DBUtil.dbExecuteUpdate(stmt);
+		}
 	}
 	
 	

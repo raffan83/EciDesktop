@@ -11,16 +11,11 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.glassfish.jersey.client.ClientResponse;
-
 import com.google.gson.Gson;
-
 import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.model.Domanda;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
-import it.ncsnetwork.EciDesktop.model.Opzione;
 import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
 import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
@@ -45,8 +40,8 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -183,6 +178,9 @@ public class ReportController {
 		completeCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.09));
 		inviaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.09));
 
+		// aggiorna stato
+
+		
 		searchReports();
 
 		setCompleteAndState();
@@ -286,7 +284,7 @@ public class ReportController {
 	public void sendJson() throws ClassNotFoundException, SQLException {
 		if (config.isConnected()) {
 			
-			String json = config.risposteVerbaleJson();
+			String json = risposteVerbaleJson();
 			
 			Client client = ClientBuilder.newClient();
 			WebTarget target = client.target(config.URL_API.concat("verbale"));
@@ -302,12 +300,40 @@ public class ReportController {
 				setCompleteAndState();
 				setCellHeight();	
 			} else {
-				//alert errore, torna alla login
+				config.dialogLogout(AlertType.ERROR, "Impossibile inviare il verbale.", menuBar);
 			}
 			
 		} else {
-			// alert nessuna connessione
+			config.dialog(AlertType.WARNING, "Nessuna connessione");
 		}
+	}
+	
+	public String risposteVerbaleJson() throws ClassNotFoundException, SQLException {
+		
+		ObservableList<Domanda> domande = FXCollections.observableArrayList();
+		try {
+			domande = QuestionarioDAO.searchRisposte(Report.getReportId());
+		} catch (SQLException e) {
+			System.out.println("Error occurred while getting questions information from DB.\n" + e);
+			throw e;
+		}
+		RisposteVerbale risposte = new RisposteVerbale();
+		ArrayList<Risposta> rispList = new ArrayList<Risposta>();
+
+		for (Domanda d: domande) {
+			
+			Risposta r = d.getRisposta();
+			rispList.add(r);
+
+		}
+			risposte.setVerbale_id(Report.getReportId());
+			risposte.setRisposte(rispList);
+			
+			Gson gson = new Gson();
+			String json = gson.toJson(risposte);
+			System.out.println(json);
+			
+			return json;
 	}
 	
 }

@@ -30,8 +30,10 @@ import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
 import it.ncsnetwork.EciDesktop.model.Risposta;
 import it.ncsnetwork.EciDesktop.model.RisposteIntervento;
+import it.ncsnetwork.EciDesktop.model.RisposteVerbale;
 import it.ncsnetwork.EciDesktop.model.User;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -61,6 +63,8 @@ public class InterventionController {
 
 	private int selectedState = 4;
 	private User selectedUser;
+	private static ObservableList<Long> listaInterventi;
+	private static ObservableList<Long> listaVerbali = FXCollections.observableArrayList();
 	
 	@FXML private TableView interventionTable;
 	@FXML private TableColumn<Intervention, Long> idCol;
@@ -73,6 +77,7 @@ public class InterventionController {
 	@FXML private TableColumn<Intervention, String> inviaCol;
 	@FXML private ComboBox comboBox;
 	@FXML private ImageView imgDownload;
+	@FXML private ImageView imgSend;
 	@FXML private MenuBar menuBar;
 	@FXML private Menu usernameMenu;
 	@FXML private Label usernameMenuLbl;
@@ -434,16 +439,18 @@ public class InterventionController {
 	}
 	
 	public void getJson() throws ClassNotFoundException, SQLException {
-		String json = config.risposteInterventiJson();
+		String json = risposteInterventiJson();
 		sendJson(json);
 	}
 	
 	public void getJson2() throws ClassNotFoundException, SQLException {
-		String json = config.risposteInterventiJson2();
+		String json = risposteInterventiJson2();
 		sendJson(json);
 	}
 	
 	public void sendJson(String json) throws ClassNotFoundException, SQLException {
+		new Thread(() -> {
+		    Platform.runLater(()-> imgSend.setImage(new Image("/it/ncsnetwork/EciDesktop/img/load.gif")));	
 		if (config.isConnected()) {
 			
 			Client client = ClientBuilder.newClient();
@@ -455,16 +462,120 @@ public class InterventionController {
 			
 			//cambia stato
 			if (response.getStatus() == 200) {
-				// cambio stato
-				// ricarica pagina
+				
+				try {
+					InterventionDAO.updateStato(listaInterventi);
+					ReportDAO.updateStato(listaVerbali);
+					searchInterventions();
+				} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
+				}
+				setDetailAndState();
+				setCellHeight();
+				
 			} else {
-				//alert errore, torna alla login
+				Platform.runLater(()-> config.dialogLogout(AlertType.ERROR, "Impossibile inviare gli interventi.", menuBar));
 			}
 			
 		} else {
-			// alert nessuna connessione
+			Platform.runLater(()-> config.dialog(AlertType.WARNING, "Nessuna connessione"));
 		}
+				
+		 // ripristina l'immagine di default
+	    Platform.runLater(()-> imgSend.setImage(new Image("/it/ncsnetwork/EciDesktop/img/Send.png")));
+		}).start();
 			
+	}
+	// invio tutti gli interventi completi
+	public String risposteInterventiJson() throws ClassNotFoundException, SQLException {
+		
+		ArrayList<RisposteIntervento> risposteInterventoList = new ArrayList<RisposteIntervento>();
+		
+		listaInterventi = InterventionDAO.serchIntervCompleti();
+		for (long idInterv: listaInterventi) {
+			ArrayList<RisposteVerbale> risposteVerbale = new ArrayList<RisposteVerbale>();
+			
+			for (long idVerb: InterventionDAO.serchIntervCompleto(idInterv)) {
+				ObservableList<Domanda> domande = FXCollections.observableArrayList();
+				try {
+					domande = QuestionarioDAO.searchRisposte(idVerb);
+				} catch (SQLException e) {
+					System.out.println("Error occurred while getting questions information from DB.\n" + e);
+					throw e;
+				}
+				
+				RisposteVerbale risposte = new RisposteVerbale();
+				ArrayList<Risposta> rispList = new ArrayList<Risposta>();
+				for (Domanda d: domande) {
+					Risposta r = d.getRisposta();
+					rispList.add(r);
+				}
+				risposte.setVerbale_id(idVerb);
+				risposte.setRisposte(rispList);
+				
+				risposteVerbale.add(risposte);			
+				listaVerbali.add(idVerb);
+			}
+			
+			RisposteIntervento risposteIntervento = new RisposteIntervento();
+			risposteIntervento.setIntervento_id(idInterv);
+			risposteIntervento.setRisposteVerbale(risposteVerbale);
+			
+			risposteInterventoList.add(risposteIntervento);
+			
+		}
+		
+		Gson gson = new Gson();
+		String json = gson.toJson(risposteInterventoList);
+		System.out.println(json);
+		
+		return json;
+	}
+	
+// invio singolo intervento
+	public static String risposteInterventiJson2() throws ClassNotFoundException, SQLException {
+			
+		ArrayList<RisposteIntervento> risposteInterventoList = new ArrayList<RisposteIntervento>();
+		
+		ArrayList<RisposteVerbale> risposteVerbale = new ArrayList<RisposteVerbale>();
+		
+		ObservableList<Long> lista = FXCollections.observableArrayList();
+		lista.add(Intervention.getIntervId());
+		listaInterventi = lista;
+			
+		listaVerbali = InterventionDAO.serchIntervCompleto(Intervention.getIntervId());
+		for (long idVerb: listaVerbali) {
+			ObservableList<Domanda> domande = FXCollections.observableArrayList();
+			try {
+				domande = QuestionarioDAO.searchRisposte(idVerb);
+			} catch (SQLException e) {
+				System.out.println("Error occurred while getting questions information from DB.\n" + e);
+				throw e;
+			}
+			
+			RisposteVerbale risposte = new RisposteVerbale();
+			ArrayList<Risposta> rispList = new ArrayList<Risposta>();
+			for (Domanda d: domande) {
+				Risposta r = d.getRisposta();
+				rispList.add(r);
+			}
+			risposte.setVerbale_id(idVerb);
+			risposte.setRisposte(rispList);
+			
+			risposteVerbale.add(risposte);
+		}
+		
+		RisposteIntervento risposteIntervento = new RisposteIntervento();
+		risposteIntervento.setIntervento_id(Intervention.getIntervId());
+		risposteIntervento.setRisposteVerbale(risposteVerbale);
+		
+		risposteInterventoList.add(risposteIntervento);
+		
+		Gson gson = new Gson();
+		String json = gson.toJson(risposteInterventoList);
+		System.out.println(json);
+		
+		return json;
 	}
 
 }
