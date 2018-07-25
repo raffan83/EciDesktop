@@ -225,7 +225,7 @@ public class QuestionnaireController {
 	    			output.setText("");
 		    	} else {
 	    			try {
-	    				double out = Double.parseDouble(input1.getText()) + Double.parseDouble(input2.getText());
+	    				double out = Double.parseDouble(input1.getText()) * Double.parseDouble(input2.getText());
 	    				String outs = Double.toString(out);
 	    				//opErr.setText("");
 	    				output.setText(outs);
