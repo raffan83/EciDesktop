@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class RisposteIntervento {
 	private long intervento_id;
-	private ArrayList<RisposteVerbale> risposteVerbale;
+	private ArrayList<RisposteVerbale> verbali;
 	
 	public RisposteIntervento() {
 		
@@ -17,9 +17,9 @@ public class RisposteIntervento {
 		this.intervento_id = intervento_id;
 	}
 	public ArrayList<RisposteVerbale> getRisposteVerbale() {
-		return risposteVerbale;
+		return verbali;
 	}
 	public void setRisposteVerbale(ArrayList<RisposteVerbale> risposteVerbale) {
-		this.risposteVerbale = risposteVerbale;
+		this.verbali = risposteVerbale;
 	}
 }

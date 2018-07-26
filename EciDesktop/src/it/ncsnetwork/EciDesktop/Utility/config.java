@@ -5,46 +5,19 @@
  */
 package it.ncsnetwork.EciDesktop.Utility;
 
-import java.awt.event.ActionEvent;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.sql.SQLException;
-import java.util.ArrayList;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-
-import com.google.gson.Gson;
-
 import it.ncsnetwork.EciDesktop.controller.InterventionController;
-import it.ncsnetwork.EciDesktop.controller.ReportController;
-import it.ncsnetwork.EciDesktop.model.Domanda;
-import it.ncsnetwork.EciDesktop.model.Intervention;
-import it.ncsnetwork.EciDesktop.model.Opzione;
-import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
-import it.ncsnetwork.EciDesktop.model.Report;
-import it.ncsnetwork.EciDesktop.model.Risposta;
-import it.ncsnetwork.EciDesktop.model.RisposteVerbale;
 import it.ncsnetwork.EciDesktop.model.User;
-import it.ncsnetwork.EciDesktop.model.UserDAO;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -192,5 +165,5 @@ public class config {
 	}
 =======
 */
-	
+
 }

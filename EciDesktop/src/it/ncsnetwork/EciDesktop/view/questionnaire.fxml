@@ -103,7 +103,7 @@
             </VBox>
          </content>
       </ScrollPane>
-      <AnchorPane maxHeight="55.0" minHeight="55.0" prefHeight="55.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <AnchorPane maxHeight="55.0" minHeight="55.0" prefHeight="55.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" styleClass="footerQuestionario">
          <children>
             <ButtonBar prefHeight="55.0" prefWidth="831.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="69.0" AnchorPane.topAnchor="0.0">
               <buttons>

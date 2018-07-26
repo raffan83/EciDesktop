@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import it.ncsnetwork.EciDesktop.Utility.DBUtil;
+import it.ncsnetwork.EciDesktop.Utility.config;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -156,5 +157,58 @@ public class QuestionarioDAO {
 			throw e;
 		 } 
 	 }
+	 
+	 public static ObservableList<Domanda> searchRisposte(long id) throws ClassNotFoundException, SQLException{
+		 String selectStmt = "SELECT domande.*, risposte.*\r\n" + 
+		 		"FROM domande\r\n" + 
+		 		"INNER JOIN risposte ON domande.id=risposte.id_domanda\r\n" + 
+		 		"WHERE id_report="+id+"\r\n" + 
+		 		"ORDER BY posizione;";
+		
+			try {
+				ResultSet rs = DBUtil.dbExecuteQuery(selectStmt);
+				ObservableList<Domanda> questionario = getRisposteList(rs);
+				return questionario;
+			} catch (SQLException e) {
+				System.out.println("SQL select operation has been failed: " + e);
+				throw e;
+			}
+	 }
+	 
+	 private static ObservableList<Domanda> getRisposteList(ResultSet rs)
+				throws SQLException, ClassNotFoundException {
+		ObservableList<Domanda> questionario = FXCollections.observableArrayList();
+
+		while (rs.next()) {
+			Domanda d = new Domanda();
+			Risposta r = new Risposta();
+
+			String stmtOp = "SELECT * FROM opzioni WHERE id_risposta=" + rs.getInt("id_risposta") + " ORDER BY posizione";
+			ResultSet rsOp = DBUtil.dbExecuteQuery(stmtOp);
+			ArrayList<Opzione> opzioni = new ArrayList<Opzione>();
+			while (rsOp.next()) {
+				Opzione o = new Opzione();
+				o.setId(rsOp.getInt("id"));
+				o.setChecked(Boolean.parseBoolean(rsOp.getString("checked")));
+				
+				opzioni.add(o);
+			}
+			
+			r.setId(rs.getInt("id_risposta"));
+			String tipo = rs.getString("tipo");
+			r.setTipo(tipo);
+			r.setTestoRisposta(rs.getString("testo_risposta"));
+			r.setInput1(rs.getString("input1"));
+			r.setInput2(rs.getString("input2"));
+			r.setRisultato(rs.getString("risultato"));
+			if(tipo.equals(config.RES_CHOICE)) r.setOpzioni(opzioni);
+
+			d.setRisposta(r);
+			
+			questionario.add(d);
+		}
+		
+		return questionario;
+	}
 	
 }
