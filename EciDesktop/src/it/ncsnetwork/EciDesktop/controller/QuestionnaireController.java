@@ -1,6 +1,8 @@
 package it.ncsnetwork.EciDesktop.controller;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -8,8 +10,6 @@ import javafx.event.EventHandler;
 
 import java.io.IOException;
 import java.sql.SQLException;
-
-import com.sun.jndi.cosnaming.RemoteToCorba;
 
 import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
@@ -39,7 +39,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -133,7 +132,7 @@ public class QuestionnaireController {
 	public void loadOpenQuestion(Domanda d) {
 		Risposta r = d.getRisposta();
 		Label t = new Label();
-		t.setMaxWidth(800);
+		t.setMaxWidth(750);
 		t.setWrapText(true);
 		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
 		else t.setText(indice + 1 + ". " + d.getTesto());
@@ -162,7 +161,7 @@ public class QuestionnaireController {
 		
 		Risposta r = d.getRisposta();
 		Label t = new Label();
-		t.setMaxWidth(800);
+		t.setMaxWidth(750);
 		t.setWrapText(true);
 		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
 		else t.setText(indice + 1 + ". " + d.getTesto());
@@ -173,7 +172,15 @@ public class QuestionnaireController {
 		createTemplateQuestion().getChildren().add(hb);
 		//createTemplateQuestion().getChildren().add(opErr);
 		TextField output = new TextField(r.getRisultato());
+		output.setEditable(false);
 		TextField input1 = new TextField(r.getInput1());
+		input1.textProperty().addListener(new ChangeListener<String>() { 
+			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) { 
+				if(!newValue.matches("[0-9]*")){ 
+					input1.setText(oldValue); 
+				} 
+			} 
+		});
 		// salva sul db la risposta
 		input1.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		    if (!newVal) {
@@ -186,7 +193,15 @@ public class QuestionnaireController {
 				}
 		    }
 		});
+
 		TextField input2 = new TextField(r.getInput2());
+		input2.textProperty().addListener(new ChangeListener<String>() { 
+			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) { 
+				if(!newValue.matches("[0-9]*")){ 
+					input2.setText(oldValue); 
+				} 
+			} 
+		});
 		// salva sul db la risposta
 		input2.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		    if (!newVal) {
@@ -265,7 +280,7 @@ public class QuestionnaireController {
 		
 		Risposta r = d.getRisposta();
 		Label t = new Label();
-		t.setMaxWidth(800);
+		t.setMaxWidth(750);
 		t.setWrapText(true);
 		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
 		else t.setText(indice + 1 + ". " + d.getTesto());
@@ -315,7 +330,7 @@ public class QuestionnaireController {
 		
 		Risposta r = d.getRisposta();
 		Label t = new Label();
-		t.setMaxWidth(800);
+		t.setMaxWidth(750);
 		t.setWrapText(true);
 		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
 		else t.setText(indice + 1 + ". " + d.getTesto());
@@ -497,7 +512,7 @@ public class QuestionnaireController {
 		} else {
 			//alert
 			config.dialog(AlertType.WARNING, "Impossibile completare il verbale.\n"
-					+ "La domanda numero " + iDomandaVuota + " è obbligatoria.");
+					+ "La domanda numero " + iDomandaVuota + " \u00E8 obbligatoria.");
 		}
 
 	}
