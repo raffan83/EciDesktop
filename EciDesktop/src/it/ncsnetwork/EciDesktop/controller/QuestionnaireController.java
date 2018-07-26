@@ -36,7 +36,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyEvent;
-
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -59,7 +59,7 @@ public class QuestionnaireController {
 	private ObservableList<Domanda> questionario = FXCollections.observableArrayList();
 	
 	@FXML private VBox reportBox;
-	
+	@FXML private Label stepX, stepN;
 	@FXML private Button indietro, avanti;
 	@FXML private ComboBox<String> comboBox;
 	
@@ -266,7 +266,6 @@ public class QuestionnaireController {
 		t.setWrapText(true);
 		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
 		else t.setText(indice + 1 + ". " + d.getTesto());
-		//t.setId("question");
 		createTemplateQuestion().getChildren().add(t);
 		
 		VBox hb = new VBox();
@@ -278,7 +277,6 @@ public class QuestionnaireController {
 			RadioButton rb = new RadioButton(o.getTesto());
 			rb.setToggleGroup(group);
 			rb.setSelected(o.isChecked());
-			//System.out.println(o.isChecked());
 			// salva sul db la risposta
 			rb.focusedProperty().addListener((obs, oldVal, newVal) -> {
 			    if (!newVal) {
@@ -331,7 +329,8 @@ public class QuestionnaireController {
 		}
 	}
 	//carica il questionario tutto insieme
-	public void createQuest() throws IOException {
+	public void showQuest() throws IOException {
+		reportBox.getChildren().clear();
 		for (Domanda d: questionario) {
 			Risposta risposta = d.getRisposta();
 			if (risposta.getTipo().equals(config.RES_TEXT)) {
@@ -399,10 +398,13 @@ public class QuestionnaireController {
 	public void initialize() throws IOException, ClassNotFoundException, SQLException {	
 
 		loadQuestion();
-
+		if (questionario.size() <= 1) avanti.setVisible(false);
 		indietro.setVisible(false);
         comboBox.getItems().addAll(comboItems(questionario.size()));
         comboBox.setPromptText("1");
+        stepX.setText("1");
+        String total = Integer.toString(questionario.size());
+        stepN.setText(total);
         setColor();
 
         
@@ -465,6 +467,7 @@ public class QuestionnaireController {
 			indietro.setVisible(true);
 			avanti.setVisible(true);
 		}
+		stepX.setText(s);
 		//imposta il colore
 		setColor();
 		//cambia stato
@@ -478,7 +481,7 @@ public class QuestionnaireController {
 		} else {
 			//alert
 			config.dialog(AlertType.WARNING, "Impossibile completare il verbale.\n"
-					+ "La domanda numero " + iDomandaVuota + " è obbligatoria.");
+					+ "La domanda numero " + iDomandaVuota + " ï¿½ obbligatoria.");
 		}
 
 	}
