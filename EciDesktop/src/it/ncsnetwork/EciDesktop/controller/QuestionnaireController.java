@@ -8,6 +8,9 @@ import javafx.event.EventHandler;
 
 import java.io.IOException;
 import java.sql.SQLException;
+
+import com.sun.jndi.cosnaming.RemoteToCorba;
+
 import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
 import it.ncsnetwork.EciDesktop.model.Domanda;
@@ -282,7 +285,7 @@ public class QuestionnaireController {
 			    if (!newVal) {
 			    	try {
 			    		o.setChecked(rb.isSelected());
-			    		QuestionarioDAO.resetChoice(o, r.getId());
+			    		QuestionarioDAO.resetChoice(r.getId());
 						QuestionarioDAO.saveResChoice(o);
 					} catch (ClassNotFoundException | SQLException e) {
 						e.printStackTrace();
@@ -293,6 +296,19 @@ public class QuestionnaireController {
 			rb.setId(id);
 			hb.getChildren().add(rb);
 		}
+		Button reset = new Button("Reset");
+		reset.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override public void handle(ActionEvent e) {
+				try {
+					QuestionarioDAO.resetChoice(r.getId());
+					reportBox.getChildren().clear();
+					loadQuestion();
+				} catch (ClassNotFoundException | SQLException | IOException e1) {
+					e1.printStackTrace();
+				}
+		    }
+		});
+		hb.getChildren().add(reset);
 	}
 	//cra la domanda a scelta multipla
 	public void loadCheckBox(Domanda d) throws IOException {
@@ -481,7 +497,7 @@ public class QuestionnaireController {
 		} else {
 			//alert
 			config.dialog(AlertType.WARNING, "Impossibile completare il verbale.\n"
-					+ "La domanda numero " + iDomandaVuota + " ï¿½ obbligatoria.");
+					+ "La domanda numero " + iDomandaVuota + " è obbligatoria.");
 		}
 
 	}

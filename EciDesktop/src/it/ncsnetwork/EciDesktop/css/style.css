@@ -44,8 +44,14 @@
  * Button dettagli interventi                                             *
  *                                                                             *
  ******************************************************************************/
- #interventionTable #detailCol {
-  -fx-alignment: CENTER;
+#interventionTable .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent c7c7c7 transparent transparent;
+}
+#detailCol {
+	 -fx-alignment: CENTER;
+	 -fx-background-color: transparent;
+	  -fx-border-color: transparent !important;
 }
 
 .dettagli{
@@ -153,8 +159,15 @@
  * Button completa verbale                                            *
  *                                                                             *
  ******************************************************************************/
- #reportTable #completeCol {
+ #reportTable .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent c7c7c7 transparent transparent;
+}
+
+#completeCol {
 	-fx-alignment: CENTER;
+	-fx-background-color: transparent;
+	-fx-border-color: transparent !important;
 }
 
 .completaVerbale{
@@ -242,15 +255,37 @@
  * button invia                                         *
  *                                                                             *
  ******************************************************************************/
- #reportTable #inviaCol {
+#inviaCol {
 	-fx-alignment: CENTER;
 }
- #interventionTable #inviaCol {
-	-fx-alignment: CENTER;
+.invia{
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/send2.png");
+	-fx-background-repeat: stretch;   
+    -fx-background-size: 30 30;
+    -fx-background-position: center center;
+    -fx-background-color: transparent;
+    -fx-border-width: 2px;
+    -fx-background-radius: 30px;
+	-fx-border-radius:15px;
+	-fx-pref-width: 30px;
+	-fx-pref-height: 30px;
+	-fx-alignment: center;
 }
-.invia {
-	-fx-cursor: hand;
+
+.invia:hover{
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/send3.png");
+  	-fx-background-color: primary-color;
+  	-fx-border-color: primary-color;
+   	-fx-cursor: hand;
+
 }
+.invia:pressed, .invia:default:hover:pressed{
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/send3.png");
+  	-fx-background-color: black;
+  	-fx-border-color: black;
+
+}
+
 /*******************************************************************************
  *                                                                             *
  * questionario                                         *
@@ -258,12 +293,21 @@
  ******************************************************************************/
 #reportBox {
 	-fx-font-size: 12pt;
+	-fx-background-color:white;
 }
 
 .footerQuestionario .combo-box .cell{
 	-fx-font-size: 10pt;
 	-fx-font-weight: bold;
 	-fx-alignment: CENTER;
+}
+
+.step {
+	-fx-font-size: 12pt;
+}
+.footerQuestionario .button {
+		-fx-font-size: 10pt;
+	-fx-font-weight: bold;
 }
 
 

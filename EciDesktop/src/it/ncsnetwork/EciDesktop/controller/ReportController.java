@@ -22,6 +22,7 @@ import it.ncsnetwork.EciDesktop.model.ReportDAO;
 import it.ncsnetwork.EciDesktop.model.Risposta;
 import it.ncsnetwork.EciDesktop.model.RisposteVerbale;
 import it.ncsnetwork.EciDesktop.model.User;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -170,13 +171,13 @@ public class ReportController {
 		completeCol.setCellValueFactory(new PropertyValueFactory<Report, String>("completeRep"));
 		inviaCol.setCellValueFactory(new PropertyValueFactory<Report, String>("inviaRep"));
 		
-		idCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
-		descrVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.32));
-		codVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
-		codCategoriaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
-		statoCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
-		completeCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.09));
-		inviaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.09));
+		idCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.14));
+		descrVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.35));
+		codVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.14));
+		codCategoriaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
+		statoCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
+		completeCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.05));
+		inviaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.05));
 
 		// aggiorna stato
 
@@ -299,8 +300,10 @@ public class ReportController {
 				searchReports();
 				setCompleteAndState();
 				setCellHeight();	
+			} else if (response.getStatus() == 401){
+				Platform.runLater(()-> config.dialogLogout(AlertType.ERROR, "Operazione non autorizzata, effettuare la login.", menuBar));
 			} else {
-				config.dialogLogout(AlertType.ERROR, "Impossibile inviare il verbale.", menuBar);
+				Platform.runLater(()-> config.dialog(AlertType.ERROR, "Impossibile inviare il verbale."));
 			}
 			
 		} else {

@@ -30,7 +30,7 @@ public class Report {
 		this.codCategoria = new SimpleStringProperty();
 		this.statoLbl = new Label(STATO_0);
 		this.completeRep = new Button("");
-		this.inviaRep = new Button("Invia");
+		this.inviaRep = new Button("");
 		this.intervId = new SimpleLongProperty();
 	}
 

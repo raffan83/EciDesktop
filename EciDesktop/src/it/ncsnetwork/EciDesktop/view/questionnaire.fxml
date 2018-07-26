@@ -95,9 +95,9 @@
             </HBox>
          </children>
       </AnchorPane>
-      <ScrollPane layoutY="124.0" prefHeight="421.0" prefWidth="900.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0">
+      <ScrollPane layoutY="124.0" prefHeight="421.0" prefWidth="900.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="90.0" style="-fx-background: white">
          <content>
-            <VBox fx:id="reportBox" alignment="CENTER">
+            <VBox fx:id="reportBox" alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
             </VBox>
          </content>
@@ -108,7 +108,7 @@
                <graphic>
                   <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../img/avanti.png" />
+                        <Image url="@../img/indietro.png" />
                      </image>
                   </ImageView>
                </graphic>
@@ -126,7 +126,7 @@
             <Button layoutX="804.0" layoutY="13.0" mnemonicParsing="false" onAction="#completeReport" prefWidth="150.0" text="Conferma" AnchorPane.rightAnchor="30.0" />
          </children>
       </AnchorPane>
-      <AnchorPane layoutX="137.0" prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+      <AnchorPane layoutX="137.0" prefHeight="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0" styleClass="step">
          <children>
             <HBox alignment="CENTER" prefHeight="40.0" prefWidth="900.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
