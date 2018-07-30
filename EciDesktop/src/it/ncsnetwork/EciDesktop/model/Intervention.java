@@ -37,7 +37,7 @@ public class Intervention {
 		this.descrVerifica = new SimpleStringProperty();
 		this.note = new SimpleStringProperty();
 		this.detailBtn = new Button("");
-		this.inviaInterv = new Button("Invia");
+		this.inviaInterv = new Button("");
 
 	}
 

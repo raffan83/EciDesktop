@@ -196,14 +196,14 @@ public class InterventionController {
 		detailCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("detailBtn"));
 		inviaCol.setCellValueFactory(new PropertyValueFactory<Intervention, String>("inviaInterv"));
 
-		idCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
+		idCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
 		sedeCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.32));
 		dataCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.1));
-		statoCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
+		statoCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.12));
 		codCategoriaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.11));
 		codVerificaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.12));
-		detailCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.06));
-		inviaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.06));
+		detailCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.05));
+		inviaCol.prefWidthProperty().bind(interventionTable.widthProperty().multiply(0.05));
 		
 		// popola la tabella
 		searchInterventions();
@@ -288,9 +288,11 @@ public class InterventionController {
 				setDetailAndState();
 				setCellHeight(); 
 		             
-	        } else {
-	        	Platform.runLater(()-> config.dialogLogout(AlertType.ERROR, "Impossibile scaricare i nuovi interventi.", menuBar));
-	        }
+			} else if (response.getStatus() == 401){
+				Platform.runLater(()-> config.dialogLogout(AlertType.ERROR, "Operazione non autorizzata, effettuare la login.", menuBar));
+			} else {
+				Platform.runLater(()-> config.dialog(AlertType.ERROR, "Impossibile scaricare i nuovi interventi."));
+			}
 	        
 		} else {
 			Platform.runLater(()-> config.dialog(AlertType.WARNING, "Nessuna connessione"));
@@ -475,8 +477,10 @@ public class InterventionController {
 				setDetailAndState();
 				setCellHeight();
 				
+			} else if (response.getStatus() == 401){
+				Platform.runLater(()-> config.dialogLogout(AlertType.ERROR, "Operazione non autorizzata, effettuare la login.", menuBar));
 			} else {
-				Platform.runLater(()-> config.dialogLogout(AlertType.ERROR, "Impossibile inviare gli interventi.", menuBar));
+				Platform.runLater(()-> config.dialog(AlertType.ERROR, "Impossibile inviare gli interventi."));
 			}
 			
 		} else {

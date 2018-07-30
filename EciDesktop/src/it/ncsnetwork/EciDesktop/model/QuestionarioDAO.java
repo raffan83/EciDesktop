@@ -147,7 +147,7 @@ public class QuestionarioDAO {
 			throw e;
 		}
 	 }
-	 public static void resetChoice(Opzione o, long id) throws ClassNotFoundException, SQLException {
+	 public static void resetChoice(long id) throws ClassNotFoundException, SQLException {
 		 String stmt = "UPDATE opzioni SET checked = 'false' WHERE id_risposta = " + id;
 	 
 		 try {
