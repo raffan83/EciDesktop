@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.ncsnetwork.EciDesktop.controller.QuestionnaireController">
+<AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="/it/ncsnetwork/EciDesktop/css/style.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.ncsnetwork.EciDesktop.controller.QuestionnaireController">
    <children>
    <AnchorPane prefHeight="40.0" style="-fx-background-color: #9d201d;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -26,14 +26,14 @@
                      <graphic>
                         <ImageView fitHeight="16.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../img/arrowLeft.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/arrowLeft.png" />
                            </image>
                         </ImageView>
                      </graphic>
                   </Button>
                   <ImageView fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../img/logo_eci_s.png" />
+                        <Image url="/it/ncsnetwork/EciDesktop/img/logo_eci_s.png" />
                      </image>
                   </ImageView>
                   <Label style="-fx-font-weight: bold;" text="Eci" textFill="WHITE">
@@ -65,7 +65,7 @@
                                              <children>
                                                 <ImageView fitHeight="120.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
-                                                      <Image url="@../img/user.png" />
+                                                      <Image url="/it/ncsnetwork/EciDesktop/img/user.png" />
                                                    </image>
                                                 </ImageView>
                                                 <Label fx:id="usernameMenuLbl" />
@@ -84,7 +84,7 @@
                            <graphic>
                               <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image url="@../img/user.png" />
+                                    <Image url="/it/ncsnetwork/EciDesktop/img/user.png" />
                                  </image>
                               </ImageView>
                            </graphic>
@@ -108,7 +108,7 @@
                <graphic>
                   <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../img/indietro.png" />
+                        <Image url="/it/ncsnetwork/EciDesktop/img/indietro.png" />
                      </image>
                   </ImageView>
                </graphic>
@@ -118,7 +118,7 @@
                <graphic>
                   <ImageView fitHeight="40.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../img/avanti.png" />
+                        <Image url="/it/ncsnetwork/EciDesktop/img/avanti.png" />
                      </image>
                   </ImageView>
                </graphic>

@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="652.0" prefWidth="1225.0" style="-fx-background-color: white;" stylesheets="@../css/Metro-UI.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="herudi.controller.customerController">
+<AnchorPane id="AnchorPane" prefHeight="652.0" prefWidth="1225.0" style="-fx-background-color: white;" stylesheets="/it/ncsnetwork/EciDesktop/css/Metro-UI.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="herudi.controller.customerController">
    <children>
       <AnchorPane fx:id="paneCrud" layoutY="91.0" opacity="0.0" prefHeight="560.0" prefWidth="1225.0" style="-fx-background-color: white;">
          <children>
@@ -35,11 +35,11 @@
             <Label alignment="CENTER_RIGHT" layoutX="62.0" layoutY="476.0" prefHeight="17.0" prefWidth="122.0" text="Credit Limit :" />
             <TextField fx:id="txtCredit" layoutX="192.0" layoutY="471.0" prefHeight="27.0" prefWidth="414.0" promptText="Credit Linit" />
             <Button fx:id="btnSave" layoutX="507.0" layoutY="507.0" mnemonicParsing="false" onAction="#aksiSave" prefHeight="27.0" prefWidth="98.0" styleClass="btn" text="Save" />
-            <Button fx:id="btnBack" layoutX="29.0" layoutY="13.0" mnemonicParsing="false" onAction="#aksiBack" prefHeight="40.0" prefWidth="40.0" stylesheets="@../css/buttonCircleBlack.css">
+            <Button fx:id="btnBack" layoutX="29.0" layoutY="13.0" mnemonicParsing="false" onAction="#aksiBack" prefHeight="40.0" prefWidth="40.0" stylesheets="/it/ncsnetwork/EciDesktop/css/buttonCircleBlack.css">
                <graphic>
                   <ImageView fitHeight="17.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../img/arrowLeftBlack.png" />
+                        <Image url="/it/ncsnetwork/EciDesktop/img/arrowLeftBlack.png" />
                      </image>
                   </ImageView>
                </graphic></Button>
@@ -55,7 +55,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -64,7 +64,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -73,7 +73,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -82,7 +82,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -91,7 +91,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -100,7 +100,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -109,7 +109,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -118,7 +118,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -127,7 +127,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -136,7 +136,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -145,7 +145,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -154,7 +154,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -163,7 +163,7 @@
                      <graphic>
                         <ImageView fitHeight="30.0" fitWidth="28.0" opacity="0.49" pickOnBounds="true" smooth="false">
                            <image>
-                              <Image url="@../img/tabel.png" />
+                              <Image url="/it/ncsnetwork/EciDesktop/img/tabel.png" />
                            </image>
                         </ImageView>
                      </graphic>
@@ -181,7 +181,7 @@
       <Button fx:id="btnNew" defaultButton="true" layoutX="1101.0" layoutY="46.0" mnemonicParsing="false" onAction="#aksiNew" prefHeight="27.0" prefWidth="108.0" styleClass="btn" text="New Data" />
       <ImageView fx:id="imgLoad" fitHeight="33.0" fitWidth="40.0" layoutX="225.0" layoutY="40.0" pickOnBounds="true" preserveRatio="true" visible="false">
          <image>
-            <Image url="@../img/301.GIF" />
+            <Image url="/it/ncsnetwork/EciDesktop/img/301.GIF" />
          </image>
       </ImageView>
       <ProgressBar fx:id="bar" layoutY="82.0" prefHeight="3.0" prefWidth="1225.0" progress="0.0" />
