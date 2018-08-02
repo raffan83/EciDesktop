@@ -145,7 +145,9 @@ public class QuestionnaireController {
 			//System.out.println(newVal ? "Focused" : "Unfocused")
 		    if (!newVal) {
 		    	try {
-		    		r.setTestoRisposta(ta.getText());
+		    		String testoRisposta = ta.getText();
+		    		testoRisposta = testoRisposta.replaceAll("'", "''");
+		    		r.setTestoRisposta(testoRisposta);
 					QuestionarioDAO.saveResText(r);
 				} catch (ClassNotFoundException | SQLException e) {
 					e.printStackTrace();

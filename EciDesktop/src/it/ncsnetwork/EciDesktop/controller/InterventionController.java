@@ -308,6 +308,7 @@ public class InterventionController {
 		JSONParser parser = new JSONParser();
         
         try {
+        	s = s.replaceAll("'", "''");
         	Object obj = parser.parse(s);
         	//Object obj = parser.parse(new FileReader("interventi.txt")); // per fare test
         	
