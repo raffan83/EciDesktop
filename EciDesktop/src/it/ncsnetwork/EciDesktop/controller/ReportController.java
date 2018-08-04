@@ -163,7 +163,7 @@ public class ReportController {
 	@FXML
 	private void initialize() throws ClassNotFoundException, SQLException {
 	
-		idCol.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
+		idCol.setCellValueFactory(cellData -> cellData.getValue().verbaleIdProperty().asObject());
 		descrVerificaCol.setCellValueFactory(cellData -> cellData.getValue().descrVerificaProperty());
 		codVerificaCol.setCellValueFactory(cellData -> cellData.getValue().codVerificaProperty());
 		codCategoriaCol.setCellValueFactory(cellData -> cellData.getValue().codCategoriaProperty());
@@ -244,9 +244,25 @@ public class ReportController {
 					public void handle(ActionEvent e) {
 
 						long repId = ((Report) item).getId();
-						Report.setReportId(repId);						
+						Report.setReportId(repId);				
 						try {
-							sendJson();
+							// controlla se ha la scheda tecnica
+							Report schedaTecnica = ReportDAO.getSchedaTecnica(repId);
+							long schedaTecnicaId = schedaTecnica.getId();
+							int stato = schedaTecnica.getStato();
+							if (schedaTecnicaId != 0) {
+								if (stato == 2) {
+									//invia scheda tecnica
+									sendJson(schedaTecnicaId);
+									// invia il verbale
+									sendJson(repId);
+								}
+								else config.dialog(AlertType.WARNING, "Prima di inviare il verbale devi completare la scheda tecnica.");
+							} else {
+								// invia il verbale
+								sendJson(repId);
+							}
+							
 						} catch (ClassNotFoundException | SQLException e1) {
 							e1.printStackTrace();
 						}
@@ -282,10 +298,10 @@ public class ReportController {
 		c.logout(menuBar);
 	}
 	
-	public void sendJson() throws ClassNotFoundException, SQLException {
+	public void sendJson(long idVerbale) throws ClassNotFoundException, SQLException {
 		if (config.isConnected()) {
 			
-			String json = risposteVerbaleJson();
+			String json = risposteVerbaleJson(idVerbale);
 			
 			Client client = ClientBuilder.newClient();
 			WebTarget target = client.target(config.URL_API.concat("verbale"));
@@ -311,11 +327,11 @@ public class ReportController {
 		}
 	}
 	
-	public String risposteVerbaleJson() throws ClassNotFoundException, SQLException {
+	public String risposteVerbaleJson(long idVerbale) throws ClassNotFoundException, SQLException {
 		
 		ObservableList<Domanda> domande = FXCollections.observableArrayList();
 		try {
-			domande = QuestionarioDAO.searchRisposte(Report.getReportId());
+			domande = QuestionarioDAO.searchRisposte(idVerbale);
 		} catch (SQLException e) {
 			System.out.println("Error occurred while getting questions information from DB.\n" + e);
 			throw e;
@@ -329,7 +345,7 @@ public class ReportController {
 			rispList.add(r);
 
 		}
-			risposte.setVerbale_id(Report.getReportId());
+			risposte.setVerbale_id(idVerbale);
 			risposte.setRisposte(rispList);
 			
 			Gson gson = new Gson();

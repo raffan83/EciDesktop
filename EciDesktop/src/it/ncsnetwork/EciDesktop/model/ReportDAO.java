@@ -31,12 +31,15 @@ public class ReportDAO {
 		while (rs.next()) {
 			Report report = new Report();
 			report.setId(rs.getInt("id"));
+			report.setVerbaleId(rs.getInt("verbale_id"));
 			report.setDescrVerifica(rs.getString("descrizione_verifica"));
 			report.setCodVerifica(rs.getString("codice_verifica"));
 			report.setCodCategoria(rs.getString("codice_categoria"));
 			report.setStatoLbl(rs.getInt("stato"));
+			boolean isSchedaTecnica = Boolean.parseBoolean(rs.getString("scheda_tecnica"));
+			report.setScheda_tecnica(isSchedaTecnica);
 			if (rs.getInt("stato") == 3) report.setNullCompleteRep();
-			if (rs.getInt("stato") != 2) report.setNullInviaRep();
+			if (rs.getInt("stato") != 2 || isSchedaTecnica) report.setNullInviaRep();
 
 			reportList.add(report);
 		}
@@ -61,10 +64,47 @@ public class ReportDAO {
 	// salva sul db i verbali dal JSON
 	public static void saveJSON(Report r, long intervId) throws ClassNotFoundException, SQLException {
 		String stmt = "INSERT INTO report "
-				+ "(id, descrizione_verifica, intervention_id, codice_categoria, codice_verifica) VALUES"
-				+ " ("+ r.getId() + ",'" + r.getDescrVerifica()+"',"+intervId+",'"+r.getCodCategoria()+"','"+r.getCodVerifica()+"')";
+				+ "(id, descrizione_verifica, intervention_id, codice_categoria, codice_verifica, scheda_tecnica, verbale_id) VALUES"
+				+ " ("+ r.getId() + ",'" + r.getDescrVerifica()+"',"+intervId+",'"+r.getCodCategoria()+"','"+r.getCodVerifica()+"','"+r.isScheda_tecnica()+"',"+r.getVerbaleId()+")";
+		DBUtil.dbExecuteUpdate(stmt);
+	}
+	
+	public static Report getSchedaTecnica(long idVerbale) throws ClassNotFoundException, SQLException {
+		String stmt = "SELECT id, stato FROM report WHERE verbale_id = " + idVerbale + " AND scheda_tecnica = 'true'";
+		
+		Report verbale = new Report();
+		try {
+			ResultSet rs = DBUtil.dbExecuteQuery(stmt);
+			if (rs.next()) {
+				verbale.setId(rs.getInt("id"));
+				verbale.setStato(rs.getInt("stato"));
+			} else {
+				verbale.setId(0);
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL select operation has been failed: " + e);
+			throw e;
+		}
+		
+		return verbale;
+	}
+	
+	
+/*	// salva sul db i verbali dal JSON
+	public static void saveJSONVerbale(Report r, long intervId) throws ClassNotFoundException, SQLException {
+		String stmt = "INSERT INTO report "
+				+ "(id, descrizione_verifica, intervention_id, codice_categoria, codice_verifica, scheda_tecnica) VALUES"
+				+ " ("+ r.getId() + ",'" + r.getDescrVerifica()+"',"+intervId+",'"+r.getCodCategoria()+"','"+r.getCodVerifica()+"','"+r.isScheda_tecnica()+"')";
 		
 		DBUtil.dbExecuteUpdate(stmt);
 	}
+	// salva sul db le schede tecniche dal JSON
+	public static void saveJSONSchedaTecnica(Report r, long intervId) throws ClassNotFoundException, SQLException {
+		String stmt = "INSERT INTO report "
+				+ "(id, intervention_id, scheda_tecnica, verbale_id) VALUES"
+				+ " ("+ r.getId()+","+intervId+",'"+r.isScheda_tecnica()+"',"+r.getVerbaleId()+")";
+		
+		DBUtil.dbExecuteUpdate(stmt);
+	}*/
 
 }

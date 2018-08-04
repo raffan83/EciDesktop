@@ -19,9 +19,12 @@ public class Report {
 	private SimpleStringProperty codVerifica;
 	private SimpleStringProperty codCategoria;
 	private Label statoLbl;
+	private int stato;
 	private Button completeRep;
 	private Button inviaRep;
 	private SimpleLongProperty intervId;
+	private boolean scheda_tecnica;
+	private SimpleLongProperty verbaleId;
 	
 	public Report() {
 		this.id = new SimpleLongProperty();
@@ -32,6 +35,7 @@ public class Report {
 		this.completeRep = new Button("");
 		this.inviaRep = new Button("");
 		this.intervId = new SimpleLongProperty();
+		this.verbaleId = new SimpleLongProperty();
 	}
 
 	// id
@@ -143,6 +147,34 @@ public class Report {
 	
 	public void setNullInviaRep() {
 		this.inviaRep = null;
+	}
+
+	public boolean isScheda_tecnica() {
+		return scheda_tecnica;
+	}
+
+	public void setScheda_tecnica(boolean scheda_tecnica) {
+		this.scheda_tecnica = scheda_tecnica;
+	}
+
+	public long getVerbaleId() {
+		return verbaleId.get();
+	}
+
+	public void setVerbaleId(long id) {
+		this.verbaleId.set(id);
+	}
+
+	public LongProperty verbaleIdProperty() {
+		return verbaleId;
+	}
+
+	public int getStato() {
+		return stato;
+	}
+
+	public void setStato(int stato) {
+		this.stato = stato;
 	}
 
 }

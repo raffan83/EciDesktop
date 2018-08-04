@@ -376,56 +376,28 @@ public class InterventionController {
 					r.setCodVerifica((String) verb.get("codiceVerifica"));
 					r.setCodCategoria((String) verb.get("codiceCategoria"));
 					r.setDescrVerifica((String) verb.get("descrizioneVerifica"));
+					r.setScheda_tecnica(false);
+					r.setVerbaleId(idVerb);
 					ReportDAO.saveJSON(r, id);
+										
+					//domande verbale
+					parseDomande(verb, idVerb);
 					
-					//domande
-					JSONArray domande = (JSONArray) verb.get("domande");
-					for (Object dom : domande) {	
-	                	JSONObject domanda = (JSONObject) dom;
-	                	Domanda d = new Domanda();
-	                	long idDomanda = (long) domanda.get("id");
-						d.setId(idDomanda);
-						d.setTesto((String) domanda.get("testo"));
-						d.setObbligatoria((boolean) domanda.get("obbligatoria"));
-						d.setPosizione((long) domanda.get("posizione"));
-						QuestionarioDAO.saveJSONDomande(d, idVerb);
-	                	
-						// risposte
-						Risposta risp = new Risposta();	                	
-	                	JSONObject risposta = (JSONObject) domanda.get("risposta");
-	                	long idRisposta = (long) risposta.get("id");
-	                	risp.setId(idRisposta);
-	                	String tipoRisposta = (String) risposta.get("tipo");
-	                	risp.setTipo(tipoRisposta);
-	                	//RES_TEXT
-	                	if (tipoRisposta.equals(config.RES_TEXT)){
-	                		QuestionarioDAO.saveJSONResText(risp, idDomanda);
-	                	}
-	                	// RES_FORMULA
-	                	else if (tipoRisposta.equals(config.RES_FORMULA)) {
-	                		risp.setLabel1((String) risposta.get("label1"));
-	                		risp.setLabel2((String) risposta.get("label2"));
-	                		risp.setOperatore((String) risposta.get("operatore"));
-	                		risp.setLabelRisultato((String) risposta.get("label_risultato"));
-	                		QuestionarioDAO.saveJSONResFormula(risp, idDomanda);		
-	                	}
-                		// RES_CHOICE
-	                	else if (tipoRisposta.equals(config.RES_CHOICE)) {
-	                		risp.setMultipla((boolean) risposta.get("multipla"));
-	                		QuestionarioDAO.saveJSONResChoice(risp, idDomanda);
-	                		
-	                		JSONArray opzioni = (JSONArray) risposta.get("opzioni");
-	    					for (Object op : opzioni) {
-	    						JSONObject opzione = (JSONObject) op;
-	    						Opzione o = new Opzione();
-	    						o.setId((long) opzione.get("id"));
-	    						o.setTesto((String) opzione.get("testo"));
-	    						o.setPosizione((long) opzione.get("posizione"));
-	    						QuestionarioDAO.saveJSONOpzioni(o, idRisposta);
-	    					}
-	                	}	
-					}
+					//scheda tecnica
+					JSONObject schedaTecnica = (JSONObject) verb.get("schedaTecnica");
+					Report st = new Report();
+					long idSchedaTecnica = (long) schedaTecnica.get("id");
+					st.setId(idSchedaTecnica);
+					st.setCodVerifica((String) schedaTecnica.get("codiceVerifica"));
+					st.setCodCategoria((String) schedaTecnica.get("codiceCategoria"));
+					st.setDescrVerifica((String) schedaTecnica.get("descrizioneVerifica")+" (SCHEDA TECNICA)");
+					st.setScheda_tecnica(true);
+					st.setVerbaleId(idVerb);
+					ReportDAO.saveJSON(st, id);
 					
+					//domande scheda tecnica
+					parseDomande(schedaTecnica, idSchedaTecnica);
+		
 				}
 			
         	}	
@@ -435,7 +407,55 @@ public class InterventionController {
 		}
 	}
 	
-	
+	private void parseDomande(JSONObject verb, long idVerb) throws ClassNotFoundException, SQLException {
+		JSONArray domande = (JSONArray) verb.get("domande");
+		for (Object dom : domande) {	
+        	JSONObject domanda = (JSONObject) dom;
+        	Domanda d = new Domanda();
+        	long idDomanda = (long) domanda.get("id");
+			d.setId(idDomanda);
+			d.setTesto((String) domanda.get("testo"));
+			d.setObbligatoria((boolean) domanda.get("obbligatoria"));
+			d.setPosizione((long) domanda.get("posizione"));
+			QuestionarioDAO.saveJSONDomande(d, idVerb);
+        	
+			// risposte
+			Risposta risp = new Risposta();	                	
+        	JSONObject risposta = (JSONObject) domanda.get("risposta");
+        	long idRisposta = (long) risposta.get("id");
+        	risp.setId(idRisposta);
+        	String tipoRisposta = (String) risposta.get("tipo");
+        	risp.setTipo(tipoRisposta);
+        	//RES_TEXT
+        	if (tipoRisposta.equals(config.RES_TEXT)){
+        		QuestionarioDAO.saveJSONResText(risp, idDomanda);
+        	}
+        	// RES_FORMULA
+        	else if (tipoRisposta.equals(config.RES_FORMULA)) {
+        		risp.setLabel1((String) risposta.get("label1"));
+        		risp.setLabel2((String) risposta.get("label2"));
+        		risp.setOperatore((String) risposta.get("operatore"));
+        		risp.setLabelRisultato((String) risposta.get("label_risultato"));
+        		QuestionarioDAO.saveJSONResFormula(risp, idDomanda);		
+        	}
+    		// RES_CHOICE
+        	else if (tipoRisposta.equals(config.RES_CHOICE)) {
+        		risp.setMultipla((boolean) risposta.get("multipla"));
+        		QuestionarioDAO.saveJSONResChoice(risp, idDomanda);
+        		
+        		JSONArray opzioni = (JSONArray) risposta.get("opzioni");
+				for (Object op : opzioni) {
+					JSONObject opzione = (JSONObject) op;
+					Opzione o = new Opzione();
+					o.setId((long) opzione.get("id"));
+					o.setTesto((String) opzione.get("testo"));
+					o.setPosizione((long) opzione.get("posizione"));
+					QuestionarioDAO.saveJSONOpzioni(o, idRisposta);
+				}
+        	}	
+		}
+	}
+
 	public void logout() throws ClassNotFoundException {
 			config c = new config();
 			c.logout(menuBar);
