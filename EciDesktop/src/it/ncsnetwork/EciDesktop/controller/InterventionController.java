@@ -385,19 +385,20 @@ public class InterventionController {
 					
 					//scheda tecnica
 					JSONObject schedaTecnica = (JSONObject) verb.get("schedaTecnica");
-					Report st = new Report();
-					long idSchedaTecnica = (long) schedaTecnica.get("id");
-					st.setId(idSchedaTecnica);
-					st.setCodVerifica((String) schedaTecnica.get("codiceVerifica"));
-					st.setCodCategoria((String) schedaTecnica.get("codiceCategoria"));
-					st.setDescrVerifica((String) schedaTecnica.get("descrizioneVerifica")+" (SCHEDA TECNICA)");
-					st.setScheda_tecnica(true);
-					st.setVerbaleId(idVerb);
-					ReportDAO.saveJSON(st, id);
-					
-					//domande scheda tecnica
-					parseDomande(schedaTecnica, idSchedaTecnica);
-		
+					if (schedaTecnica != null) {
+						Report st = new Report();
+						long idSchedaTecnica = (long) schedaTecnica.get("id");
+						st.setId(idSchedaTecnica);
+						st.setCodVerifica((String) schedaTecnica.get("codiceVerifica"));
+						st.setCodCategoria((String) schedaTecnica.get("codiceCategoria"));
+						st.setDescrVerifica((String) schedaTecnica.get("descrizioneVerifica")+" (SCHEDA TECNICA)");
+						st.setScheda_tecnica(true);
+						st.setVerbaleId(idVerb);
+						ReportDAO.saveJSON(st, id);
+						
+						//domande scheda tecnica
+						parseDomande(schedaTecnica, idSchedaTecnica);
+					}
 				}
 			
         	}	

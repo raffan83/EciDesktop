@@ -178,7 +178,7 @@ public class QuestionnaireController {
 		TextField input1 = new TextField(r.getInput1());
 		input1.textProperty().addListener(new ChangeListener<String>() { 
 			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) { 
-				if(!newValue.matches("[0-9]*")){ 
+				if(!newValue.matches("^\\d*\\.?\\d*$")){ 
 					input1.setText(oldValue); 
 				} 
 			} 
@@ -199,7 +199,7 @@ public class QuestionnaireController {
 		TextField input2 = new TextField(r.getInput2());
 		input2.textProperty().addListener(new ChangeListener<String>() { 
 			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) { 
-				if(!newValue.matches("[0-9]*")){ 
+				if(!newValue.matches("^\\d*\\.?\\d*$")){ 
 					input2.setText(oldValue); 
 				} 
 			} 

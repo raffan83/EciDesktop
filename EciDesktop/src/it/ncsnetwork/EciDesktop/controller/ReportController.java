@@ -312,7 +312,7 @@ public class ReportController {
 			
 			//cambia stato
 			if (response.getStatus() == 200) {
-				ReportDAO.changeState(3);
+				ReportDAO.setStateInviato(idVerbale);
 				searchReports();
 				setCompleteAndState();
 				setCellHeight();	

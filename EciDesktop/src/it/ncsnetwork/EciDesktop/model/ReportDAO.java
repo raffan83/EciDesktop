@@ -54,6 +54,14 @@ public class ReportDAO {
 		//aggiorna stato intervento
 		InterventionDAO.setState();
 	}
+	public static void setStateInviato(long id) throws ClassNotFoundException, SQLException {
+		
+		String stmt = "UPDATE report SET stato = 3 WHERE id = " + id;
+		DBUtil.dbExecuteUpdate(stmt);
+		
+		//aggiorna stato intervento
+		InterventionDAO.setState();
+	}
 	public static void updateStato(ObservableList<Long> listaVerbali) throws ClassNotFoundException, SQLException {
 		for (long id: listaVerbali) {
 			String stmt = "UPDATE report SET stato = 3 WHERE id = " + id;
