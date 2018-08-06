@@ -196,6 +196,35 @@
 
 /*******************************************************************************
  *                                                                             *
+ * Button visualizza verbale                                            *
+ *                                                                             *
+ ******************************************************************************/
+.showVerbale{
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/show5.png");
+	-fx-background-repeat: stretch;   
+    -fx-background-color: transparent;
+    -fx-pref-width: 30px;
+	-fx-pref-height: 30px;
+	-fx-background-size: 30 30;
+    -fx-background-position: center center;
+}
+
+.showVerbale:hover{
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/show2.png");
+  	-fx-background-color: primary-color;
+  	-fx-border-color: primary-color;
+   	-fx-cursor: hand;
+    -fx-background-radius: 30px;
+	-fx-border-radius:15px;
+
+}
+.showVerbale:pressed, .showVerbale:default:hover:pressed{
+  	-fx-background-color: black;
+  	-fx-border-color: black;
+}
+
+/*******************************************************************************
+ *                                                                             *
  * Button indietro                                            *
  *                                                                             *
  ******************************************************************************/

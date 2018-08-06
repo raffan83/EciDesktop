@@ -36,9 +36,10 @@ public class ReportDAO {
 			report.setCodVerifica(rs.getString("codice_verifica"));
 			report.setCodCategoria(rs.getString("codice_categoria"));
 			report.setStatoLbl(rs.getInt("stato"));
+			report.setStato(rs.getInt("stato"));
 			boolean isSchedaTecnica = Boolean.parseBoolean(rs.getString("scheda_tecnica"));
 			report.setScheda_tecnica(isSchedaTecnica);
-			if (rs.getInt("stato") == 3) report.setNullCompleteRep();
+			//if (rs.getInt("stato") == 3) report.setNullCompleteRep();
 			if (rs.getInt("stato") != 2 || isSchedaTecnica) report.setNullInviaRep();
 
 			reportList.add(report);
@@ -114,5 +115,22 @@ public class ReportDAO {
 		
 		DBUtil.dbExecuteUpdate(stmt);
 	}*/
+	
+	public static int getStato() throws ClassNotFoundException, SQLException {
+		String stmt = "SELECT stato FROM report WHERE id = " + Report.getReportId();
+		try {
+			ResultSet rs = DBUtil.dbExecuteQuery(stmt);
+			
+			if (rs.next()) {
+				return rs.getInt("stato");
+			} else {
+				return 0;
+			}
+
+		} catch (SQLException e) {
+			System.out.println("SQL select operation has been failed: " + e);
+			throw e;
+		}
+	}
 
 }

@@ -428,11 +428,11 @@ public class InterventionController {
         	String tipoRisposta = (String) risposta.get("tipo");
         	risp.setTipo(tipoRisposta);
         	//RES_TEXT
-        	if (tipoRisposta.equals(config.RES_TEXT)){
+        	if (tipoRisposta.equals(Risposta.RES_TEXT)){
         		QuestionarioDAO.saveJSONResText(risp, idDomanda);
         	}
         	// RES_FORMULA
-        	else if (tipoRisposta.equals(config.RES_FORMULA)) {
+        	else if (tipoRisposta.equals(Risposta.RES_FORMULA)) {
         		risp.setLabel1((String) risposta.get("label1"));
         		risp.setLabel2((String) risposta.get("label2"));
         		risp.setOperatore((String) risposta.get("operatore"));
@@ -440,7 +440,7 @@ public class InterventionController {
         		QuestionarioDAO.saveJSONResFormula(risp, idDomanda);		
         	}
     		// RES_CHOICE
-        	else if (tipoRisposta.equals(config.RES_CHOICE)) {
+        	else if (tipoRisposta.equals(Risposta.RES_CHOICE)) {
         		risp.setMultipla((boolean) risposta.get("multipla"));
         		QuestionarioDAO.saveJSONResChoice(risp, idDomanda);
         		

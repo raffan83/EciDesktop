@@ -27,14 +27,9 @@ import javafx.stage.StageStyle;
  */
 public class config {
 	
-	//public static final String URL_API = "http://localhost:8080/PortalECI/rest/";
-	public static final String URL_API = "http://31.14.128.57:8096/PortalECI/rest/";
-	
-	public static final String RES_TEXT = "RES_TEXT";
-	public static final String RES_FORMULA = "RES_FORMULA";
-	public static final String RES_CHOICE = "RES_CHOICE";
-	public static final String SOMMA = "Somma";
-	public static final String MOLTIPLICAZIONE = "Moltiplicazione";
+	public static final String URL_API = "http://localhost:8080/PortalECI/rest/";
+	//public static final String URL_API = "http://192.168.1.64:8080/PortalECI/rest/";
+	//public static final String URL_API = "http://31.14.128.57:8096/PortalECI/rest/";
 	
 	public config() {
 	}

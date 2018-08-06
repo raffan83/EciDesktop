@@ -17,7 +17,7 @@ import it.ncsnetwork.EciDesktop.model.Domanda;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.Opzione;
 import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
-
+import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
 import it.ncsnetwork.EciDesktop.model.Risposta;
 import it.ncsnetwork.EciDesktop.model.User;
@@ -59,10 +59,11 @@ public class QuestionnaireController {
 	private int indice = 0;
 	private int iDomandaVuota = 1;
 	private ObservableList<Domanda> questionario = FXCollections.observableArrayList();
+	private boolean solaLettura;
 	
 	@FXML private VBox reportBox;
 	@FXML private Label stepX, stepN;
-	@FXML private Button indietro, avanti;
+	@FXML private Button indietro, avanti, completa;
 	@FXML private ComboBox<String> comboBox;
 	
 	@FXML private String user;
@@ -156,6 +157,7 @@ public class QuestionnaireController {
 		});
 		
 		ta.setPrefHeight(40);
+		if (solaLettura) ta.setEditable(false);
 		createTemplateQuestion().getChildren().add(ta);
 	}
 	// crea la domanda formula
@@ -173,9 +175,15 @@ public class QuestionnaireController {
 		//Label opErr = new Label();
 		createTemplateQuestion().getChildren().add(hb);
 		//createTemplateQuestion().getChildren().add(opErr);
+		TextField input1 = new TextField(r.getInput1());
+		TextField input2 = new TextField(r.getInput2());
+		if (solaLettura) {
+			input1.setEditable(false);
+			input2.setEditable(false);
+		}	
 		TextField output = new TextField(r.getRisultato());
 		output.setEditable(false);
-		TextField input1 = new TextField(r.getInput1());
+		
 		input1.textProperty().addListener(new ChangeListener<String>() { 
 			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) { 
 				if(!newValue.matches("^\\d*\\.?\\d*$")){ 
@@ -187,16 +195,20 @@ public class QuestionnaireController {
 		input1.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		    if (!newVal) {
 		    	try {
-		    		r.setInput1(input1.getText());
-		    		r.setRisultato(output.getText());
-					QuestionarioDAO.saveResFormula(r);
+		    		if (input1.getText().isEmpty() || output.getText().equals("err")) {
+		    			QuestionarioDAO.resetResFormula(r);
+		    		} else {
+			    		r.setInput1(input1.getText());
+			    		r.setRisultato(output.getText());
+		    			QuestionarioDAO.saveResFormula(r);
+		    		}
 				} catch (ClassNotFoundException | SQLException e) {
 					e.printStackTrace();
 				}
 		    }
 		});
 
-		TextField input2 = new TextField(r.getInput2());
+		
 		input2.textProperty().addListener(new ChangeListener<String>() { 
 			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) { 
 				if(!newValue.matches("^\\d*\\.?\\d*$")){ 
@@ -208,44 +220,38 @@ public class QuestionnaireController {
 		input2.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		    if (!newVal) {
 		    	try {
-		    		r.setInput2(input2.getText());
-		    		r.setRisultato(output.getText());
-					QuestionarioDAO.saveResFormula(r);
+		    		
+		    		if (input2.getText().isEmpty() || output.getText().equals("err")) {
+		    			QuestionarioDAO.resetResFormula(r);
+		    		} else {
+		    			r.setInput2(input2.getText());
+			    		r.setRisultato(output.getText());
+		    			QuestionarioDAO.saveResFormula(r);
+		    		}
 				} catch (ClassNotFoundException | SQLException e) {
 					e.printStackTrace();
 				}
 		    }
 		});
-		
-		
-		// evento per fare la somma
-		EventHandler<KeyEvent> somma = new EventHandler<KeyEvent>() {
+
+		EventHandler<KeyEvent> operazione = new EventHandler<KeyEvent>() {
 		    @Override
 		    public void handle(KeyEvent event) {
 		    	if (input1.getText().isEmpty() || input2.getText().isEmpty()) {
 	    			output.setText("");
 		    	} else {
 	    			try {
-	    				double out = Double.parseDouble(input1.getText()) + Double.parseDouble(input2.getText());
-	    				String outs = Double.toString(out);
-	    				//opErr.setText("");
-	    				output.setText(outs);
-	    			} catch (Exception e) {
-	    				output.setText("err");
-	    				//opErr.setText("Inserisci valori numerici!");
-	    			}
-		    	}
-		    }
-		};
-		// evento per fare la moltiplicazione
-		EventHandler<KeyEvent> moltiplicazione = new EventHandler<KeyEvent>() {
-		    @Override
-		    public void handle(KeyEvent event) {
-		    	if (input1.getText().isEmpty() || input2.getText().isEmpty()) {
-	    			output.setText("");
-		    	} else {
-	    			try {
-	    				double out = Double.parseDouble(input1.getText()) * Double.parseDouble(input2.getText());
+	    				double out = 0;
+	    				if (r.getOperatore().equals(Risposta.SOMMA))
+	    					out = Double.parseDouble(input1.getText()) + Double.parseDouble(input2.getText());
+	    				else if (r.getOperatore().equals(Risposta.MOLTIPLICAZIONE))
+	    					out = Double.parseDouble(input1.getText()) * Double.parseDouble(input2.getText());
+	    				else if (r.getOperatore().equals(Risposta.SOTTRAZIONE))
+	    					out = Double.parseDouble(input1.getText()) - Double.parseDouble(input2.getText());
+	    				else if (r.getOperatore().equals(Risposta.DIVISIONE))
+	    					out = Double.parseDouble(input1.getText()) / Double.parseDouble(input2.getText());
+	    				else if (r.getOperatore().equals(Risposta.POTENZA))
+	    					out = Math.pow(Double.parseDouble(input1.getText()), Double.parseDouble(input2.getText()));
 	    				String outs = Double.toString(out);
 	    				//opErr.setText("");
 	    				output.setText(outs);
@@ -265,16 +271,20 @@ public class QuestionnaireController {
 		gridpane.add(input2, 2, 1);
 		gridpane.add(new Label(" = "), 3, 1);
 		gridpane.add(output, 4, 1);			
-		if (r.getOperatore().equals(config.SOMMA)) {
+		if (r.getOperatore().equals(Risposta.SOMMA)) {
 			gridpane.add(new Label(" + "), 1, 1);
-			input1.setOnKeyReleased(somma);
-			input2.setOnKeyReleased(somma);
-		} else if (r.getOperatore().equals(config.MOLTIPLICAZIONE)) {
+		} else if (r.getOperatore().equals(Risposta.MOLTIPLICAZIONE)) {
 			gridpane.add(new Label(" X "), 1, 1);
-			input1.setOnKeyReleased(moltiplicazione);
-			input2.setOnKeyReleased(moltiplicazione);
-		}
-		
+		} else if (r.getOperatore().equals(Risposta.SOTTRAZIONE)) {
+			gridpane.add(new Label(" - "), 1, 1);
+		} else if (r.getOperatore().equals(Risposta.DIVISIONE)) {
+			gridpane.add(new Label(" / "), 1, 1);
+		} else if (r.getOperatore().equals(Risposta.POTENZA)) {
+			gridpane.add(new Label(" ^ "), 1, 1);
+		}		
+			
+		input1.setOnKeyReleased(operazione);
+		input2.setOnKeyReleased(operazione);
 		hb.getChildren().add(gridpane);
 	}
 	// crea la domanda a scelta singola
@@ -311,6 +321,10 @@ public class QuestionnaireController {
 			});
 			String id = Double.toString(o.getId());
 			rb.setId(id);
+			if (solaLettura) {
+				rb.setDisable(true);
+				rb.setStyle("-fx-opacity: 1");
+			}
 			hb.getChildren().add(rb);
 		}
 		Button reset = new Button("Reset");
@@ -325,6 +339,7 @@ public class QuestionnaireController {
 				}
 		    }
 		});
+		if (!solaLettura)
 		hb.getChildren().add(reset);
 	}
 	//cra la domanda a scelta multipla
@@ -358,6 +373,10 @@ public class QuestionnaireController {
 			});
 			String id = Double.toString(o.getId());
 			cb.setId(id);
+			if (solaLettura) {
+				cb.setDisable(true);
+				cb.setStyle("-fx-opacity: 1");
+			}		
 			hb.getChildren().add(cb);
 		}
 	}
@@ -366,11 +385,11 @@ public class QuestionnaireController {
 		reportBox.getChildren().clear();
 		for (Domanda d: questionario) {
 			Risposta risposta = d.getRisposta();
-			if (risposta.getTipo().equals(config.RES_TEXT)) {
+			if (risposta.getTipo().equals(Risposta.RES_TEXT)) {
 				loadOpenQuestion(d);
-			} else if (risposta.getTipo().equals(config.RES_FORMULA)) {
+			} else if (risposta.getTipo().equals(Risposta.RES_FORMULA)) {
 				loadFormula(d);
-			} else if (risposta.getTipo().equals(config.RES_CHOICE)) {
+			} else if (risposta.getTipo().equals(Risposta.RES_CHOICE)) {
 				if (risposta.isMultipla()) {
 					loadCheckBox(d);
 				} else {
@@ -389,11 +408,11 @@ public class QuestionnaireController {
 		}
 		Domanda d = questionario.get(indice);
 		Risposta risposta = d.getRisposta();
-		if (risposta.getTipo().equals(config.RES_TEXT)) {
+		if (risposta.getTipo().equals(Risposta.RES_TEXT)) {
 			loadOpenQuestion(d);
-		} else if (risposta.getTipo().equals(config.RES_FORMULA)) {
+		} else if (risposta.getTipo().equals(Risposta.RES_FORMULA)) {
 			loadFormula(d);
-		} else if (risposta.getTipo().equals(config.RES_CHOICE)) {
+		} else if (risposta.getTipo().equals(Risposta.RES_CHOICE)) {
 			if (risposta.isMultipla()) {
 				loadCheckBox(d);
 			} else {
@@ -407,13 +426,13 @@ public class QuestionnaireController {
 		for (Domanda d: questionario) {
 			if (d.isObbligatoria()) {
 				Risposta r = d.getRisposta();
-				if (r.getTipo().equals(config.RES_TEXT)) {
+				if (r.getTipo().equals(Risposta.RES_TEXT)) {
 					if(r.getTestoRisposta() == null || r.getTestoRisposta().isEmpty()) return false;
 
-				} else if (r.getTipo().equals(config.RES_FORMULA)) {
+				} else if (r.getTipo().equals(Risposta.RES_FORMULA)) {
 					if(r.getRisultato() == null || r.getRisultato().isEmpty() || r.getRisultato().equals("err")) return false;
 					
-				} else if (r.getTipo().equals(config.RES_CHOICE)) {
+				} else if (r.getTipo().equals(Risposta.RES_CHOICE)) {
 					boolean compl = false;
 					for (Opzione o : r.getOpzioni()) {
 						if (o.isChecked()) compl = true;
@@ -430,6 +449,11 @@ public class QuestionnaireController {
 	
 	public void initialize() throws IOException, ClassNotFoundException, SQLException {	
 
+		if (ReportDAO.getStato() == 3) {
+			solaLettura = true;
+			completa.setVisible(false);
+		}
+		
 		loadQuestion();
 		if (questionario.size() <= 1) avanti.setVisible(false);
 		indietro.setVisible(false);
@@ -439,8 +463,7 @@ public class QuestionnaireController {
         String total = Integer.toString(questionario.size());
         stepN.setText(total);
         setColor();
-
-        
+    
 	}
 	
 	private ObservableList<String> comboItems(int n){
@@ -504,7 +527,7 @@ public class QuestionnaireController {
 		//imposta il colore
 		setColor();
 		//cambia stato
-		ReportDAO.changeState(1);
+		if (!solaLettura) ReportDAO.changeState(1);
 	}
 
 	public void completeReport(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
@@ -627,17 +650,17 @@ public class QuestionnaireController {
 		Domanda d = questionario.get(i);
 		
 			Risposta r = d.getRisposta();
-			if (r.getTipo().equals(config.RES_TEXT)) {
+			if (r.getTipo().equals(Risposta.RES_TEXT)) {
 				if(r.getTestoRisposta() == null || r.getTestoRisposta().isEmpty()) 
 					if (d.isObbligatoria()) return 0;
 					else return 1;
 
-			} else if (r.getTipo().equals(config.RES_FORMULA)) {
+			} else if (r.getTipo().equals(Risposta.RES_FORMULA)) {
 				if(r.getRisultato() == null || r.getRisultato().isEmpty() || r.getRisultato().equals("err"))
 					if (d.isObbligatoria()) return 0;
 					else return 1;
 
-			} else if (r.getTipo().equals(config.RES_CHOICE)) {
+			} else if (r.getTipo().equals(Risposta.RES_CHOICE)) {
 				boolean compl = false;
 				for (Opzione o : r.getOpzioni()) {
 					if (o.isChecked()) compl = true;
@@ -650,32 +673,34 @@ public class QuestionnaireController {
 	}
 	
 	private void setColor() {
-		comboBox.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
-			@Override public ListCell<String> call(ListView<String> param) {
-	            final ListCell<String> cell = new ListCell<String>() {
-	                //{ super.setPrefWidth(100);}    
-	                @Override public void updateItem(String item, boolean empty) {
-	                	super.updateItem(item, empty);
-                        if (item != null) {
-                            setText(item);    
-                            if (getComboBoxColor(item)==0) {
-                                setTextFill(Color.RED);
-                            }
-                            else if (getComboBoxColor(item)==2){
-                                setTextFill(Color.GREEN);
-                            }
-                            else {
-                                setTextFill(Color.BLACK);
-                            }
-                        }
-                        else {
-                            setText(null);
-                        }
-                    }
-	            };
-	            return cell;
-			}
-		});
+		if(!solaLettura) {
+			comboBox.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+				@Override public ListCell<String> call(ListView<String> param) {
+		            final ListCell<String> cell = new ListCell<String>() {
+		                //{ super.setPrefWidth(100);}    
+		                @Override public void updateItem(String item, boolean empty) {
+		                	super.updateItem(item, empty);
+	                        if (item != null) {
+	                            setText(item);    
+	                            if (getComboBoxColor(item)==0) {
+	                                setTextFill(Color.RED);
+	                            }
+	                            else if (getComboBoxColor(item)==2){
+	                                setTextFill(Color.GREEN);
+	                            }
+	                            else {
+	                                setTextFill(Color.BLACK);
+	                            }
+	                        }
+	                        else {
+	                            setText(null);
+	                        }
+	                    }
+		            };
+		            return cell;
+				}
+			});
+		}
 	}
 
 }

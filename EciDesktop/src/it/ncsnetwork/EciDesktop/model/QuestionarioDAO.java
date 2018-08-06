@@ -137,6 +137,19 @@ public class QuestionarioDAO {
 			throw e;
 		}
 	 }
+	 public static void resetResFormula(Risposta r) throws ClassNotFoundException, SQLException {
+		String stmt = "UPDATE risposte SET "
+				+ "input1 = NULL " 
+				+ ", input2 = NULL "
+				+ ", risultato = NULL "
+				+ " WHERE id_risposta = " + r.getId();
+		try {
+			DBUtil.dbExecuteUpdate(stmt);
+		} catch (SQLException e) {
+			System.out.println("SQL select operation has been failed: " + e);
+			throw e;
+		}
+	 }
 	 public static void saveResChoice(Opzione o) throws ClassNotFoundException, SQLException {
 	 String stmt = "UPDATE opzioni SET checked = '" + o.isChecked() + "' WHERE id = " + o.getId();
 	 
@@ -201,7 +214,7 @@ public class QuestionarioDAO {
 			r.setInput1(rs.getString("input1"));
 			r.setInput2(rs.getString("input2"));
 			r.setRisultato(rs.getString("risultato"));
-			if(tipo.equals(config.RES_CHOICE)) r.setOpzioni(opzioni);
+			if(tipo.equals(Risposta.RES_CHOICE)) r.setOpzioni(opzioni);
 
 			d.setRisposta(r);
 			
