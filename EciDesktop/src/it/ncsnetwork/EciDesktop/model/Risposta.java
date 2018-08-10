@@ -3,6 +3,16 @@ package it.ncsnetwork.EciDesktop.model;
 import java.util.ArrayList;
 
 public class Risposta {
+	
+	public static final String RES_TEXT = "RES_TEXT";
+	public static final String RES_FORMULA = "RES_FORMULA";
+	public static final String RES_CHOICE = "RES_CHOICE";
+	public static final String SOMMA = "Somma";
+	public static final String MOLTIPLICAZIONE = "Moltiplicazione";
+	public static final String DIVISIONE = "Divisione";
+	public static final String SOTTRAZIONE = "Sottrazione";
+	public static final String POTENZA = "Potenza";
+	
 	private long id;
 	private String type;
 	//RES_TEXT

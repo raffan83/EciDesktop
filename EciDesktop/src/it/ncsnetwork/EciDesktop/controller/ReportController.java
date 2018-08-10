@@ -163,7 +163,7 @@ public class ReportController {
 	@FXML
 	private void initialize() throws ClassNotFoundException, SQLException {
 	
-		idCol.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
+		idCol.setCellValueFactory(cellData -> cellData.getValue().verbaleIdProperty().asObject());
 		descrVerificaCol.setCellValueFactory(cellData -> cellData.getValue().descrVerificaProperty());
 		codVerificaCol.setCellValueFactory(cellData -> cellData.getValue().codVerificaProperty());
 		codCategoriaCol.setCellValueFactory(cellData -> cellData.getValue().codCategoriaProperty());
@@ -196,46 +196,51 @@ public class ReportController {
 	@FXML
 	private void setCompleteAndState() {
 		for (Object item : reportTable.getItems()) {
-			// label stato verbale
-			if (((Report) item).getStatoLbl() instanceof Label) {
-				String stateText = ((Report) item).getStatoLbl().getText();
-				((Report) item).getStatoLbl().setText(stateText.toUpperCase());
-				if (stateText == Report.STATO_2)
-					((Report) item).getStatoLbl().getStyleClass().add("completo");
-				else if (stateText == Report.STATO_1) 
-					((Report) item).getStatoLbl().getStyleClass().add("inLavorazione");
-				else if (stateText == Report.STATO_3) 
-					((Report) item).getStatoLbl().getStyleClass().add("inviato");
-				else ((Report) item).getStatoLbl().getStyleClass().add("daCompilare");
-			}
-			//button completa verbale
-			if (((Report) item).getCompleteRep() instanceof Button) {
+
+		//	if (((Report) item).getCompleteRep() instanceof Button) {
+			
+			String stateText = ((Report) item).getStatoLbl().getText();
+			((Report) item).getStatoLbl().setText(stateText.toUpperCase());
+			
+			if (((Report) item).getStato() == 3) {
+				((Report) item).getStatoLbl().getStyleClass().add("inviato");
+				((Report) item).getCompleteRep().getStyleClass().add("showVerbale");
+			} else {
 				((Report) item).getCompleteRep().getStyleClass().add("completaVerbale");
-				((Report) item).getCompleteRep().setOnAction(new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent e) {
-
-						long repId = ((Report) item).getId();
-						Report.setReportId(repId);
-
-						try {
-							FXMLLoader loader = new FXMLLoader();
-							loader.setLocation(getClass().getResource("/it/ncsnetwork/EciDesktop/view/questionnaire.fxml"));
-							Parent tableViewParent = loader.load();
-							Scene tableViewScene = new Scene(tableViewParent);
-
-							QuestionnaireController controller = loader.getController();
-							controller.setData(selectedInterv, selectedState, selectedUser);
-
-							Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
-							window.setScene(tableViewScene);
-							window.show();
-						} catch (IOException e1) {
-							e1.printStackTrace();
-						}
-					}
-				});
 			}
+	
+			if (((Report) item).getStato() == 2)
+				((Report) item).getStatoLbl().getStyleClass().add("completo");
+			else if (((Report) item).getStato() == 1) 
+				((Report) item).getStatoLbl().getStyleClass().add("inLavorazione");
+			else ((Report) item).getStatoLbl().getStyleClass().add("daCompilare");
+				
+				
+			((Report) item).getCompleteRep().setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent e) {
+
+					long repId = ((Report) item).getId();
+					Report.setReportId(repId);
+
+					try {
+						FXMLLoader loader = new FXMLLoader();
+						loader.setLocation(getClass().getResource("/it/ncsnetwork/EciDesktop/view/questionnaire.fxml"));
+						Parent tableViewParent = loader.load();
+						Scene tableViewScene = new Scene(tableViewParent);
+
+						QuestionnaireController controller = loader.getController();
+						controller.setData(selectedInterv, selectedState, selectedUser);
+
+						Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
+						window.setScene(tableViewScene);
+						window.show();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			});
+		//	}
 			// button invia verbale
 			if (((Report) item).getInviaRep() instanceof Button) {
 				((Report) item).getInviaRep().getStyleClass().add("invia");
@@ -244,9 +249,25 @@ public class ReportController {
 					public void handle(ActionEvent e) {
 
 						long repId = ((Report) item).getId();
-						Report.setReportId(repId);						
+						Report.setReportId(repId);				
 						try {
-							sendJson();
+							// controlla se ha la scheda tecnica
+							Report schedaTecnica = ReportDAO.getSchedaTecnica(repId);
+							long schedaTecnicaId = schedaTecnica.getId();
+							int stato = schedaTecnica.getStato();
+							if (schedaTecnicaId != 0) {
+								if (stato == 2) {
+									//invia scheda tecnica
+									sendJson(schedaTecnicaId);
+									// invia il verbale
+									sendJson(repId);
+								}
+								else config.dialog(AlertType.WARNING, "Prima di inviare il verbale devi completare la scheda tecnica.");
+							} else {
+								// invia il verbale
+								sendJson(repId);
+							}
+							
 						} catch (ClassNotFoundException | SQLException e1) {
 							e1.printStackTrace();
 						}
@@ -282,10 +303,10 @@ public class ReportController {
 		c.logout(menuBar);
 	}
 	
-	public void sendJson() throws ClassNotFoundException, SQLException {
+	public void sendJson(long idVerbale) throws ClassNotFoundException, SQLException {
 		if (config.isConnected()) {
 			
-			String json = risposteVerbaleJson();
+			String json = risposteVerbaleJson(idVerbale);
 			
 			Client client = ClientBuilder.newClient();
 			WebTarget target = client.target(config.URL_API.concat("verbale"));
@@ -296,7 +317,7 @@ public class ReportController {
 			
 			//cambia stato
 			if (response.getStatus() == 200) {
-				ReportDAO.changeState(3);
+				ReportDAO.setStateInviato(idVerbale);
 				searchReports();
 				setCompleteAndState();
 				setCellHeight();	
@@ -311,11 +332,11 @@ public class ReportController {
 		}
 	}
 	
-	public String risposteVerbaleJson() throws ClassNotFoundException, SQLException {
+	public String risposteVerbaleJson(long idVerbale) throws ClassNotFoundException, SQLException {
 		
 		ObservableList<Domanda> domande = FXCollections.observableArrayList();
 		try {
-			domande = QuestionarioDAO.searchRisposte(Report.getReportId());
+			domande = QuestionarioDAO.searchRisposte(idVerbale);
 		} catch (SQLException e) {
 			System.out.println("Error occurred while getting questions information from DB.\n" + e);
 			throw e;
@@ -329,7 +350,7 @@ public class ReportController {
 			rispList.add(r);
 
 		}
-			risposte.setVerbale_id(Report.getReportId());
+			risposte.setVerbale_id(idVerbale);
 			risposte.setRisposte(rispList);
 			
 			Gson gson = new Gson();

@@ -8,26 +8,19 @@ package it.ncsnetwork.EciDesktop.controller;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import it.ncsnetwork.EciDesktop.Execute.MainApp;
 import it.ncsnetwork.EciDesktop.animations.FadeInLeftTransition;
 import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
 import it.ncsnetwork.EciDesktop.animations.FadeInTransition;
 import javafx.application.Platform;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+
 
 /**
  * FXML Controller class
