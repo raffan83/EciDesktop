@@ -1,5 +1,7 @@
 package it.ncsnetwork.EciDesktop.model;
 
+import java.util.ArrayList;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -8,6 +10,7 @@ public class Opzione {
 	private String testo;
 	private Long posizione;
 	private boolean choice;
+	private ArrayList<Risposta> risposte;
 	
 	public Opzione() {
 		//this.testo = new SimpleStringProperty();		
@@ -47,6 +50,14 @@ public class Opzione {
 
 	public void setChecked(boolean checked) {
 		this.choice = checked;
+	}
+
+	public ArrayList<Risposta> getRisposte() {
+		return risposte;
+	}
+
+	public void setRisposte(ArrayList<Risposta> risposte) {
+		this.risposte = risposte;
 	}
 	
 }

@@ -1,5 +1,6 @@
 package it.ncsnetwork.EciDesktop.controller;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -297,6 +298,8 @@ public class InterventionController {
 		} else {
 			Platform.runLater(()-> config.dialog(AlertType.WARNING, "Nessuna connessione"));
 		}
+		    
+		    ParseJsonInterventi("");
         // ripristina l'immagine di default
         Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/download2.png")));
 		}).start();
@@ -383,7 +386,7 @@ public class InterventionController {
 					ReportDAO.saveJSON(r, id);
 										
 					//domande verbale
-					parseDomande(verb, idVerb);
+					parseDomande(verb, idVerb, 0);
 					
 					//scheda tecnica
 					JSONObject schedaTecnica = (JSONObject) verb.get("schedaTecnica");
@@ -399,7 +402,7 @@ public class InterventionController {
 						ReportDAO.saveJSON(st, id);
 						
 						//domande scheda tecnica
-						parseDomande(schedaTecnica, idSchedaTecnica);
+						parseDomande(schedaTecnica, idSchedaTecnica, 0);
 					}
 				}
 			
@@ -410,7 +413,7 @@ public class InterventionController {
 		}
 	}
 	
-	private void parseDomande(JSONObject verb, long idVerb) throws ClassNotFoundException, SQLException {
+	private void parseDomande(JSONObject verb, long idVerb, long annidata) throws ClassNotFoundException, SQLException {
 		JSONArray domande = (JSONArray) verb.get("domande");
 		for (Object dom : domande) {	
         	JSONObject domanda = (JSONObject) dom;
@@ -420,8 +423,13 @@ public class InterventionController {
 			d.setTesto((String) domanda.get("testo"));
 			d.setObbligatoria((boolean) domanda.get("obbligatoria"));
 			d.setPosizione((long) domanda.get("posizione"));
-			QuestionarioDAO.saveJSONDomande(d, idVerb);
-        	
+			if (annidata == 0) {
+				QuestionarioDAO.saveJSONDomande(d, idVerb);
+			} else {
+				d.setAnnidata(annidata);
+				QuestionarioDAO.saveJSONDomandeAnn(d, idVerb);
+			}
+					
 			// risposte
 			Risposta risp = new Risposta();	                	
         	JSONObject risposta = (JSONObject) domanda.get("risposta");
@@ -450,10 +458,14 @@ public class InterventionController {
 				for (Object op : opzioni) {
 					JSONObject opzione = (JSONObject) op;
 					Opzione o = new Opzione();
-					o.setId((long) opzione.get("id"));
+					long idOpzione = (long) opzione.get("id");
+					o.setId(idOpzione);
 					o.setTesto((String) opzione.get("testo"));
 					o.setPosizione((long) opzione.get("posizione"));
-					QuestionarioDAO.saveJSONOpzioni(o, idRisposta);
+					JSONArray domande_annidate = (JSONArray) opzione.get("domande");
+					if (domande_annidate != null) 
+						parseDomande(opzione, idVerb, idOpzione);	
+					QuestionarioDAO.saveJSONOpzioni(o, idRisposta);					
 				}
         	}	
 		}

@@ -10,6 +10,7 @@ public class Domanda {
 	private boolean obbligatoria;
 	private long posizione;
 	private Risposta risposta;
+	private long annidata;
 	
 	public Domanda() {
 		this.testo = new SimpleStringProperty();
@@ -57,5 +58,13 @@ public class Domanda {
 
 	public void setRisposta(Risposta risposta) {
 		this.risposta = risposta;
+	}
+
+	public long getAnnidata() {
+		return annidata;
+	}
+
+	public void setAnnidata(long annidata) {
+		this.annidata = annidata;
 	}
 }

@@ -304,6 +304,7 @@ public class ReportController {
 	}
 	
 	public void sendJson(long idVerbale) throws ClassNotFoundException, SQLException {
+		
 		if (config.isConnected()) {
 			
 			String json = risposteVerbaleJson(idVerbale);

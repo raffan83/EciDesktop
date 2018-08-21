@@ -10,6 +10,7 @@ import javafx.event.EventHandler;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
@@ -59,9 +60,12 @@ public class QuestionnaireController {
 	private int indice = 0;
 	private int iDomandaVuota = 1;
 	private ObservableList<Domanda> questionario = FXCollections.observableArrayList();
+	private ObservableList<Domanda> domandeAnnidate = FXCollections.observableArrayList();
 	private boolean solaLettura;
 	
 	@FXML private VBox reportBox;
+	//@FXML private VBox domandaAnnidataBox = new VBox();
+	@FXML private Pane paneAnn = new Pane();
 	@FXML private Label stepX, stepN;
 	@FXML private Button indietro, avanti, completa;
 	@FXML private ComboBox<String> comboBox;
@@ -86,6 +90,17 @@ public class QuestionnaireController {
 		try {
 			ObservableList<Domanda> quest = QuestionarioDAO.searchDomande();
 			questionario = quest;
+		} catch (SQLException e) {
+			System.out.println("Error occurred while getting questions information from DB.\n" + e);
+			throw e;
+		}
+	}
+	
+	@FXML
+	private void searchDomandeAnnidate(long idOpzione) throws SQLException, ClassNotFoundException {
+		try {
+			ObservableList<Domanda> quest = QuestionarioDAO.searchDomandeAnnidate(idOpzione);
+			domandeAnnidate = quest;
 		} catch (SQLException e) {
 			System.out.println("Error occurred while getting questions information from DB.\n" + e);
 			throw e;
@@ -126,18 +141,43 @@ public class QuestionnaireController {
 		VBox vb = new VBox();
 		vb.setSpacing(10);
 		pane.getChildren().add(vb);
+		//pane.getChildren().add(domandaAnnidataBox);
 		
 		return vb;
 	}
+	
+	/*public VBox createTemplateQuestionAnn() {
+		Platform.runLater(() -> {
+			new FadeInRightTransition(reportBox).play();
+		});
+		reportBox.setPadding(new Insets (20, 50, 20, 50));
+		Pane pane = new Pane();
+		pane.setPadding(new Insets (10, 15, 10, 15));
+		reportBox.getChildren().add(pane);
+		VBox vb = new VBox();
+		vb.setSpacing(10);
+		pane.getChildren().add(vb);
+		
+		return vb;
+	}*/
+	
 	// crea la domanda a risposta aperta
-	public void loadOpenQuestion(Domanda d) {
+	public VBox loadOpenQuestion(Domanda d, boolean annidata) {
+		
+		VBox vbox = createTemplateQuestion();
 		Risposta r = d.getRisposta();
 		Label t = new Label();
 		t.setMaxWidth(750);
 		t.setWrapText(true);
-		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
-		else t.setText(indice + 1 + ". " + d.getTesto());
-		createTemplateQuestion().getChildren().add(t);
+		
+		if (!annidata) {
+			if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
+			else t.setText(indice + 1 + ". " + d.getTesto());
+		} else {
+			if (d.isObbligatoria()) t.setText(d.getTesto() + " (Domanda obbligatoria)");
+			else t.setText(d.getTesto());
+		}
+		vbox.getChildren().add(t);
 		
 		TextArea ta = new TextArea(r.getTestoRisposta());
 		
@@ -158,22 +198,32 @@ public class QuestionnaireController {
 		
 		ta.setPrefHeight(40);
 		if (solaLettura) ta.setEditable(false);
-		createTemplateQuestion().getChildren().add(ta);
+		vbox.getChildren().add(ta);
+		
+		return vbox;
+		
 	}
 	// crea la domanda formula
-	public void loadFormula(Domanda d) {
+	public VBox loadFormula(Domanda d, boolean annidata) {
 		
+		VBox vbox = createTemplateQuestion();
 		Risposta r = d.getRisposta();
 		Label t = new Label();
 		t.setMaxWidth(750);
 		t.setWrapText(true);
-		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
-		else t.setText(indice + 1 + ". " + d.getTesto());
-		createTemplateQuestion().getChildren().add(t);
+		
+		if (!annidata) {
+			if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
+			else t.setText(indice + 1 + ". " + d.getTesto());
+		} else {
+			if (d.isObbligatoria()) t.setText(d.getTesto() + " (Domanda obbligatoria)");
+			else t.setText(d.getTesto());
+		}
+		vbox.getChildren().add(t);
 		HBox hb = new HBox();
 		hb.setSpacing(20);
 		//Label opErr = new Label();
-		createTemplateQuestion().getChildren().add(hb);
+		vbox.getChildren().add(hb);
 		//createTemplateQuestion().getChildren().add(opErr);
 		TextField input1 = new TextField(r.getInput1());
 		TextField input2 = new TextField(r.getInput2());
@@ -195,7 +245,7 @@ public class QuestionnaireController {
 		input1.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		    if (!newVal) {
 		    	try {
-		    		if (input1.getText().isEmpty() || output.getText().equals("err")) {
+		    		if (input1.getText().isEmpty() || r.getRisultato().equals("err")) {
 		    			QuestionarioDAO.resetResFormula(r);
 		    		} else {
 			    		r.setInput1(input1.getText());
@@ -219,8 +269,7 @@ public class QuestionnaireController {
 		// salva sul db la risposta
 		input2.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		    if (!newVal) {
-		    	try {
-		    		
+		    	try {   		
 		    		if (input2.getText().isEmpty() || output.getText().equals("err")) {
 		    			QuestionarioDAO.resetResFormula(r);
 		    		} else {
@@ -286,27 +335,43 @@ public class QuestionnaireController {
 		input1.setOnKeyReleased(operazione);
 		input2.setOnKeyReleased(operazione);
 		hb.getChildren().add(gridpane);
+		
+		return vbox;
 	}
 	// crea la domanda a scelta singola
-	public void loadRadioButton(Domanda d) throws IOException {
+	public VBox loadRadioButton(Domanda d, boolean annidata) throws IOException {
 		
+		VBox vbox = createTemplateQuestion();
 		Risposta r = d.getRisposta();
 		Label t = new Label();
 		t.setMaxWidth(750);
 		t.setWrapText(true);
-		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
-		else t.setText(indice + 1 + ". " + d.getTesto());
-		createTemplateQuestion().getChildren().add(t);
+		
+		if (!annidata) {
+			if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
+			else t.setText(indice + 1 + ". " + d.getTesto());		
+		} else {
+			if (d.isObbligatoria()) t.setText(d.getTesto() + " (Domanda obbligatoria)");
+			else t.setText(d.getTesto());
+		}
+		vbox.getChildren().add(t);
 		
 		VBox hb = new VBox();
 		hb.setSpacing(20);
-		createTemplateQuestion().getChildren().add(hb);
+		vbox.getChildren().add(hb);
+		Pane paneAnn =new Pane();
+		vbox.getChildren().add(paneAnn);
 		
 		ToggleGroup group = new ToggleGroup();
+		
 		for (Opzione o: r.getOpzioni()) {
 			RadioButton rb = new RadioButton(o.getTesto());
 			rb.setToggleGroup(group);
+			rb.setUserData(o.getId());
 			rb.setSelected(o.isChecked());
+			if (o.isChecked()) {
+				paneAnn.getChildren().add(loadQuestionAnn(o.getId()));
+			}
 			// salva sul db la risposta
 			rb.focusedProperty().addListener((obs, oldVal, newVal) -> {
 			    if (!newVal) {
@@ -327,6 +392,31 @@ public class QuestionnaireController {
 			}
 			hb.getChildren().add(rb);
 		}
+
+		group.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
+		    public void changed(ObservableValue<? extends Toggle> ov, Toggle old_toggle, Toggle new_toggle) {	
+				
+		         if (group.getSelectedToggle() != null) {
+
+		             long idOpzione = Long.parseLong(group.getSelectedToggle().getUserData().toString());
+		             try {
+		            	 searchDomandeAnnidate(idOpzione);
+		            	 if (!domandeAnnidate.isEmpty()) {
+		            		 paneAnn.getChildren().clear();
+		            		 paneAnn.getChildren().add(loadQuestionAnn(idOpzione));
+		            	 } else {
+		            		 paneAnn.getChildren().clear();
+		            	 }
+						
+					} catch (ClassNotFoundException | SQLException | IOException e) {
+						e.printStackTrace();
+					}
+
+		         }
+
+		     } 
+		});
+		
 		Button reset = new Button("Reset");
 		reset.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent e) {
@@ -340,28 +430,74 @@ public class QuestionnaireController {
 		    }
 		});
 		if (!solaLettura)
-		hb.getChildren().add(reset);
+			hb.getChildren().add(reset);
+		
+		return vbox;
 	}
 	//cra la domanda a scelta multipla
-	public void loadCheckBox(Domanda d) throws IOException {
+	public VBox loadCheckBox(Domanda d, boolean annidata) throws IOException {
 		
+		VBox vbox = createTemplateQuestion();
 		Risposta r = d.getRisposta();
 		Label t = new Label();
 		t.setMaxWidth(750);
 		t.setWrapText(true);
-		if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
-		else t.setText(indice + 1 + ". " + d.getTesto());
-		createTemplateQuestion().getChildren().add(t);
 		
+		if (!annidata) {
+			if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
+			else t.setText(indice + 1 + ". " + d.getTesto());			
+		} else {
+			if (d.isObbligatoria()) t.setText(d.getTesto() + " (Domanda obbligatoria)");
+			else t.setText(d.getTesto());
+		}
+		vbox.getChildren().add(t);
 		VBox hb = new VBox();
 		hb.setSpacing(20);
-		createTemplateQuestion().getChildren().add(hb);
+		vbox.getChildren().add(hb);
+		
+		Pane paneAnn = new Pane();
+		VBox vboxAnn = new VBox();
+		paneAnn.getChildren().add(vboxAnn);
+		vbox.getChildren().add(paneAnn);
 	
 		for (Opzione o: r.getOpzioni()) {
 			CheckBox cb = new CheckBox(o.getTesto());
 			cb.setSelected(o.isChecked());
+			if (o.isChecked()) {
+				VBox vb = loadQuestionAnn(o.getId());
+				vb.setId("vb"+o.getId());
+				vboxAnn.getChildren().add(vb);
+			}
+			
+			cb.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			    @Override
+			    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+			    	//salva sul db
+			    	try {
+			    		o.setChecked(cb.isSelected());
+						QuestionarioDAO.saveResChoice(o);
+					} catch (ClassNotFoundException | SQLException e) {
+						e.printStackTrace();
+					}
+			    	//visualizza domande annidate
+			    	if (cb.isSelected()) {
+			        	try {
+			        		VBox vb = loadQuestionAnn(o.getId());
+							vb.setId("vb"+o.getId());
+							vboxAnn.getChildren().add(vb);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+			        } else {
+			        	Scene scene = reportBox.getScene();
+			        	VBox vb = (VBox) scene.lookup("#vb"+o.getId());
+			        	vboxAnn.getChildren().remove(vb);
+			        }
+			    }
+			});
+			
 			// salva sul db la risposta
-			cb.focusedProperty().addListener((obs, oldVal, newVal) -> {
+		/*	cb.focusedProperty().addListener((obs, oldVal, newVal) -> {
 			    if (!newVal) {
 			    	try {
 			    		o.setChecked(cb.isSelected());
@@ -370,7 +506,7 @@ public class QuestionnaireController {
 						e.printStackTrace();
 					}
 			    }
-			});
+			});*/
 			String id = Double.toString(o.getId());
 			cb.setId(id);
 			if (solaLettura) {
@@ -379,25 +515,27 @@ public class QuestionnaireController {
 			}		
 			hb.getChildren().add(cb);
 		}
+		
+		return vbox;
 	}
 	//carica il questionario tutto insieme
-	public void showQuest() throws IOException {
+/*	public void showQuest() throws IOException {
 		reportBox.getChildren().clear();
 		for (Domanda d: questionario) {
 			Risposta risposta = d.getRisposta();
 			if (risposta.getTipo().equals(Risposta.RES_TEXT)) {
-				loadOpenQuestion(d);
+				loadOpenQuestion(d, false);
 			} else if (risposta.getTipo().equals(Risposta.RES_FORMULA)) {
-				loadFormula(d);
+				loadFormula(d, false);
 			} else if (risposta.getTipo().equals(Risposta.RES_CHOICE)) {
 				if (risposta.isMultipla()) {
-					loadCheckBox(d);
+					loadCheckBox(d, false);
 				} else {
-					loadRadioButton(d);
+					loadRadioButton(d, false);
 				}
 			}
 		}			
-	}
+	}*/
 	
 	// carica la domanda secondo l'indice
 	public void loadQuestion() throws IOException {
@@ -409,23 +547,48 @@ public class QuestionnaireController {
 		Domanda d = questionario.get(indice);
 		Risposta risposta = d.getRisposta();
 		if (risposta.getTipo().equals(Risposta.RES_TEXT)) {
-			loadOpenQuestion(d);
+			loadOpenQuestion(d, false);
 		} else if (risposta.getTipo().equals(Risposta.RES_FORMULA)) {
-			loadFormula(d);
+			loadFormula(d, false);
 		} else if (risposta.getTipo().equals(Risposta.RES_CHOICE)) {
 			if (risposta.isMultipla()) {
-				loadCheckBox(d);
+				loadCheckBox(d, false);
 			} else {
-				loadRadioButton(d);
+				loadRadioButton(d, false);
 			}
 		}
 	}
 	
-	private boolean isCompleto() throws IOException {
+	// carica la domanda secondo l'indice
+	public VBox loadQuestionAnn(long idOpzione) throws IOException {
+		VBox vbox = new VBox();
+		try {
+			searchDomandeAnnidate(idOpzione);
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}		
+		for (Domanda d: domandeAnnidate) {
+			Risposta risposta = d.getRisposta();
+			if (risposta.getTipo().equals(Risposta.RES_TEXT)) {
+				vbox.getChildren().add(loadOpenQuestion(d, true));
+			} else if (risposta.getTipo().equals(Risposta.RES_FORMULA)) {
+				vbox.getChildren().add(loadFormula(d,true));
+			} else if (risposta.getTipo().equals(Risposta.RES_CHOICE)) {
+				if (risposta.isMultipla()) {
+					vbox.getChildren().add(loadCheckBox(d, true));
+				} else {
+					vbox.getChildren().add(loadRadioButton(d, true));
+				}
+			}
+		}
+		return vbox;
+	}
+	
+	private boolean isCompleto() throws IOException, ClassNotFoundException, SQLException {
 		iDomandaVuota = 1;
 		for (Domanda d: questionario) {
-			if (d.isObbligatoria()) {
-				Risposta r = d.getRisposta();
+			Risposta r = d.getRisposta();
+			if (d.isObbligatoria()) {				
 				if (r.getTipo().equals(Risposta.RES_TEXT)) {
 					if(r.getTestoRisposta() == null || r.getTestoRisposta().isEmpty()) return false;
 
@@ -435,12 +598,67 @@ public class QuestionnaireController {
 				} else if (r.getTipo().equals(Risposta.RES_CHOICE)) {
 					boolean compl = false;
 					for (Opzione o : r.getOpzioni()) {
-						if (o.isChecked()) compl = true;
+						if (o.isChecked()) {
+							searchDomandeAnnidate(o.getId());
+							if (isCompletoAnn()) {
+								compl = true;
+							}
+						}
 					}
 					if (!compl) return false;
 				}
 			}
+			else if (r.getTipo().equals(Risposta.RES_CHOICE)) {
+				boolean compl = false;
+				for (Opzione o : r.getOpzioni()) {
+					if (o.isChecked()) {
+						searchDomandeAnnidate(o.getId());
+						if (isCompletoAnn()) {
+							compl = true;
+						}
+					}
+				}
+				if (!compl) return false;				
+			}
 			iDomandaVuota++;
+		}
+		return true;
+	}
+	
+	private boolean isCompletoAnn() throws ClassNotFoundException, SQLException {
+		if (domandeAnnidate.isEmpty()) return true;
+		else {
+			for (Domanda dAnn: domandeAnnidate) {
+				Risposta r = dAnn.getRisposta();
+				if (dAnn.isObbligatoria()) {
+					if (r.getTipo().equals(Risposta.RES_TEXT)) {
+						if(r.getTestoRisposta() == null || r.getTestoRisposta().isEmpty()) return false;
+	
+					} else if (r.getTipo().equals(Risposta.RES_FORMULA)) {
+						if(r.getRisultato() == null || r.getRisultato().isEmpty() || r.getRisultato().equals("err")) return false;
+						
+					} else if (r.getTipo().equals(Risposta.RES_CHOICE)) {
+						boolean compl = false;
+						for (Opzione o : r.getOpzioni()) {
+							searchDomandeAnnidate(o.getId());
+							if (o.isChecked() && isCompletoAnn()) compl = true;
+						}
+						if (!compl) return false;
+					}
+				}
+				else if (r.getTipo().equals(Risposta.RES_CHOICE)) {
+					boolean compl = false;
+					for (Opzione o : r.getOpzioni()) {
+						if (o.isChecked()) {
+							searchDomandeAnnidate(o.getId());
+							if (isCompletoAnn()) {
+								compl = true;
+							}
+						}
+					}
+					if (!compl) return false;		
+				}
+			}
 		}
 		return true;
 	}
@@ -640,7 +858,7 @@ public class QuestionnaireController {
 				addAllDescendents((Parent) node, nodes);
 		}
 	}
-*/	
+*/
 	public void logout(ActionEvent event) throws ClassNotFoundException, SQLException {
 		config c = new config();
 		c.logout(menuBar);
