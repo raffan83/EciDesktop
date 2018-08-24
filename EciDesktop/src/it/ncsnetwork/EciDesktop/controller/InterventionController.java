@@ -299,7 +299,7 @@ public class InterventionController {
 			Platform.runLater(()-> config.dialog(AlertType.WARNING, "Nessuna connessione"));
 		}
 		    
-		    ParseJsonInterventi("");
+		//ParseJsonInterventi("");
         // ripristina l'immagine di default
         Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/download2.png")));
 		}).start();
