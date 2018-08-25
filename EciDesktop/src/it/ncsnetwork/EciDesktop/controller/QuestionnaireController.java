@@ -198,7 +198,7 @@ public class QuestionnaireController {
 		    }
 		});
 		
-		ta.setPrefHeight(40);
+		ta.setPrefHeight(120);
 		if (solaLettura) ta.setEditable(false);
 		vbox.getChildren().add(ta);
 		
