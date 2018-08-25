@@ -522,7 +522,7 @@ public class InterventionController {
 		}
 				
 		 // ripristina l'immagine di default
-	    Platform.runLater(()-> imgSend.setImage(new Image("/it/ncsnetwork/EciDesktop/img/Send.png")));
+	    Platform.runLater(()-> imgSend.setImage(new Image("/it/ncsnetwork/EciDesktop/img/send.png")));
 		}).start();
 			
 	}
