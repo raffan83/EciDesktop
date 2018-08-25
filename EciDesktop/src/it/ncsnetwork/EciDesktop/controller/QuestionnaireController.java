@@ -187,9 +187,11 @@ public class QuestionnaireController {
 		    if (!newVal) {
 		    	try {
 		    		String testoRisposta = ta.getText();
-		    		testoRisposta = testoRisposta.replaceAll("'", "''");
-		    		r.setTestoRisposta(testoRisposta);
-					QuestionarioDAO.saveResText(r);
+		    		if(testoRisposta != null) {
+			    		testoRisposta = testoRisposta.replaceAll("'", "''");
+			    		r.setTestoRisposta(testoRisposta);
+						QuestionarioDAO.saveResText(r);
+		    		}
 				} catch (ClassNotFoundException | SQLException e) {
 					e.printStackTrace();
 				}
@@ -245,10 +247,14 @@ public class QuestionnaireController {
 		input1.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		    if (!newVal) {
 		    	try {
-		    		if (input1.getText().isEmpty() || r.getRisultato().equals("err")) {
-		    			QuestionarioDAO.resetResFormula(r);
-		    		} else {
+		    		if (input1.getText() != null || 
+		    				!input1.getText().isEmpty() == false ||
+		    				input2.getText() != null || 
+		    				input2.getText().isEmpty() == false ||
+		    				output != null ||
+		    				output.equals("err") != false) {
 			    		r.setInput1(input1.getText());
+			    		r.setInput2(input2.getText());
 			    		r.setRisultato(output.getText());
 		    			QuestionarioDAO.saveResFormula(r);
 		    		}
@@ -270,9 +276,13 @@ public class QuestionnaireController {
 		input2.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		    if (!newVal) {
 		    	try {   		
-		    		if (input2.getText().isEmpty() || output.getText().equals("err")) {
-		    			QuestionarioDAO.resetResFormula(r);
-		    		} else {
+		    		if (input1.getText() != null || 
+		    				!input1.getText().isEmpty() == false ||
+		    				input2.getText() != null || 
+		    				input2.getText().isEmpty() == false ||
+		    				output != null ||
+		    				output.equals("err") != false){
+		    			r.setInput1(input1.getText());
 		    			r.setInput2(input2.getText());
 			    		r.setRisultato(output.getText());
 		    			QuestionarioDAO.saveResFormula(r);
@@ -286,7 +296,9 @@ public class QuestionnaireController {
 		EventHandler<KeyEvent> operazione = new EventHandler<KeyEvent>() {
 		    @Override
 		    public void handle(KeyEvent event) {
-		    	if (input1.getText().isEmpty() || input2.getText().isEmpty()) {
+		    	//System.out.println("R" + input2.getText());
+		    	if (input1.getText() == null || input2.getText() == null || 
+		    			input1.getText().isEmpty() || input2.getText().isEmpty()) {
 	    			output.setText("");
 		    	} else {
 	    			try {
