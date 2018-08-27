@@ -62,9 +62,9 @@ public class QuestionnaireController {
 	private ObservableList<Domanda> questionario = FXCollections.observableArrayList();
 	private ObservableList<Domanda> domandeAnnidate = FXCollections.observableArrayList();
 	private boolean solaLettura;
+	private int stato;
 	
 	@FXML private VBox reportBox;
-	//@FXML private VBox domandaAnnidataBox = new VBox();
 	@FXML private Pane paneAnn = new Pane();
 	@FXML private Label stepX, stepN;
 	@FXML private Button indietro, avanti, completa;
@@ -76,13 +76,25 @@ public class QuestionnaireController {
 	@FXML private Label usernameMenuLbl;
 	
 	// salva le info dell'intervento per rimetterle sulla pagina verbali
-	public void setData(Intervention interv, int state, User user) {
+	public void setData(Intervention interv, int selState, User user, int s, Stage stage) {
 		selectedInterv = interv;
-		selectedState = state;
+		selectedState = selState;
 		selectedUser = user;
 		usernameMenu.setText(selectedUser.getUsername());
 		usernameMenuLbl.setText(selectedUser.getUsername());
 		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
+		stato = s;
+		// se il verbale è completo e si cancella una risposta obbligatoria il verbale torna in lavorazione
+		stage.setOnCloseRequest(event ->
+		{
+			try {
+				if(stato == 2 && !isCompleto()) {
+					ReportDAO.changeState(1);
+				}
+			} catch (ClassNotFoundException | IOException | SQLException e) {
+				e.printStackTrace();
+			}
+		});
 	}
 	
 	@FXML
@@ -109,6 +121,10 @@ public class QuestionnaireController {
 
 	@FXML
 	public void goBack(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
+		// se il verbale è completo e si cancella una risposta obbligatoria il verbale torna in lavorazione
+		if(!isCompleto()) {
+			ReportDAO.changeState(1);
+		}
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(getClass().getResource("/it/ncsnetwork/EciDesktop/view/report.fxml"));
 		Parent tableViewParent = loader.load();
@@ -187,11 +203,14 @@ public class QuestionnaireController {
 		    if (!newVal) {
 		    	try {
 		    		String testoRisposta = ta.getText();
-		    		if(testoRisposta != null) {
+		    		System.out.println("TestoRisposta: "+ testoRisposta);
+		    		if(testoRisposta != null && !testoRisposta.isEmpty()) {
 			    		testoRisposta = testoRisposta.replaceAll("'", "''");
 			    		r.setTestoRisposta(testoRisposta);
-						QuestionarioDAO.saveResText(r);
-		    		}
+		    		} else {
+		    			r.setTestoRisposta("");
+		    		}	    		
+					QuestionarioDAO.saveResText(r);
 				} catch (ClassNotFoundException | SQLException e) {
 					e.printStackTrace();
 				}
@@ -247,14 +266,14 @@ public class QuestionnaireController {
 		input1.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		    if (!newVal) {
 		    	try {
-		    		if (input1.getText() != null || 
-		    				!input1.getText().isEmpty() == false ||
-		    				input2.getText() != null || 
-		    				input2.getText().isEmpty() == false ||
-		    				output != null ||
-		    				output.equals("err") != false) {
-			    		r.setInput1(input1.getText());
-			    		r.setInput2(input2.getText());
+		    		if (input1.getText().isEmpty() || 
+		    				input2.getText() == null || 
+		    				input2.getText().isEmpty() ||
+		    				output.getText().equals("err")) {
+		    			QuestionarioDAO.resetResFormula(r);
+		    		} else {
+		    			r.setInput1(input1.getText());
+		    			r.setInput2(input2.getText());
 			    		r.setRisultato(output.getText());
 		    			QuestionarioDAO.saveResFormula(r);
 		    		}
@@ -263,7 +282,7 @@ public class QuestionnaireController {
 				}
 		    }
 		});
-
+		if(r.getRisultato() == null || r.getRisultato().isEmpty() || r.getRisultato().equals("err"))
 		
 		input2.textProperty().addListener(new ChangeListener<String>() { 
 			@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) { 
@@ -275,13 +294,13 @@ public class QuestionnaireController {
 		// salva sul db la risposta
 		input2.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		    if (!newVal) {
-		    	try {   		
-		    		if (input1.getText() != null || 
-		    				!input1.getText().isEmpty() == false ||
-		    				input2.getText() != null || 
-		    				input2.getText().isEmpty() == false ||
-		    				output != null ||
-		    				output.equals("err") != false){
+		    	try {
+		    		if (input2.getText().isEmpty() ||
+		    				input1.getText() == null ||
+		    				input1.getText().isEmpty() ||	    				
+		    				output.getText().equals("err")) {
+		    			QuestionarioDAO.resetResFormula(r);
+		    		} else {
 		    			r.setInput1(input1.getText());
 		    			r.setInput2(input2.getText());
 			    		r.setRisultato(output.getText());
@@ -748,7 +767,7 @@ public class QuestionnaireController {
 	}
 	
 	//combo box
-	public void selectDomanda(ActionEvent actionEvent) throws IOException, ClassNotFoundException, SQLException {
+	public void selectDomanda(ActionEvent actionEvent) throws IOException {
 		String s = comboBox.getValue().toString();
 		indice = Integer.parseInt(s) -1;
 		reportBox.getChildren().clear();
@@ -769,7 +788,16 @@ public class QuestionnaireController {
 		//imposta il colore
 		setColor();
 		//cambia stato
-		if (!solaLettura) ReportDAO.changeState(1);
+		if (stato == 0) {
+			try {
+				ReportDAO.changeState(1);
+			} catch (ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+			} finally {
+				stato = 1;
+			}
+		}
+		//if (!solaLettura) ReportDAO.changeState(1);
 	}
 
 	public void completeReport(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
@@ -884,6 +912,14 @@ public class QuestionnaireController {
 	}
 */
 	public void logout(ActionEvent event) throws ClassNotFoundException, SQLException {
+		// se il verbale è completo e si cancella una risposta obbligatoria il verbale torna in lavorazione
+		try {
+			if(stato == 2 && !isCompleto()) {
+				ReportDAO.changeState(1);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		config c = new config();
 		c.logout(menuBar);
 	}
@@ -944,5 +980,6 @@ public class QuestionnaireController {
 			});
 		}
 	}
+	
 
 }

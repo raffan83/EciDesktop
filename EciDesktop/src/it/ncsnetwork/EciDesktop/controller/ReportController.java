@@ -199,19 +199,20 @@ public class ReportController {
 
 		//	if (((Report) item).getCompleteRep() instanceof Button) {
 			
+			int stato = ((Report) item).getStato();
 			String stateText = ((Report) item).getStatoLbl().getText();
 			((Report) item).getStatoLbl().setText(stateText.toUpperCase());
 			
-			if (((Report) item).getStato() == 3) {
+			if (stato == 3) {
 				((Report) item).getStatoLbl().getStyleClass().add("inviato");
 				((Report) item).getCompleteRep().getStyleClass().add("showVerbale");
 			} else {
 				((Report) item).getCompleteRep().getStyleClass().add("completaVerbale");
 			}
 	
-			if (((Report) item).getStato() == 2)
+			if (stato == 2)
 				((Report) item).getStatoLbl().getStyleClass().add("completo");
-			else if (((Report) item).getStato() == 1) 
+			else if (stato == 1) 
 				((Report) item).getStatoLbl().getStyleClass().add("inLavorazione");
 			else ((Report) item).getStatoLbl().getStyleClass().add("daCompilare");
 				
@@ -229,10 +230,11 @@ public class ReportController {
 						Parent tableViewParent = loader.load();
 						Scene tableViewScene = new Scene(tableViewParent);
 
-						QuestionnaireController controller = loader.getController();
-						controller.setData(selectedInterv, selectedState, selectedUser);
-
 						Stage window = (Stage) ((Node) e.getSource()).getScene().getWindow();
+						
+						QuestionnaireController controller = loader.getController();
+						controller.setData(selectedInterv, selectedState, selectedUser, stato, window);
+						
 						window.setScene(tableViewScene);
 						window.show();
 					} catch (IOException e1) {
