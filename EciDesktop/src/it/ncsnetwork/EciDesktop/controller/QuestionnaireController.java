@@ -266,7 +266,8 @@ public class QuestionnaireController {
 		input1.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		    if (!newVal) {
 		    	try {
-		    		if (input1.getText().isEmpty() || 
+		    		if (input1.getText() == null ||
+		    				input1.getText().isEmpty() || 
 		    				input2.getText() == null || 
 		    				input2.getText().isEmpty() ||
 		    				output.getText().equals("err")) {
@@ -295,7 +296,8 @@ public class QuestionnaireController {
 		input2.focusedProperty().addListener((obs, oldVal, newVal) -> {
 		    if (!newVal) {
 		    	try {
-		    		if (input2.getText().isEmpty() ||
+		    		if (input2.getText() == null ||
+		    				input2.getText().isEmpty() ||
 		    				input1.getText() == null ||
 		    				input1.getText().isEmpty() ||	    				
 		    				output.getText().equals("err")) {
