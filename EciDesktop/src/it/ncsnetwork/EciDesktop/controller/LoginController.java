@@ -35,6 +35,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -69,6 +71,8 @@ public class LoginController implements Initializable {
 	private Label lblClose;
 	@FXML
 	private Label errLogin;
+	@FXML
+	private ImageView loadImg;
 
 	Stage stage;
 
@@ -103,11 +107,26 @@ public class LoginController implements Initializable {
 				System.exit(0);
 			});
 		});
-		// TODO
+		
+		txtUsername.setOnKeyPressed(e -> {
+		    errLogin.setText("");
+		});
+		txtPassword.setOnKeyPressed(e -> {
+		    errLogin.setText("");
+		});
+		loadImg.setVisible(false);
+		
 	}
 
 	public void Login(ActionEvent event) throws ClassNotFoundException, UnknownHostException, IOException {
 		
+		new Thread(() -> {
+		    Platform.runLater(()-> {
+		    	errLogin.setText("");
+		    	btnLogin.setVisible(false);
+				loadImg.setVisible(true);
+		    });	
+			
 		//verifica connessione
 
 		if (config.isConnected()) { // login chiamata rest
@@ -138,10 +157,18 @@ public class LoginController implements Initializable {
 							e.printStackTrace();
 					} finally {
 			    	 config c = new config();
-					 c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml","Eci spa", true, StageStyle.DECORATED, false, user); 	
+					    Platform.runLater(()->
+					  
+					 c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml","Eci spa", true, StageStyle.DECORATED, false, user)
+					 );
 					}	     
-			     } else {
-			    	 errLogin.setText("Username o password errati!");
+			     } else {		    
+			    	 Platform.runLater(()-> {
+				    	 loadImg.setVisible(false);
+				    	 btnLogin.setVisible(true);
+				    	 errLogin.setText("Username o password errati!");
+			    	 });	
+
 			     }
 		     }catch (Exception e) {
 		    	 e.printStackTrace();
@@ -155,16 +182,29 @@ public class LoginController implements Initializable {
 				    user.setUsername(txtUsername.getText());
 				    user.setPassword(txtPassword.getText());
 					config c = new config();
-					c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml","Eci spa", true,
-							StageStyle.DECORATED, false, user);
+				    Platform.runLater(()->
+					  
+				 c.newStage(stage, lblClose, "/it/ncsnetwork/EciDesktop/view/intervention.fxml","Eci spa", true, StageStyle.DECORATED, false, user)
+				 );
 				} else {
-					errLogin.setText("Username o password errati!");
+			    	 Platform.runLater(()-> {
+				    	 loadImg.setVisible(false);
+				    	 btnLogin.setVisible(true);
+				    	 errLogin.setText("Username o password errati!");
+			    	 });
 				}
-			} catch (SQLException e) {
-				errLogin.setText("Username o password errati!");
+			} catch (SQLException | ClassNotFoundException e) {
+				
+		    	 Platform.runLater(()-> {
+			    	 loadImg.setVisible(false);
+			    	 btnLogin.setVisible(true);
+			    	 errLogin.setText("Username o password errati!");
+		    	 });
 				e.printStackTrace();
 			}
 		}
+        
+		}).start();
 	}
 
 	/*

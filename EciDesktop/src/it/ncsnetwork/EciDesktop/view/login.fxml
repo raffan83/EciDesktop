@@ -55,6 +55,11 @@
                   <Font name="Arial" size="16.0" />
                </font>
              </Label>
+             <ImageView fx:id="loadImg" fitHeight="40.0" fitWidth="40.0" layoutX="355.0" layoutY="215.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="/it/ncsnetwork/EciDesktop/img/load.gif" />
+               </image>
+            </ImageView>
          </children>
       </AnchorPane>
    </children>

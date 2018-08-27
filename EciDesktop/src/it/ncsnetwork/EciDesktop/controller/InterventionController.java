@@ -76,7 +76,7 @@ public class InterventionController {
 	@FXML private TableColumn<Intervention, String> codVerificaCol;
 	@FXML private TableColumn<Intervention, String> detailCol;
 	@FXML private TableColumn<Intervention, String> inviaCol;
-	@FXML private ComboBox comboBox;
+	@FXML private ComboBox<String> comboBox;
 	@FXML private ImageView imgDownload;
 	@FXML private ImageView imgSend;
 	@FXML private MenuBar menuBar;
@@ -288,6 +288,8 @@ public class InterventionController {
 				// imposta il button dettagli cliccabile e l'altezza righe
 				setDetailAndState();
 				setCellHeight(); 
+				Platform.runLater(()-> comboBox.setValue("Tutti"));
+				
 		             
 			} else if (response.getStatus() == 401){
 				Platform.runLater(()-> config.dialogLogout(AlertType.ERROR, "Operazione non autorizzata, effettuare la login.", menuBar));
@@ -510,6 +512,7 @@ public class InterventionController {
 				}
 				setDetailAndState();
 				setCellHeight();
+				Platform.runLater(()-> comboBox.setValue("Tutti"));
 				
 			} else if (response.getStatus() == 401){
 				Platform.runLater(()-> config.dialogLogout(AlertType.ERROR, "Operazione non autorizzata, effettuare la login.", menuBar));

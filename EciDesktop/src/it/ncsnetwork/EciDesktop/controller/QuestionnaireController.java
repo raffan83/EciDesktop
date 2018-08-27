@@ -614,6 +614,8 @@ public class QuestionnaireController {
 							searchDomandeAnnidate(o.getId());
 							if (isCompletoAnn()) {
 								compl = true;
+							} else {
+								compl = false;
 							}
 						}
 					}
@@ -621,12 +623,14 @@ public class QuestionnaireController {
 				}
 			}
 			else if (r.getTipo().equals(Risposta.RES_CHOICE)) {
-				boolean compl = false;
+				boolean compl = true;
 				for (Opzione o : r.getOpzioni()) {
 					if (o.isChecked()) {
 						searchDomandeAnnidate(o.getId());
 						if (isCompletoAnn()) {
 							compl = true;
+						} else {
+							compl = false;
 						}
 					}
 				}
@@ -652,23 +656,31 @@ public class QuestionnaireController {
 					} else if (r.getTipo().equals(Risposta.RES_CHOICE)) {
 						boolean compl = false;
 						for (Opzione o : r.getOpzioni()) {
-							searchDomandeAnnidate(o.getId());
-							if (o.isChecked() && isCompletoAnn()) compl = true;
+							if (o.isChecked()) {
+								searchDomandeAnnidate(o.getId());
+								if (isCompletoAnn()) {
+									compl = true;
+								} else {
+									compl = false;
+								}
+							}
 						}
 						if (!compl) return false;
 					}
 				}
 				else if (r.getTipo().equals(Risposta.RES_CHOICE)) {
-					boolean compl = false;
+					boolean compl = true;
 					for (Opzione o : r.getOpzioni()) {
 						if (o.isChecked()) {
 							searchDomandeAnnidate(o.getId());
 							if (isCompletoAnn()) {
 								compl = true;
+							} else {
+								compl = false;
 							}
 						}
 					}
-					if (!compl) return false;		
+					if (!compl) return false;				
 				}
 			}
 		}
