@@ -1,6 +1,5 @@
 package it.ncsnetwork.EciDesktop.controller;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;

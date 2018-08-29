@@ -28,15 +28,16 @@ import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
 import it.ncsnetwork.EciDesktop.model.User;
 import it.ncsnetwork.EciDesktop.model.UserDAO;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -73,6 +74,20 @@ public class LoginController implements Initializable {
 	private Label errLogin;
 	@FXML
 	private ImageView loadImg;
+	
+	private EventHandler keypress = new EventHandler<KeyEvent>() {
+	    @Override
+	    public void handle(KeyEvent keyEvent) {
+	    	errLogin.setText("");
+	        if(keyEvent.getCode() == KeyCode.ENTER){
+	        	try {
+					Login();
+				} catch (ClassNotFoundException | IOException e) {
+					e.printStackTrace();
+				}	        
+	        }
+	    }
+	};
 
 	Stage stage;
 
@@ -108,17 +123,13 @@ public class LoginController implements Initializable {
 			});
 		});
 		
-		txtUsername.setOnKeyPressed(e -> {
-		    errLogin.setText("");
-		});
-		txtPassword.setOnKeyPressed(e -> {
-		    errLogin.setText("");
-		});
+		txtUsername.setOnKeyPressed(keypress);
+		txtPassword.setOnKeyPressed(keypress);
 		loadImg.setVisible(false);
 		
 	}
 
-	public void Login(ActionEvent event) throws ClassNotFoundException, UnknownHostException, IOException {
+	public void Login() throws ClassNotFoundException, UnknownHostException, IOException {
 		
 		new Thread(() -> {
 		    Platform.runLater(()-> {
