@@ -40,7 +40,8 @@ public class ReportDAO {
 			boolean isSchedaTecnica = Boolean.parseBoolean(rs.getString("scheda_tecnica"));
 			report.setScheda_tecnica(isSchedaTecnica);
 			//if (rs.getInt("stato") == 3) report.setNullCompleteRep();
-			if (rs.getInt("stato") != 2 || isSchedaTecnica) report.setNullInviaRep();
+			//if (rs.getInt("stato") != 2 || isSchedaTecnica) report.setNullInviaRep();
+			if (rs.getInt("stato") != 2) report.setNullInviaRep();
 
 			reportList.add(report);
 		}

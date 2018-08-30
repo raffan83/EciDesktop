@@ -18,6 +18,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -30,6 +33,11 @@ public class config {
 	//public static final String URL_API = "http://localhost:8080/PortalECI/rest/";
 	//public static final String URL_API = "http://192.168.1.64:8080/PortalECI/rest/";
 	public static final String URL_API = "http://31.14.128.57:8096/PortalECI/rest/";
+
+	
+	// combinazione per cambiare domanda al questionario
+	public static final KeyCombination AVANTI = new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.SHIFT_DOWN);
+	public static final KeyCombination INDIETRO = new KeyCodeCombination(KeyCode.LEFT, KeyCombination.SHIFT_DOWN);
 	
 	public config() {
 	}
@@ -115,6 +123,7 @@ public class config {
 			return false;
 		}
 	}
+
 /*
 	public void newStage2(Stage stage, Button lb, String load, String judul, boolean resize, StageStyle style,
 			boolean maximized) {

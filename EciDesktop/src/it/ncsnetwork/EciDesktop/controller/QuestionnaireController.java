@@ -10,7 +10,6 @@ import javafx.event.EventHandler;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
@@ -18,7 +17,6 @@ import it.ncsnetwork.EciDesktop.model.Domanda;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.Opzione;
 import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
-import it.ncsnetwork.EciDesktop.model.Report;
 import it.ncsnetwork.EciDesktop.model.ReportDAO;
 import it.ncsnetwork.EciDesktop.model.Risposta;
 import it.ncsnetwork.EciDesktop.model.User;
@@ -63,6 +61,16 @@ public class QuestionnaireController {
 	private ObservableList<Domanda> domandeAnnidate = FXCollections.observableArrayList();
 	private boolean solaLettura;
 	private int stato;
+	private EventHandler keypress = new EventHandler<KeyEvent>(){
+		  @Override
+		  public void handle(KeyEvent event){
+		    if (config.AVANTI.match(event)) {
+				avanti();
+		    } else if (config.INDIETRO.match(event)) {
+				indietro();
+		    }
+		  }
+		};
 	
 	@FXML private VBox reportBox;
 	@FXML private Pane paneAnn = new Pane();
@@ -74,6 +82,8 @@ public class QuestionnaireController {
 	@FXML private MenuBar menuBar;
 	@FXML private Menu usernameMenu;
 	@FXML private Label usernameMenuLbl;
+	
+	
 	
 	// salva le info dell'intervento per rimetterle sulla pagina verbali
 	public void setData(Intervention interv, int selState, User user, int s, Stage stage) {
@@ -94,7 +104,7 @@ public class QuestionnaireController {
 			} catch (ClassNotFoundException | IOException | SQLException e) {
 				e.printStackTrace();
 			}
-		});
+		});	
 	}
 	
 	@FXML
@@ -196,6 +206,8 @@ public class QuestionnaireController {
 		vbox.getChildren().add(t);
 		
 		TextArea ta = new TextArea(r.getTestoRisposta());
+		// Imposta cambio pagina con SHIFT + FRECCIA
+		ta.setOnKeyPressed(keypress);
 		
 		// salva sul db la risposta
 		ta.focusedProperty().addListener((obs, oldVal, newVal) -> {
@@ -203,7 +215,6 @@ public class QuestionnaireController {
 		    if (!newVal) {
 		    	try {
 		    		String testoRisposta = ta.getText();
-		    		System.out.println("TestoRisposta: "+ testoRisposta);
 		    		if(testoRisposta != null && !testoRisposta.isEmpty()) {
 			    		testoRisposta = testoRisposta.replaceAll("'", "''");
 			    		r.setTestoRisposta(testoRisposta);
@@ -248,6 +259,9 @@ public class QuestionnaireController {
 		//createTemplateQuestion().getChildren().add(opErr);
 		TextField input1 = new TextField(r.getInput1());
 		TextField input2 = new TextField(r.getInput2());
+		// Imposta cambio pagina con SHIFT + FRECCIA
+		input1.setOnKeyPressed(keypress);
+		input2.setOnKeyPressed(keypress);
 		if (solaLettura) {
 			input1.setEditable(false);
 			input2.setEditable(false);
@@ -739,33 +753,37 @@ public class QuestionnaireController {
 	}
 	
 	@FXML
-	public void avanti(ActionEvent e) throws IOException, ClassNotFoundException, SQLException {
+	public void avanti() {
 		//cambia domanda
-		reportBox.getChildren().clear();
-		if (indice == questionario.size()-2) {
-        	avanti.setVisible(false);
-        	indice++;
-        } else {
-        	indietro.setVisible(true);
-        	indice++;
-        }
-		String ind = Integer.toString(indice+1);
-		comboBox.setValue(ind);	
+		if (avanti.isVisible()) {
+			reportBox.getChildren().clear();
+			if (indice == questionario.size()-2) {
+	        	avanti.setVisible(false);
+	        	indice++;
+	        } else {
+	        	indietro.setVisible(true);
+	        	indice++;
+	        }
+			String ind = Integer.toString(indice+1);
+			comboBox.setValue(ind);	
+		}
 	}
 	
 	@FXML
-	public void indietro(ActionEvent e) throws IOException {
-		//cambia domanda	
-		reportBox.getChildren().clear();
-        if (indice == 1) {
-        	indietro.setVisible(false);
-        	indice--;
-        } else {
-        	avanti.setVisible(true);
-        	indice--;
-        }
-		String ind = Integer.toString(indice+1);
-		comboBox.setValue(ind);	
+	public void indietro() {
+		//cambia domanda
+		if (indietro.isVisible()) {
+			reportBox.getChildren().clear();
+	        if (indice == 1) {
+	        	indietro.setVisible(false);
+	        	indice--;
+	        } else {
+	        	avanti.setVisible(true);
+	        	indice--;
+	        }
+			String ind = Integer.toString(indice+1);
+			comboBox.setValue(ind);
+		}	
 	}
 	
 	//combo box

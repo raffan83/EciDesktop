@@ -43,6 +43,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -235,6 +236,18 @@ public class ReportController {
 						QuestionnaireController controller = loader.getController();
 						controller.setData(selectedInterv, selectedState, selectedUser, stato, window);
 						
+						// Imposta cambio pagina con SHIFT + FRECCIA
+						tableViewScene.setOnKeyPressed(new EventHandler<KeyEvent>(){
+							  @Override
+							  public void handle(KeyEvent event){
+							    if (config.AVANTI.match(event)) {
+									controller.avanti();
+							    } else if (config.INDIETRO.match(event)) {
+									controller.indietro();
+							    }
+							  }
+							});
+						
 						window.setScene(tableViewScene);
 						window.show();
 					} catch (IOException e1) {
@@ -252,7 +265,7 @@ public class ReportController {
 
 						long repId = ((Report) item).getId();
 						Report.setReportId(repId);				
-						try {
+					/*	try {
 							// controlla se ha la scheda tecnica
 							Report schedaTecnica = ReportDAO.getSchedaTecnica(repId);
 							long schedaTecnicaId = schedaTecnica.getId();
@@ -270,6 +283,11 @@ public class ReportController {
 								sendJson(repId);
 							}
 							
+						} catch (ClassNotFoundException | SQLException e1) {
+							e1.printStackTrace();
+						}*/
+						try {
+							sendJson(repId);
 						} catch (ClassNotFoundException | SQLException e1) {
 							e1.printStackTrace();
 						}
