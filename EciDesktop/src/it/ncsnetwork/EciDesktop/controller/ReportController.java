@@ -1,5 +1,6 @@
 package it.ncsnetwork.EciDesktop.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -43,10 +44,13 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
 
 public class ReportController {
@@ -63,6 +67,8 @@ public class ReportController {
 	@FXML private TableColumn<Report, String> statoCol;
 	@FXML private TableColumn<Report, String> completeCol;
 	@FXML private TableColumn<Report, String> inviaCol;
+	@FXML private TableColumn<Report, String> uploadDocCol;
+	@FXML private TableColumn<Report, String> showDocCol;
 	@FXML private Label sedeLabel, dataLabel, codVerLabel, descrVerLabel, codCatLabel, descrCatLabel;
 	@FXML private Text note;
 	@FXML private Button modNoteBtn;
@@ -169,14 +175,18 @@ public class ReportController {
 		codVerificaCol.setCellValueFactory(cellData -> cellData.getValue().codVerificaProperty());
 		codCategoriaCol.setCellValueFactory(cellData -> cellData.getValue().codCategoriaProperty());
 		statoCol.setCellValueFactory(new PropertyValueFactory<Report, String>("statoLbl"));
+		uploadDocCol.setCellValueFactory(new PropertyValueFactory<Report, String>("uploadDoc"));
+		showDocCol.setCellValueFactory(new PropertyValueFactory<Report, String>("showDoc"));
 		completeCol.setCellValueFactory(new PropertyValueFactory<Report, String>("completeRep"));
 		inviaCol.setCellValueFactory(new PropertyValueFactory<Report, String>("inviaRep"));
 		
-		idCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.14));
-		descrVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.35));
-		codVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.14));
-		codCategoriaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
-		statoCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
+		idCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
+		descrVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.30));
+		codVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
+		codCategoriaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
+		statoCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
+		uploadDocCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.05));
+		showDocCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.05));
 		completeCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.05));
 		inviaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.05));
 
@@ -197,6 +207,8 @@ public class ReportController {
 	@FXML
 	private void setCompleteAndState() {
 		for (Object item : reportTable.getItems()) {
+			
+			long repId = ((Report) item).getId();
 
 		//	if (((Report) item).getCompleteRep() instanceof Button) {
 			
@@ -222,7 +234,6 @@ public class ReportController {
 				@Override
 				public void handle(ActionEvent e) {
 
-					long repId = ((Report) item).getId();
 					Report.setReportId(repId);
 
 					try {
@@ -263,7 +274,6 @@ public class ReportController {
 					@Override
 					public void handle(ActionEvent e) {
 
-						long repId = ((Report) item).getId();
 						Report.setReportId(repId);				
 					/*	try {
 							// controlla se ha la scheda tecnica
@@ -294,6 +304,48 @@ public class ReportController {
 					}
 				});
 			}
+			
+			// action carica documento
+			((Report) item).getUploadDoc().setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+                public void handle(final ActionEvent e) {
+					//System.out.println(((Report) item).isScheda_tecnica());	
+					System.out.println(System.getProperty("user.home"));
+					System.out.println(System.getProperty("user.dir"));
+					FileChooser fileChooser = new FileChooser();
+					File selectedFile = fileChooser.showOpenDialog(null);
+                    if (selectedFile != null) {
+                    	try {                  		
+                		    config.uploadFile(selectedFile, repId);
+						} catch (IOException e1) {
+							e1.printStackTrace();
+						}
+                    } else {
+                    	//alert
+                    	System.out.println("File selection cancelled.");
+                    }
+                }
+			});
+			
+			// action visulizza documenti
+			((Report) item).getShowDoc().setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+                public void handle(final ActionEvent e) {		
+					Report.setReportId(repId);
+					// new stage
+					try {
+						Parent root = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/listaDocumenti.fxml"));
+						Scene scene = new Scene(root);
+						Stage stage = new Stage();
+						stage.setScene(scene);
+						stage.getIcons().add(new Image("/it/ncsnetwork/EciDesktop/img/logo-eci.jpg"));
+						stage.setTitle("Eci spa");
+						stage.show();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+                }
+			});
 					
 		}
 	}

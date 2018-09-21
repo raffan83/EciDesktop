@@ -6,9 +6,14 @@
 package it.ncsnetwork.EciDesktop.Utility;
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.channels.FileChannel;
+
 import it.ncsnetwork.EciDesktop.controller.InterventionController;
 import it.ncsnetwork.EciDesktop.model.User;
 import javafx.fxml.FXMLLoader;
@@ -38,6 +43,9 @@ public class config {
 	public static final KeyCombination AVANTI = new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.SHIFT_DOWN);
 	public static final KeyCombination INDIETRO = new KeyCodeCombination(KeyCode.LEFT, KeyCombination.SHIFT_DOWN);
 	
+	// path documenti
+	public static final String PATH_DOCUMENTI = System.getProperty("user.dir") + "\\src\\it\\ncsnetwork\\EciDesktop\\documenti\\";
+	//public static final String PATH_DOCUMENTI = "/it/ncsnetwork/EciDesktop/documenti/";
 	public config() {
 	}
 	
@@ -121,6 +129,20 @@ public class config {
 			System.out.println("non connesso");
 			return false;
 		}
+	}
+	
+	public static void uploadFile(File source, long verbaleID) throws IOException {
+		File dest = new File(PATH_DOCUMENTI+"verbale"+verbaleID+"_"+source.getName());
+        FileChannel inputChannel = null;
+        FileChannel outputChannel = null;
+        try {
+        	inputChannel = new FileInputStream(source).getChannel();
+        	outputChannel = new FileOutputStream(dest).getChannel();
+        	outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+        } finally {
+        	inputChannel.close();
+        	outputChannel.close();
+        }
 	}
 
 /*
