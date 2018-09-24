@@ -13,8 +13,13 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 
 import it.ncsnetwork.EciDesktop.controller.InterventionController;
+import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.User;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -132,7 +137,10 @@ public class config {
 	}
 	
 	public static void uploadFile(File source, long verbaleID) throws IOException {
-		File dest = new File(PATH_DOCUMENTI+"verbale"+verbaleID+"_"+source.getName());
+		//File dest = new File(PATH_DOCUMENTI+"verbale"+verbaleID+"_"+source.getName());
+		String path = PATH_DOCUMENTI+Intervention.getIntervId()+"\\"+verbaleID;
+		new File(path).mkdirs();
+		File dest = new File(path+"\\"+source.getName());
         FileChannel inputChannel = null;
         FileChannel outputChannel = null;
         try {
@@ -143,6 +151,12 @@ public class config {
         	inputChannel.close();
         	outputChannel.close();
         }
+	}
+	
+	public static String encodeFileToBase64Binary(File file) throws IOException {
+	    //File file = new File(fileName);
+	    byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
+	    return new String(encoded, StandardCharsets.US_ASCII);
 	}
 
 /*

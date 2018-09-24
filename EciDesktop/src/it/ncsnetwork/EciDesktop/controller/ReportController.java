@@ -14,7 +14,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import com.google.gson.Gson;
 import it.ncsnetwork.EciDesktop.Utility.config;
+import it.ncsnetwork.EciDesktop.model.Documento;
 import it.ncsnetwork.EciDesktop.model.Domanda;
+import it.ncsnetwork.EciDesktop.model.EncodedFile;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
 import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
@@ -67,8 +69,9 @@ public class ReportController {
 	@FXML private TableColumn<Report, String> statoCol;
 	@FXML private TableColumn<Report, String> completeCol;
 	@FXML private TableColumn<Report, String> inviaCol;
-	@FXML private TableColumn<Report, String> uploadDocCol;
-	@FXML private TableColumn<Report, String> showDocCol;
+	@FXML private TableColumn<Report, String> docCol;
+	//@FXML private TableColumn<Report, String> uploadDocCol;
+	//@FXML private TableColumn<Report, String> showDocCol;
 	@FXML private Label sedeLabel, dataLabel, codVerLabel, descrVerLabel, codCatLabel, descrCatLabel;
 	@FXML private Text note;
 	@FXML private Button modNoteBtn;
@@ -169,6 +172,9 @@ public class ReportController {
 
 	@FXML
 	private void initialize() throws ClassNotFoundException, SQLException {
+		TableColumn uploadDocCol = new TableColumn("Carica");
+	    TableColumn showDocCol = new TableColumn("Lista");
+	    docCol.getColumns().addAll(uploadDocCol, showDocCol);
 	
 		idCol.setCellValueFactory(cellData -> cellData.getValue().verbaleIdProperty().asObject());
 		descrVerificaCol.setCellValueFactory(cellData -> cellData.getValue().descrVerificaProperty());
@@ -180,13 +186,14 @@ public class ReportController {
 		completeCol.setCellValueFactory(new PropertyValueFactory<Report, String>("completeRep"));
 		inviaCol.setCellValueFactory(new PropertyValueFactory<Report, String>("inviaRep"));
 		
-		idCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
-		descrVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.30));
-		codVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
-		codCategoriaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
-		statoCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
-		uploadDocCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.05));
-		showDocCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.05));
+		idCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
+		descrVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.3));
+		codVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.11));
+		codCategoriaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.11));
+		statoCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
+		docCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
+		uploadDocCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.06));
+		showDocCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.06));
 		completeCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.05));
 		inviaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.05));
 
@@ -306,46 +313,56 @@ public class ReportController {
 			}
 			
 			// action carica documento
-			((Report) item).getUploadDoc().setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-                public void handle(final ActionEvent e) {
-					//System.out.println(((Report) item).isScheda_tecnica());	
-					System.out.println(System.getProperty("user.home"));
-					System.out.println(System.getProperty("user.dir"));
-					FileChooser fileChooser = new FileChooser();
-					File selectedFile = fileChooser.showOpenDialog(null);
-                    if (selectedFile != null) {
-                    	try {                  		
-                		    config.uploadFile(selectedFile, repId);
+			if (((Report) item).getUploadDoc() instanceof Button) {
+				((Report) item).getUploadDoc().getStyleClass().add("uploadDoc");
+				((Report) item).getUploadDoc().setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+	                public void handle(final ActionEvent e) {
+						Report.setReportId(repId);	
+						
+						FileChooser fileChooser = new FileChooser();
+						File selectedFile = fileChooser.showOpenDialog(null);
+	                    if (selectedFile != null) {
+	                    	try {                  		
+	                		    config.uploadFile(selectedFile, repId);
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							} finally {
+								try {
+									searchReports();
+								} catch (ClassNotFoundException | SQLException e1) {
+									e1.printStackTrace();
+								}
+								setCompleteAndState();
+								setCellHeight();
+							}
+	                    }
+	                }
+				});
+			}
+			
+			// action visulizza documenti
+			if (((Report) item).getShowDoc() instanceof Button) {
+				((Report) item).getShowDoc().getStyleClass().add("showDoc");
+				((Report) item).getShowDoc().setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+	                public void handle(final ActionEvent e) {		
+						Report.setReportId(repId);
+						// new stage
+						try {
+							Parent root = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/listaDocumenti.fxml"));
+							Scene scene = new Scene(root);
+							Stage stage = new Stage();
+							stage.setScene(scene);
+							stage.getIcons().add(new Image("/it/ncsnetwork/EciDesktop/img/logo-eci.jpg"));
+							stage.setTitle("Eci spa");
+							stage.show();
 						} catch (IOException e1) {
 							e1.printStackTrace();
 						}
-                    } else {
-                    	//alert
-                    	System.out.println("File selection cancelled.");
-                    }
-                }
-			});
-			
-			// action visulizza documenti
-			((Report) item).getShowDoc().setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-                public void handle(final ActionEvent e) {		
-					Report.setReportId(repId);
-					// new stage
-					try {
-						Parent root = FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/listaDocumenti.fxml"));
-						Scene scene = new Scene(root);
-						Stage stage = new Stage();
-						stage.setScene(scene);
-						stage.getIcons().add(new Image("/it/ncsnetwork/EciDesktop/img/logo-eci.jpg"));
-						stage.setTitle("Eci spa");
-						stage.show();
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-                }
-			});
+	                }
+				});
+			}
 					
 		}
 	}
@@ -418,19 +435,41 @@ public class ReportController {
 		ArrayList<Risposta> rispList = new ArrayList<Risposta>();
 
 		for (Domanda d: domande) {
-			
 			Risposta r = d.getRisposta();
 			rispList.add(r);
-
 		}
 			risposte.setVerbale_id(idVerbale);
 			risposte.setRisposte(rispList);
-			
+			//documenti
+			ArrayList<EncodedFile> docList = searchDocumenti();
+			if (!docList.isEmpty())
+				risposte.setDocumenti(docList);
+				
 			Gson gson = new Gson();
 			String json = gson.toJson(risposte);
 			System.out.println(json);
-			
+
 			return json;
+	}
+	
+	private ArrayList<EncodedFile> searchDocumenti() {
+		ArrayList<EncodedFile> docList = new ArrayList<EncodedFile>();
+		File[] files = new File(config.PATH_DOCUMENTI+Intervention.getIntervId()+"\\"+Report.getReportId()).listFiles();
+		
+		for (File file : files) {
+		    if (file.isFile()) {
+		    	try {
+					String encoded = config.encodeFileToBase64Binary(file);
+					EncodedFile doc = new EncodedFile();
+					doc.setFileName(file.getName());
+					doc.setEncodedFile(encoded);
+					docList.add(doc);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}	    	
+		    }
+		}
+		return docList;
 	}
 	
 }

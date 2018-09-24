@@ -177,8 +177,7 @@
                   <TableColumn fx:id="codVerificaCol" prefWidth="141.0" text="Codice &#10;Verifica" />
                   <TableColumn fx:id="descrVerificaCol" prefWidth="241.0" text="Descrizione Verifica" />
                   <TableColumn fx:id="statoCol" prefWidth="97.0" text="Stato" />
-                  <TableColumn fx:id="uploadDocCol" prefWidth="92.0" />
-                  <TableColumn fx:id="showDocCol" prefWidth="92.0" />
+                  <TableColumn fx:id="docCol" prefWidth="92.0" text="Documenti" />        
                   <TableColumn fx:id="completeCol" prefWidth="92.0" />
                   <TableColumn fx:id="inviaCol" prefWidth="92.0" />
               </columns>

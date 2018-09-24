@@ -14,10 +14,10 @@ public class Documento {
 	
 	public Documento() {
 		this.nomeDocumento = new SimpleStringProperty();
-		this.eliminaDocumento = new Button("elimina");
-		this.visualizzaDocumento = new Button("show");
+		this.eliminaDocumento = new Button("Elimina");
+		this.visualizzaDocumento = new Button("Apri");
 	}
-
+	
 	public String getNomeDocumento() {
 		return nomeDocumento.get();
 	}

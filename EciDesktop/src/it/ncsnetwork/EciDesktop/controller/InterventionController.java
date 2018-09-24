@@ -1,5 +1,6 @@
 package it.ncsnetwork.EciDesktop.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -22,6 +23,7 @@ import com.google.gson.Gson;
 
 import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.model.Domanda;
+import it.ncsnetwork.EciDesktop.model.EncodedFile;
 import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
@@ -554,6 +556,10 @@ public class InterventionController {
 				}
 				risposte.setVerbale_id(idVerb);
 				risposte.setRisposte(rispList);
+				//documenti
+				ArrayList<EncodedFile> docList = searchDocumenti(idInterv, idVerb);
+				if (!docList.isEmpty())
+					risposte.setDocumenti(docList);	
 				
 				risposteVerbale.add(risposte);			
 				listaVerbali.add(idVerb);
@@ -603,6 +609,10 @@ public class InterventionController {
 			}
 			risposte.setVerbale_id(idVerb);
 			risposte.setRisposte(rispList);
+			//documenti
+			ArrayList<EncodedFile> docList = searchDocumenti(Intervention.getIntervId(), idVerb);
+			if (!docList.isEmpty())
+				risposte.setDocumenti(docList);			
 			
 			risposteVerbale.add(risposte);
 		}
@@ -618,6 +628,26 @@ public class InterventionController {
 		System.out.println(json);
 		
 		return json;
+	}
+	
+	private static ArrayList<EncodedFile> searchDocumenti(long interventoID, long verbaleID) {
+		ArrayList<EncodedFile> docList = new ArrayList<EncodedFile>();
+		File[] files = new File(config.PATH_DOCUMENTI+interventoID+"\\"+verbaleID).listFiles();
+		
+		for (File file : files) {
+		    if (file.isFile()) {
+		    	try {
+					String encoded = config.encodeFileToBase64Binary(file);
+					EncodedFile doc = new EncodedFile();
+					doc.setFileName(file.getName());
+					doc.setEncodedFile(encoded);
+					docList.add(doc);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}	    	
+		    }
+		}
+		return docList;
 	}
 
 }

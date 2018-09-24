@@ -38,8 +38,8 @@ public class Report {
 		this.inviaRep = new Button("");
 		this.intervId = new SimpleLongProperty();
 		this.verbaleId = new SimpleLongProperty();
-		this.uploadDoc = new Button("upload");
-		this.showDoc = new Button("show");
+		this.uploadDoc = new Button("");
+		this.showDoc = new Button("");
 	}
 
 	// id
@@ -191,6 +191,10 @@ public class Report {
 		this.uploadDoc = uploadDoc;
 	}
 	
+	public void setNullUploadDoc() {
+		this.uploadDoc = null;
+	}
+	
 	// show documenti
 	public Button getShowDoc() {
 		return showDoc;
@@ -198,6 +202,10 @@ public class Report {
 
 	public void setShowDoc(Button showDoc) {
 		this.showDoc = showDoc;
+	}
+	
+	public void setNullShowDoc() {
+		this.showDoc = null;
 	}
 
 }

@@ -97,7 +97,7 @@
                <graphic>
                   <ImageView fx:id="imgSend" fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="/it/ncsnetwork/EciDesktop/img/send.png" />
+                        <Image url="/it/ncsnetwork/EciDesktop/img/send6.png" />
                      </image>
                   </ImageView>
                </graphic>
