@@ -174,12 +174,17 @@
               <columns>
                 <TableColumn fx:id="idCol" prefWidth="60.0" text="ID" />
                 <TableColumn fx:id="codCategoriaCol" prefWidth="135.6666717529297" text="Codice &#10;Categoria" />
-                  <TableColumn fx:id="codVerificaCol" prefWidth="141.0" text="Codice &#10;Verifica" />
-                  <TableColumn fx:id="descrVerificaCol" prefWidth="241.0" text="Descrizione Verifica" />
-                  <TableColumn fx:id="statoCol" prefWidth="97.0" text="Stato" />
-                  <TableColumn fx:id="docCol" prefWidth="92.0" text="Documenti" />        
-                  <TableColumn fx:id="completeCol" prefWidth="92.0" />
-                  <TableColumn fx:id="inviaCol" prefWidth="92.0" />
+                <TableColumn fx:id="codVerificaCol" prefWidth="141.0" text="Codice &#10;Verifica" />
+                <TableColumn fx:id="descrVerificaCol" prefWidth="241.0" text="Descrizione Verifica" />
+                <TableColumn fx:id="statoCol" prefWidth="97.0" text="Stato" />
+                <TableColumn fx:id="docCol" prefWidth="92.0" text="Documenti" >      
+            		<columns>
+                  		<TableColumn fx:id="uploadDocCol" prefWidth="75.0" text="Carica" />
+                  		<TableColumn fx:id="showDocCol" prefWidth="75.0" text="Invia" />
+               		</columns>
+            	</TableColumn>       
+                <TableColumn fx:id="completeCol" prefWidth="92.0" />
+               	<TableColumn fx:id="inviaCol" prefWidth="92.0" />
               </columns>
             </TableView>
          </children>

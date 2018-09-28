@@ -70,8 +70,8 @@ public class ReportController {
 	@FXML private TableColumn<Report, String> completeCol;
 	@FXML private TableColumn<Report, String> inviaCol;
 	@FXML private TableColumn<Report, String> docCol;
-	//@FXML private TableColumn<Report, String> uploadDocCol;
-	//@FXML private TableColumn<Report, String> showDocCol;
+	@FXML private TableColumn<Report, String> uploadDocCol;
+	@FXML private TableColumn<Report, String> showDocCol;
 	@FXML private Label sedeLabel, dataLabel, codVerLabel, descrVerLabel, codCatLabel, descrCatLabel;
 	@FXML private Text note;
 	@FXML private Button modNoteBtn;
@@ -172,10 +172,7 @@ public class ReportController {
 
 	@FXML
 	private void initialize() throws ClassNotFoundException, SQLException {
-		TableColumn uploadDocCol = new TableColumn("Carica");
-	    TableColumn showDocCol = new TableColumn("Lista");
-	    docCol.getColumns().addAll(uploadDocCol, showDocCol);
-	
+
 		idCol.setCellValueFactory(cellData -> cellData.getValue().verbaleIdProperty().asObject());
 		descrVerificaCol.setCellValueFactory(cellData -> cellData.getValue().descrVerificaProperty());
 		codVerificaCol.setCellValueFactory(cellData -> cellData.getValue().codVerificaProperty());

@@ -344,9 +344,6 @@
  * button upload e show doc                                         *
  *                                                                             *
  ******************************************************************************/
-#uploadDocCol {
-	-fx-alignment: CENTER;
-}
 .uploadDoc{
 	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/attach.png");
 	-fx-background-repeat: stretch;
@@ -461,4 +458,7 @@
   	-fx-border-color: black;
 }
 
+#uploadDocCol, .showDocCol, #showCol, #eliminaCol {
+	-fx-alignment: CENTER;
+}
 
