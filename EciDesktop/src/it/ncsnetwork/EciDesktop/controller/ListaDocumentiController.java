@@ -41,9 +41,9 @@ public class ListaDocumentiController {
 		showCol.setCellValueFactory(new PropertyValueFactory<Documento, String>("visualizzaDocumento"));
 		eliminaCol.setCellValueFactory(new PropertyValueFactory<Documento, String>("eliminaDocumento"));
 		
-		documentiCol.prefWidthProperty().bind(listaDocumentiTable.widthProperty().multiply(0.7));
-		showCol.prefWidthProperty().bind(listaDocumentiTable.widthProperty().multiply(0.14));
-		eliminaCol.prefWidthProperty().bind(listaDocumentiTable.widthProperty().multiply(0.14));
+		documentiCol.prefWidthProperty().bind(listaDocumentiTable.widthProperty().multiply(0.75));
+		showCol.prefWidthProperty().bind(listaDocumentiTable.widthProperty().multiply(0.1));
+		eliminaCol.prefWidthProperty().bind(listaDocumentiTable.widthProperty().multiply(0.1));
 		
 		searchDocumenti();
 		setShowAndRemove();
@@ -74,7 +74,8 @@ public class ListaDocumentiController {
 	@FXML
 	private void setShowAndRemove() {
 		for (Object item : listaDocumentiTable.getItems()) {
-			
+			((Documento) item).getVisualizzaDocumento().getStyleClass().add("apriDoc");
+		
 			// visualizza il documento
 			((Documento) item).getVisualizzaDocumento().setOnAction(new EventHandler<ActionEvent>() {
 				@Override
@@ -98,6 +99,7 @@ public class ListaDocumentiController {
 			});
 			
 			// elimina il docuemnto
+			((Documento) item).getEliminaDocumento().getStyleClass().add("eliminaDoc");	
 			((Documento) item).getEliminaDocumento().setOnAction(new EventHandler<ActionEvent>() {
 				@Override
                 public void handle(final ActionEvent e) {

@@ -397,5 +397,68 @@
   	-fx-border-color: black;
 }
 
+.load{
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/loader-ico.gif");
+	-fx-background-repeat: stretch;
+    -fx-background-size: 30 30;
+    -fx-background-position: center center;
+    -fx-background-color: transparent;
+    -fx-border-width: 2px;
+    -fx-background-radius: 30px;
+	-fx-border-radius:15px;
+	-fx-pref-width: 30px;
+	-fx-pref-height: 30px;
+	-fx-alignment: center;
+}
+
+.apriDoc{
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/open.png");
+	-fx-background-repeat: stretch;
+    -fx-background-size: 30 30;
+    -fx-background-position: center center;
+    -fx-background-color: transparent;
+    -fx-border-width: 2px;
+    -fx-background-radius: 30px;
+	-fx-border-radius:15px;
+	-fx-pref-width: 30px;
+	-fx-pref-height: 30px;
+	-fx-alignment: center;
+	-fx-cursor: hand;
+}
+
+.apriDoc:hover{
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/open2.png");
+  	-fx-background-color: primary-color;
+  	-fx-border-color: primary-color;
+}
+.apriDoc:pressed, .apriDoc:default:hover:pressed{
+  	-fx-background-color: black;
+  	-fx-border-color: black;
+}
+
+.eliminaDoc{
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/elimina.png");
+	-fx-background-repeat: stretch;
+    -fx-background-size: 30 30;
+    -fx-background-position: center center;
+    -fx-background-color: transparent;
+    -fx-border-width: 2px;
+    -fx-background-radius: 30px;
+	-fx-border-radius:15px;
+	-fx-pref-width: 30px;
+	-fx-pref-height: 30px;
+	-fx-alignment: center;
+	-fx-cursor: hand;
+}
+
+.eliminaDoc:hover{
+	-fx-background-image: url("/it/ncsnetwork/EciDesktop/img/elimina2.png");
+  	-fx-background-color: primary-color;
+  	-fx-border-color: primary-color;
+}
+.eliminaDoc:pressed, .eliminaDoc:default:hover:pressed{
+  	-fx-background-color: black;
+  	-fx-border-color: black;
+}
 
 

@@ -14,8 +14,8 @@ public class Documento {
 	
 	public Documento() {
 		this.nomeDocumento = new SimpleStringProperty();
-		this.eliminaDocumento = new Button("Elimina");
-		this.visualizzaDocumento = new Button("Apri");
+		this.eliminaDocumento = new Button("");
+		this.visualizzaDocumento = new Button("");
 	}
 	
 	public String getNomeDocumento() {

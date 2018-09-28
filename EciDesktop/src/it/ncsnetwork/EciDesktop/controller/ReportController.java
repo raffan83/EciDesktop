@@ -303,11 +303,20 @@ public class ReportController {
 						} catch (ClassNotFoundException | SQLException e1) {
 							e1.printStackTrace();
 						}*/
-						try {
+						new Thread(() -> {
+						    Platform.runLater(()-> {
+						    ((Report) item).getInviaRep().getStyleClass().add("invia");
+						    ((Report) item).getInviaRep().getStyleClass().add("load");
+						    });
+						try {	
 							sendJson(repId);
 						} catch (ClassNotFoundException | SQLException e1) {
 							e1.printStackTrace();
 						}
+					    Platform.runLater(()-> {
+					    	((Report) item).getInviaRep().getStyleClass().remove("load");
+					    	((Report) item).getInviaRep().getStyleClass().add("invia");	
+					    });}).start();
 					}
 				});
 			}
@@ -442,32 +451,34 @@ public class ReportController {
 			risposte.setRisposte(rispList);
 			//documenti
 			ArrayList<EncodedFile> docList = searchDocumenti();
-			if (!docList.isEmpty())
+			//if (!docList.isEmpty())
 				risposte.setDocumenti(docList);
 				
 			Gson gson = new Gson();
 			String json = gson.toJson(risposte);
-			System.out.println(json);
+			//System.out.println(json);
 
 			return json;
 	}
 	
 	private ArrayList<EncodedFile> searchDocumenti() {
 		ArrayList<EncodedFile> docList = new ArrayList<EncodedFile>();
-		File[] files = new File(config.PATH_DOCUMENTI+Intervention.getIntervId()+"\\"+Report.getReportId()).listFiles();
-		
-		for (File file : files) {
-		    if (file.isFile()) {
-		    	try {
-					String encoded = config.encodeFileToBase64Binary(file);
-					EncodedFile doc = new EncodedFile();
-					doc.setFileName(file.getName());
-					doc.setEncodedFile(encoded);
-					docList.add(doc);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}	    	
-		    }
+		String filePath = config.PATH_DOCUMENTI+Intervention.getIntervId()+"\\"+Report.getReportId();
+		if(new File(filePath).exists()) {
+			File[] files = new File(filePath).listFiles();
+			for (File file : files) {
+			    if (file.isFile()) {
+			    	try {
+						String encoded = config.encodeFileToBase64Binary(file);
+						EncodedFile doc = new EncodedFile();
+						doc.setFileName(file.getName());
+						doc.setEncodedFile(encoded);
+						docList.add(doc);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}	    	
+			    }
+			}
 		}
 		return docList;
 	}
