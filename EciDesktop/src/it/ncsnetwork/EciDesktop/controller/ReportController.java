@@ -305,7 +305,7 @@ public class ReportController {
 						}*/
 						new Thread(() -> {
 						    Platform.runLater(()-> {
-						    ((Report) item).getInviaRep().getStyleClass().add("invia");
+						    ((Report) item).getInviaRep().getStyleClass().remove("invia");
 						    ((Report) item).getInviaRep().getStyleClass().add("load");
 						    });
 						try {	
@@ -427,7 +427,7 @@ public class ReportController {
 			}
 			
 		} else {
-			config.dialog(AlertType.WARNING, "Nessuna connessione");
+			Platform.runLater(()-> config.dialog(AlertType.WARNING, "Nessuna connessione"));
 		}
 	}
 	
