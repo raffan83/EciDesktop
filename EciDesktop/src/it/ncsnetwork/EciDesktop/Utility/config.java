@@ -14,6 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
@@ -49,8 +50,15 @@ public class config {
 	public static final KeyCombination INDIETRO = new KeyCodeCombination(KeyCode.LEFT, KeyCombination.SHIFT_DOWN);
 	
 	// path documenti
-	public static final String PATH_DOCUMENTI = System.getProperty("user.dir") + "\\src\\it\\ncsnetwork\\EciDesktop\\documenti\\";
-	//public static final String PATH_DOCUMENTI = "/it/ncsnetwork/EciDesktop/documenti/";
+	public static String PATH_DOCUMENTI = "/documentiAllegati/";
+	
+	static {
+		Properties properties = System.getProperties();
+		PATH_DOCUMENTI = properties.getProperty("PATH_DOCUMENTI", PATH_DOCUMENTI);
+		File documentiAllegati = new File(PATH_DOCUMENTI);
+		if(!documentiAllegati.exists()) documentiAllegati.mkdirs();
+	}
+	
 	public config() {
 	}
 	
@@ -137,7 +145,6 @@ public class config {
 	}
 	
 	public static void uploadFile(File source, long verbaleID) throws IOException {
-		//File dest = new File(PATH_DOCUMENTI+"verbale"+verbaleID+"_"+source.getName());
 		String path = PATH_DOCUMENTI+Intervention.getIntervId()+"\\"+verbaleID;
 		new File(path).mkdirs();
 		File dest = new File(path+"\\"+source.getName());
@@ -154,7 +161,6 @@ public class config {
 	}
 	
 	public static String encodeFileToBase64Binary(File file) throws IOException {
-	    //File file = new File(fileName);
 	    byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
 	    return new String(encoded, StandardCharsets.US_ASCII);
 	}
