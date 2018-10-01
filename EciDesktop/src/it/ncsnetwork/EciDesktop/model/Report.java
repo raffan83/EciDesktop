@@ -25,6 +25,8 @@ public class Report {
 	private SimpleLongProperty intervId;
 	private boolean scheda_tecnica;
 	private SimpleLongProperty verbaleId;
+	private Button uploadDoc;
+	private Button showDoc;
 	
 	public Report() {
 		this.id = new SimpleLongProperty();
@@ -36,6 +38,8 @@ public class Report {
 		this.inviaRep = new Button("");
 		this.intervId = new SimpleLongProperty();
 		this.verbaleId = new SimpleLongProperty();
+		this.uploadDoc = new Button("");
+		this.showDoc = new Button("");
 	}
 
 	// id
@@ -149,6 +153,7 @@ public class Report {
 		this.inviaRep = null;
 	}
 
+// is scheda tecnica
 	public boolean isScheda_tecnica() {
 		return scheda_tecnica;
 	}
@@ -175,6 +180,32 @@ public class Report {
 
 	public void setStato(int stato) {
 		this.stato = stato;
+	}
+	
+	//upload documento
+	public Button getUploadDoc() {
+		return uploadDoc;
+	}
+
+	public void setUploadDoc(Button uploadDoc) {
+		this.uploadDoc = uploadDoc;
+	}
+	
+	public void setNullUploadDoc() {
+		this.uploadDoc = null;
+	}
+	
+	// show documenti
+	public Button getShowDoc() {
+		return showDoc;
+	}
+
+	public void setShowDoc(Button showDoc) {
+		this.showDoc = showDoc;
+	}
+	
+	public void setNullShowDoc() {
+		this.showDoc = null;
 	}
 
 }

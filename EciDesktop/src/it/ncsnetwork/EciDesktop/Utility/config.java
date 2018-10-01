@@ -6,10 +6,21 @@
 package it.ncsnetwork.EciDesktop.Utility;
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
+
 import it.ncsnetwork.EciDesktop.controller.InterventionController;
+import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.User;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -39,6 +50,16 @@ public class config {
 	// combinazione per cambiare domanda al questionario
 	public static final KeyCombination AVANTI = new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.SHIFT_DOWN);
 	public static final KeyCombination INDIETRO = new KeyCodeCombination(KeyCode.LEFT, KeyCombination.SHIFT_DOWN);
+	
+	// path documenti
+	public static String PATH_DOCUMENTI = "/documentiAllegati/";
+	
+	static {
+		Properties properties = System.getProperties();
+		PATH_DOCUMENTI = properties.getProperty("PATH_DOCUMENTI", PATH_DOCUMENTI);
+		File documentiAllegati = new File(PATH_DOCUMENTI);
+		if(!documentiAllegati.exists()) documentiAllegati.mkdirs();
+	}
 	
 	public config() {
 	}
@@ -123,6 +144,27 @@ public class config {
 			System.out.println("non connesso");
 			return false;
 		}
+	}
+	
+	public static void uploadFile(File source, long verbaleID) throws IOException {
+		String path = PATH_DOCUMENTI+Intervention.getIntervId()+"\\"+verbaleID;
+		new File(path).mkdirs();
+		File dest = new File(path+"\\"+source.getName());
+        FileChannel inputChannel = null;
+        FileChannel outputChannel = null;
+        try {
+        	inputChannel = new FileInputStream(source).getChannel();
+        	outputChannel = new FileOutputStream(dest).getChannel();
+        	outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
+        } finally {
+        	inputChannel.close();
+        	outputChannel.close();
+        }
+	}
+	
+	public static String encodeFileToBase64Binary(File file) throws IOException {
+	    byte[] encoded = Base64.encodeBase64(FileUtils.readFileToByteArray(file));
+	    return new String(encoded, StandardCharsets.US_ASCII);
 	}
 
 /*

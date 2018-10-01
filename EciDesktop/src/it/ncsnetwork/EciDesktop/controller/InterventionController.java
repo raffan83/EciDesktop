@@ -1,5 +1,6 @@
 package it.ncsnetwork.EciDesktop.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -22,6 +23,7 @@ import com.google.gson.Gson;
 
 import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.model.Domanda;
+import it.ncsnetwork.EciDesktop.model.EncodedFile;
 import it.ncsnetwork.EciDesktop.model.QuestionarioDAO;
 import it.ncsnetwork.EciDesktop.model.Intervention;
 import it.ncsnetwork.EciDesktop.model.InterventionDAO;
@@ -172,11 +174,20 @@ public class InterventionController {
 						long intervId = ((Intervention) item).getId();
 						Intervention.setIntervId(intervId);
 	
-						try {
+						new Thread(() -> {
+						    Platform.runLater(()-> {
+						    ((Intervention) item).getInviaInterv().getStyleClass().remove("invia");
+						    ((Intervention) item).getInviaInterv().getStyleClass().add("load");
+						    });
+						try {	
 							getJson2();
 						} catch (ClassNotFoundException | SQLException e1) {
 							e1.printStackTrace();
 						}
+					    Platform.runLater(()-> {
+						    ((Intervention) item).getInviaInterv().getStyleClass().remove("load");
+						    ((Intervention) item).getInviaInterv().getStyleClass().add("invia");	
+					    });}).start();
 					}
 				});
 			}
@@ -258,7 +269,7 @@ public class InterventionController {
 	private void downloadInterventions(ActionEvent event) throws ClassNotFoundException {
 		// imposta la gif di caricamento
 		new Thread(() -> {
-		    Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/load.gif")));	
+		    Platform.runLater(()-> imgDownload.setImage(new Image("/it/ncsnetwork/EciDesktop/img/loader-ico.gif")));	
 		
 
 		//verifica connessione
@@ -274,7 +285,7 @@ public class InterventionController {
 	        if (response.getStatus() == 200) {
 	        
 		        String s = response.readEntity(String.class);
-		        System.out.println(s);
+		        //System.out.println(s);
 		        
 		        ParseJsonInterventi(s);
 		        
@@ -478,8 +489,17 @@ public class InterventionController {
 	}
 	
 	public void getJson() throws ClassNotFoundException, SQLException {
-		String json = risposteInterventiJson();
-		sendJson(json);
+		new Thread(() -> {
+			Platform.runLater(()-> imgSend.setImage(new Image("/it/ncsnetwork/EciDesktop/img/loader-ico.gif")));	
+		try {
+			String json = risposteInterventiJson();
+			sendJson(json);
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		
+	    Platform.runLater(()-> imgSend.setImage(new Image("/it/ncsnetwork/EciDesktop/img/send6.png")));
+		}).start();
 	}
 	
 	public void getJson2() throws ClassNotFoundException, SQLException {
@@ -488,8 +508,6 @@ public class InterventionController {
 	}
 	
 	public void sendJson(String json) throws ClassNotFoundException, SQLException {
-		new Thread(() -> {
-		    Platform.runLater(()-> imgSend.setImage(new Image("/it/ncsnetwork/EciDesktop/img/load.gif")));	
 		if (config.isConnected()) {
 			
 			Client client = ClientBuilder.newClient();
@@ -521,12 +539,7 @@ public class InterventionController {
 			
 		} else {
 			Platform.runLater(()-> config.dialog(AlertType.WARNING, "Nessuna connessione"));
-		}
-				
-		 // ripristina l'immagine di default
-	    Platform.runLater(()-> imgSend.setImage(new Image("/it/ncsnetwork/EciDesktop/img/send.png")));
-		}).start();
-			
+		}		
 	}
 	// invio tutti gli interventi completi
 	public String risposteInterventiJson() throws ClassNotFoundException, SQLException {
@@ -554,6 +567,9 @@ public class InterventionController {
 				}
 				risposte.setVerbale_id(idVerb);
 				risposte.setRisposte(rispList);
+				//documenti
+				ArrayList<EncodedFile> docList = searchDocumenti(idInterv, idVerb);
+				risposte.setDocumenti(docList);	
 				
 				risposteVerbale.add(risposte);			
 				listaVerbali.add(idVerb);
@@ -569,7 +585,7 @@ public class InterventionController {
 		
 		Gson gson = new Gson();
 		String json = gson.toJson(risposteInterventoList);
-		System.out.println(json);
+		//System.out.println(json);
 		
 		return json;
 	}
@@ -603,6 +619,9 @@ public class InterventionController {
 			}
 			risposte.setVerbale_id(idVerb);
 			risposte.setRisposte(rispList);
+			//documenti
+			ArrayList<EncodedFile> docList = searchDocumenti(Intervention.getIntervId(), idVerb);
+			risposte.setDocumenti(docList);			
 			
 			risposteVerbale.add(risposte);
 		}
@@ -615,9 +634,32 @@ public class InterventionController {
 		
 		Gson gson = new Gson();
 		String json = gson.toJson(risposteInterventoList);
-		System.out.println(json);
+		//System.out.println(json);
 		
 		return json;
+	}
+	
+	private static ArrayList<EncodedFile> searchDocumenti(long interventoID, long verbaleID) {
+		ArrayList<EncodedFile> docList = new ArrayList<EncodedFile>();
+		String filePath = config.PATH_DOCUMENTI+interventoID+"\\"+verbaleID;
+		if(new File(filePath).exists()) {
+			
+			File[] files = new File(filePath).listFiles();
+			for (File file : files) {
+			    if (file.isFile()) {
+			    	try {
+						String encoded = config.encodeFileToBase64Binary(file);
+						EncodedFile doc = new EncodedFile();
+						doc.setFileName(file.getName());
+						doc.setEncodedFile(encoded);
+						docList.add(doc);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}	    	
+			    }
+			}
+		}
+		return docList;
 	}
 
 }

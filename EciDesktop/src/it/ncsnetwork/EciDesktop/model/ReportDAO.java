@@ -1,9 +1,11 @@
 package it.ncsnetwork.EciDesktop.model;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import it.ncsnetwork.EciDesktop.Utility.DBUtil;
+import it.ncsnetwork.EciDesktop.Utility.config;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -42,6 +44,9 @@ public class ReportDAO {
 			//if (rs.getInt("stato") == 3) report.setNullCompleteRep();
 			//if (rs.getInt("stato") != 2 || isSchedaTecnica) report.setNullInviaRep();
 			if (rs.getInt("stato") != 2) report.setNullInviaRep();
+			if (rs.getInt("stato") == 3 || isSchedaTecnica) report.setNullUploadDoc();
+			String filePath = config.PATH_DOCUMENTI+Intervention.getIntervId()+"\\"+report.getId();
+			if (isSchedaTecnica || !new File(filePath).exists()) report.setNullShowDoc();
 
 			reportList.add(report);
 		}
