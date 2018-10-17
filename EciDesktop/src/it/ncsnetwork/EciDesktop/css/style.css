@@ -458,7 +458,7 @@
   	-fx-border-color: black;
 }
 
-#uploadDocCol, .showDocCol, #showCol, #eliminaCol {
+#uploadDocCol, #showDocCol, #showCol, #eliminaCol {
 	-fx-alignment: CENTER;
 }
 
