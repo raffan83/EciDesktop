@@ -41,12 +41,13 @@ import javafx.stage.StageStyle;
  */
 public class config {
 	
-	//public static final String URL_API = "http://localhost:8080/PortalECI/rest/";
 	public static final String URL_API = "http://192.168.3.99:8080/PortalECI/rest/";
+
+//	public static final String URL_API = "http://localhost:8080/PortalECI/rest/";
+
 	//public static final String URL_API = "http://192.168.1.64:8080/PortalECI/rest/";
 	//public static final String URL_API = "http://31.14.128.57:8096/PortalECI/rest/";
 
-	
 	// combinazione per cambiare domanda al questionario
 	public static final KeyCombination AVANTI = new KeyCodeCombination(KeyCode.RIGHT, KeyCombination.SHIFT_DOWN);
 	public static final KeyCombination INDIETRO = new KeyCodeCombination(KeyCode.LEFT, KeyCombination.SHIFT_DOWN);
