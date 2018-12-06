@@ -453,7 +453,7 @@ public class ReportController {
 				
 			Gson gson = new Gson();
 			String json = gson.toJson(risposte);
-			System.out.println(json);
+			//System.out.println(json);
 
 			return json;
 	}

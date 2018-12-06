@@ -285,7 +285,7 @@ public class InterventionController {
 	        if (response.getStatus() == 200) {
 	        
 		        String s = response.readEntity(String.class);
-		        System.out.println(s);
+		        //System.out.println(s);
 		        
 		        ParseJsonInterventi(s);
 		        
@@ -693,7 +693,7 @@ public class InterventionController {
 		
 		Gson gson = new Gson();
 		String json = gson.toJson(risposteInterventoList);
-		System.out.println(json);
+		//System.out.println(json);
 		
 		return json;
 	}

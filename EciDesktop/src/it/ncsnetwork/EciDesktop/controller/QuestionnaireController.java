@@ -945,7 +945,8 @@ public class QuestionnaireController {
 		    }
 		});
 		
-		vbox.getChildren().addAll(table, hbox, deleteButton);	
+		vbox.getChildren().add(table);
+		if (!solaLettura) vbox.getChildren().addAll(table, hbox, deleteButton);
 	
 		return vbox;
 	}
