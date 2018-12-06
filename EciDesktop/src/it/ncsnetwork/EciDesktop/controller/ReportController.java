@@ -400,7 +400,7 @@ public class ReportController {
 	
 	public void sendJson(long idVerbale) throws ClassNotFoundException, SQLException {
 		
-		if (config.isConnected()) {
+		//if (config.isConnected()) {
 			
 			String json = risposteVerbaleJson(idVerbale);
 			
@@ -423,9 +423,9 @@ public class ReportController {
 				Platform.runLater(()-> config.dialog(AlertType.ERROR, "Impossibile inviare il verbale."));
 			}
 			
-		} else {
-			Platform.runLater(()-> config.dialog(AlertType.WARNING, "Nessuna connessione"));
-		}
+		//} else {
+		///	Platform.runLater(()-> config.dialog(AlertType.WARNING, "Nessuna connessione"));
+		//}
 	}
 	
 	public String risposteVerbaleJson(long idVerbale) throws ClassNotFoundException, SQLException {
@@ -453,7 +453,7 @@ public class ReportController {
 				
 			Gson gson = new Gson();
 			String json = gson.toJson(risposte);
-			//System.out.println(json);
+			System.out.println(json);
 
 			return json;
 	}

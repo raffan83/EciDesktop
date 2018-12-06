@@ -10,6 +10,8 @@ import javafx.event.EventHandler;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 import it.ncsnetwork.EciDesktop.Utility.config;
 import it.ncsnetwork.EciDesktop.animations.FadeInRightTransition;
@@ -27,16 +29,9 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.cell.MapValueFactory;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -49,6 +44,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.*;
 
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 public class QuestionnaireController {
 
@@ -59,8 +55,10 @@ public class QuestionnaireController {
 	private int iDomandaVuota = 1;
 	private ObservableList<Domanda> questionario = FXCollections.observableArrayList();
 	private ObservableList<Domanda> domandeAnnidate = FXCollections.observableArrayList();
+	private ObservableList<Domanda> domandeTabella = FXCollections.observableArrayList();
 	private boolean solaLettura;
 	private int stato;
+	private int numRighe;
 	private EventHandler keypress = new EventHandler<KeyEvent>(){
 		  @Override
 		  public void handle(KeyEvent event){
@@ -94,7 +92,7 @@ public class QuestionnaireController {
 		usernameMenuLbl.setText(selectedUser.getUsername());
 		usernameMenuLbl.setStyle("-fx-text-fill: #444444;");
 		stato = s;
-		// se il verbale è completo e si cancella una risposta obbligatoria il verbale torna in lavorazione
+		// se il verbale ï¿½ completo e si cancella una risposta obbligatoria il verbale torna in lavorazione
 		stage.setOnCloseRequest(event ->
 		{
 			try {
@@ -128,10 +126,21 @@ public class QuestionnaireController {
 			throw e;
 		}
 	}
+	
+	@FXML
+	private void searchDomandeTabella(long idRisposta) throws SQLException, ClassNotFoundException {
+		try {
+			ObservableList<Domanda> quest = QuestionarioDAO.searchDomandeTabella(idRisposta);
+			domandeTabella = quest;
+		} catch (SQLException e) {
+			System.out.println("Error occurred while getting questions information from DB.\n" + e);
+			throw e;
+		}
+	}
 
 	@FXML
 	public void goBack(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
-		// se il verbale è completo e si cancella una risposta obbligatoria il verbale torna in lavorazione
+		// se il verbale ï¿½ completo e si cancella una risposta obbligatoria il verbale torna in lavorazione
 		if(!isCompleto()) {
 			ReportDAO.changeState(1);
 		}
@@ -565,6 +574,439 @@ public class QuestionnaireController {
 		
 		return vbox;
 	}
+	
+	public VBox loadTabella(Domanda d, boolean annidata) throws IOException, ClassNotFoundException, SQLException {
+		VBox vbox = createTemplateQuestion();
+		Label t = new Label();
+		t.setMaxWidth(750);
+		t.setWrapText(true);
+		
+		if (!annidata) {
+			if (d.isObbligatoria()) t.setText(indice + 1 + ". " + d.getTesto() + " (Domanda obbligatoria)");
+			else t.setText(indice + 1 + ". " + d.getTesto());			
+		} else {
+			if (d.isObbligatoria()) t.setText(d.getTesto() + " (Domanda obbligatoria)");
+			else t.setText(d.getTesto());
+		}
+		vbox.getChildren().add(t);
+
+		TableView table = new TableView<>();
+        table.setEditable(true);
+       	table.setMaxHeight(250);
+            
+        HBox hbox = new HBox();
+        hbox.setSpacing(10);
+    	     
+        TableColumn<Map, String> colonnaID = new TableColumn<>("ID");
+		colonnaID.setCellValueFactory(new MapValueFactory("ID"));  
+		table.getColumns().add(colonnaID);
+		colonnaID.setVisible(false);
+		
+		for(Domanda domanda : domandeTabella) {
+			TableColumn<Map, String> colonna = new TableColumn<>(domanda.getTesto());
+			colonna.setCellValueFactory(new MapValueFactory("A"+domanda.getId()));
+			colonna.setMinWidth(130); 
+
+		    table.getColumns().add(colonna);
+		    
+		    Risposta r = domanda.getRisposta();
+			String nomeColonna;
+			if (domanda.isObbligatoria()) {
+				nomeColonna = domanda.getTesto()+"(*)";
+			} else {
+				nomeColonna = domanda.getTesto();
+			}
+		    
+		    if (r.getTipo().equals(Risposta.RES_TEXT)) {
+		    	VBox vb = new VBox();
+		    	vb.setSpacing(5);
+			    TextField tf = new TextField();
+			    
+			    tf.setId("r"+r.getId());
+		        tf.setMaxWidth(colonna.getPrefWidth());
+		        Label lbl = new Label(nomeColonna);
+		        vb.getChildren().addAll(lbl, tf);
+			    hbox.getChildren().add(vb);    	
+		    } else if (r.getTipo().equals(Risposta.RES_CHOICE)) {
+		    	//ToggleGroup group = new ToggleGroup();
+		    	VBox vb = new VBox();
+		    	vb.setSpacing(5);
+		    	Label lbl = new Label(nomeColonna);
+		    	vb.getChildren().add(lbl);
+		    	ObservableList<Opzione> data = FXCollections.observableArrayList();
+		    	data.add(new Opzione(0));
+				for (Opzione o: r.getOpzioni()) {
+					/*RadioButton rb = new RadioButton(o.getTesto());
+					rb.setId("o"+o.getId());
+					rb.setToggleGroup(group);
+					rb.setUserData(o.getId());
+					rb.setSelected(o.isChecked());
+					vb.getChildren().add(rb);*/
+					data.add(o);
+					
+				}
+				ComboBox<Opzione> comboBox = new ComboBox<>(data);
+				comboBox.setId("cb"+r.getId());
+				comboBox.getSelectionModel().selectFirst();
+				vb.getChildren().add(comboBox);
+				hbox.getChildren().add(vb);
+		    	
+		    } else if (r.getTipo().equals(Risposta.RES_FORMULA)) {
+		    	TextField input1 = new TextField();
+				TextField input2 = new TextField();
+				TextField output = new TextField();
+				
+				input1.setId("i1"+r.getId());
+				input2.setId("i2"+r.getId());
+				output.setId("o"+r.getId());
+				
+				input1.setPromptText(r.getLabel1());
+				input1.setMaxWidth(colonna.getPrefWidth());
+				input2.setPromptText(r.getLabel2());
+				input2.setMaxWidth(colonna.getPrefWidth());
+				// Imposta cambio pagina con SHIFT + FRECCIA
+				input1.setOnKeyPressed(keypress);
+				input2.setOnKeyPressed(keypress);
+
+		    	output.setPromptText(r.getLabelRisultato());
+		    	output.setMaxWidth(colonna.getPrefWidth());
+				output.setEditable(false);
+				
+				input1.textProperty().addListener(new ChangeListener<String>() { 
+					@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) { 
+						if(!newValue.matches("^\\d*\\.?\\d*$")){ 
+							input1.setText(oldValue); 
+						} 
+					} 
+				});
+				
+				input2.textProperty().addListener(new ChangeListener<String>() { 
+					@Override public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) { 
+						if(!newValue.matches("^\\d*\\.?\\d*$")){ 
+							input2.setText(oldValue); 
+						} 
+					} 
+				});
+
+				EventHandler<KeyEvent> operazione = new EventHandler<KeyEvent>() {
+				    @Override
+				    public void handle(KeyEvent event) {
+				    	//System.out.println("R" + input2.getText());
+				    	if (input1.getText() == null || input2.getText() == null || 
+				    			input1.getText().isEmpty() || input2.getText().isEmpty()) {
+			    			output.setText("");
+				    	} else {
+			    			try {
+			    				double out = 0;
+			    				if (r.getOperatore().equals(Risposta.SOMMA))
+			    					out = Double.parseDouble(input1.getText()) + Double.parseDouble(input2.getText());
+			    				else if (r.getOperatore().equals(Risposta.MOLTIPLICAZIONE))
+			    					out = Double.parseDouble(input1.getText()) * Double.parseDouble(input2.getText());
+			    				else if (r.getOperatore().equals(Risposta.SOTTRAZIONE))
+			    					out = Double.parseDouble(input1.getText()) - Double.parseDouble(input2.getText());
+			    				else if (r.getOperatore().equals(Risposta.DIVISIONE))
+			    					out = Double.parseDouble(input1.getText()) / Double.parseDouble(input2.getText());
+			    				else if (r.getOperatore().equals(Risposta.POTENZA))
+			    					out = Math.pow(Double.parseDouble(input1.getText()), Double.parseDouble(input2.getText()));
+			    				String outs = Double.toString(out);
+			    				output.setText(outs);
+			    			} catch (Exception e) {
+			    				output.setText("err");
+			    			}
+				    	}
+				    }
+				};
+				
+				GridPane gridpane = new GridPane();
+				gridpane.add(input1, 0, 0);
+				gridpane.add(input2, 2, 0);
+				gridpane.add(new Label(" = "), 3, 0);
+				gridpane.add(output, 4, 0);			
+				if (r.getOperatore().equals(Risposta.SOMMA)) {
+					gridpane.add(new Label(" + "), 1, 0);
+				} else if (r.getOperatore().equals(Risposta.MOLTIPLICAZIONE)) {
+					gridpane.add(new Label(" X "), 1, 0);
+				} else if (r.getOperatore().equals(Risposta.SOTTRAZIONE)) {
+					gridpane.add(new Label(" - "), 1, 0);
+				} else if (r.getOperatore().equals(Risposta.DIVISIONE)) {
+					gridpane.add(new Label(" / "), 1, 0);
+				} else if (r.getOperatore().equals(Risposta.POTENZA)) {
+					gridpane.add(new Label(" ^ "), 1, 0);
+				}		
+				
+		        Label lbl = new Label(nomeColonna);
+		        VBox vb = new VBox();
+		        vb.setSpacing(5);
+				vb.getChildren().addAll(lbl, gridpane);
+				input1.setOnKeyReleased(operazione);
+				input2.setOnKeyReleased(operazione);
+				hbox.getChildren().add(vb);
+		    }
+		   		
+		}
+		
+		table.setItems(generateDataInMap());
+
+		VBox vbBtn = new VBox();
+		vbBtn.setSpacing(5);
+		Button addButton = new Button("Aggiungi");
+		
+		addButton.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override public void handle(ActionEvent e) {
+		    	
+		    	Scene scene = hbox.getScene();
+		    	
+		    	boolean aggiungi = true;
+		    	
+		    	for (Domanda domanda: domandeTabella) {	    		
+		    		Risposta risposta = domanda.getRisposta();
+		    		if (domanda.isObbligatoria()) {
+			    		if (risposta.getTipo().equals(Risposta.RES_TEXT)) {
+			    			TextField tf = (TextField) scene.lookup("#r"+risposta.getId());
+			    			String testoRisposta = tf.getText();
+		    				if(testoRisposta == null || testoRisposta.isEmpty()) {
+		    					aggiungi = false;
+		    					break;
+				    		}
+			    		} else if (risposta.getTipo().equals(Risposta.RES_CHOICE)) {
+			    			ComboBox<Opzione> cb = (ComboBox) scene.lookup("#cb"+risposta.getId());
+			    			if(cb.getValue().getId()==0) {
+			    				aggiungi = false;
+		    					break;
+			    			}			
+			    		} else if (risposta.getTipo().equals(Risposta.RES_FORMULA)) {
+			    			TextField output = (TextField) scene.lookup("#o"+risposta.getId());
+			    			String risultato = output.getText();
+		    				if(risultato == null || risultato.isEmpty()) {
+		    					aggiungi = false;
+		    					break;
+				    		}
+			    		}
+		    		}
+		    	}
+		    	
+		    	if (aggiungi) {
+		    		
+			    	Map<String, String> dataRow = new HashMap<>();
+			    	ObservableList<Map> allData = table.getItems();
+			    	
+			    	long id_row = 1;
+			    	try {
+						id_row = QuestionarioDAO.getLastId();
+					} catch (ClassNotFoundException | SQLException e1) {
+						e1.printStackTrace();
+					}
+		    	
+			    	for (Domanda domanda: domandeTabella) {
+			    		
+			    		Risposta risposta = domanda.getRisposta();
+			    		
+			    		if (risposta.getTipo().equals(Risposta.RES_TEXT)) {
+			    			
+			    			TextField tf = (TextField) scene.lookup("#r"+risposta.getId());
+			    			String testoRisposta = tf.getText();
+			    			
+			    			//salva risposta sul db
+			    			try {
+			    				if(testoRisposta != null && !testoRisposta.isEmpty()) {
+						    		testoRisposta = testoRisposta.replaceAll("'", "''");
+						    		risposta.setTestoRisposta(testoRisposta);
+					    		} else {
+					    			risposta.setTestoRisposta("");
+					    		}	    		
+								QuestionarioDAO.saveResTextTable(risposta, id_row, domanda.getId());
+							} catch (ClassNotFoundException | SQLException ex) {
+								ex.printStackTrace();
+							}
+			    			dataRow.put("A"+domanda.getId(), testoRisposta);
+			    			tf.clear();
+		    			
+	        
+			    		} else if (risposta.getTipo().equals(Risposta.RES_CHOICE)) {
+			    			long id_risposta_choice = 0;
+			    			try {
+			    				id_risposta_choice = QuestionarioDAO.saveResChoiceTable(risposta, id_row, domanda.getId());
+							} catch (ClassNotFoundException | SQLException e1) {
+								e1.printStackTrace();
+							}
+			    			String opzione = "";
+			    			ComboBox<Opzione> cb = (ComboBox) scene.lookup("#cb"+risposta.getId());
+			    			long selectedOption = cb.getValue().getId();	
+			    			
+			    			for (Opzione o: risposta.getOpzioni()) {
+			    				//RadioButton rb = (RadioButton) scene.lookup("#o"+o.getId());
+			    				if (o.getId()==selectedOption) {
+					    			try {
+										QuestionarioDAO.saveResChoiceOptionsTable(true, id_risposta_choice, o);
+									} catch (ClassNotFoundException | SQLException e1) {
+										e1.printStackTrace();
+									}
+			    					opzione = o.getTesto();
+			    					dataRow.put("A"+domanda.getId(), opzione);
+			    					cb.setValue(new Opzione(0));
+			    					//rb.setSelected(false);	
+				    			} else {			    					
+					    			try {
+										QuestionarioDAO.saveResChoiceOptionsTable(false, id_risposta_choice, o);
+									} catch (ClassNotFoundException | SQLException e1) {
+										e1.printStackTrace();
+									}
+				    			}
+			    			}
+			    			
+			    		} else if (risposta.getTipo().equals(Risposta.RES_FORMULA)) {
+			    			String operatore = "";
+							if (risposta.getOperatore().equals(Risposta.SOMMA)) {
+								operatore = " + ";
+							} else if (risposta.getOperatore().equals(Risposta.MOLTIPLICAZIONE)) {
+								operatore = " X ";
+							} else if (risposta.getOperatore().equals(Risposta.SOTTRAZIONE)) {
+								operatore = " - ";
+							} else if (risposta.getOperatore().equals(Risposta.DIVISIONE)) {
+								operatore = " / ";
+							} else if (risposta.getOperatore().equals(Risposta.POTENZA)) {
+								operatore = " ^ ";
+							}	
+			    			TextField input1 = (TextField) scene.lookup("#i1"+risposta.getId());
+			    			TextField input2 = (TextField) scene.lookup("#i2"+risposta.getId());
+			    			TextField output = (TextField) scene.lookup("#o"+risposta.getId());
+			    			
+			    			if (input1.getText() != null &&
+				    				!input1.getText().isEmpty() && 
+				    				input2.getText() != null && 
+				    				!input2.getText().isEmpty() &&
+				    				!output.getText().equals("err")) {
+			    				risposta.setInput1(input1.getText());
+			    				risposta.setInput2(input2.getText());
+			    				risposta.setRisultato(output.getText());
+				    			try {
+									QuestionarioDAO.saveResFormulaTable(risposta, id_row, domanda.getId());
+								} catch (ClassNotFoundException | SQLException e1) {
+									e1.printStackTrace();
+								}
+				    			dataRow.put("A"+domanda.getId(), input1.getText()+operatore+input2.getText()+" = "+output.getText());
+			    			} else {
+			    				dataRow.put("A", "");
+			    			}    			
+			    			input1.clear();
+			    			input2.clear();
+			    			output.clear();
+			    		}
+				        
+			    	}
+			    	
+			    	dataRow.put("ID", Long.toString(id_row));
+			    	
+			    	try {
+						QuestionarioDAO.setTabellaCompleta(d.getRisposta().getId());
+					} catch (ClassNotFoundException | SQLException e1) {
+						e1.printStackTrace();
+					}
+			    	allData.add(dataRow);
+			        table.setItems(allData);
+		        
+		    	} else {
+		    		config.dialog(AlertType.WARNING, "I campi con (*) sono obbligatori.");
+		    	}
+		    }
+		});
+		
+		Label lblBtn = new Label(" ");
+		vbBtn.getChildren().addAll(lblBtn, addButton);
+		hbox.getChildren().add(vbBtn);
+		
+		final Button deleteButton = new Button("Cancella riga");
+		deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override public void handle(ActionEvent e) {
+		    	
+		    	ObservableList<Map> selectedRows;
+		    	ObservableList<Map> allData = table.getItems();
+		        
+		        //this gives us the rows that were selected
+		        selectedRows = table.getSelectionModel().getSelectedItems();
+		        
+		        //loop over the selected rows and remove the Person objects from the table
+		        for (Map map: selectedRows) {
+		        	String id = (String) map.get("ID");
+		        	try {
+						QuestionarioDAO.deleteRow(id);
+					} catch (ClassNotFoundException | SQLException e1) {
+						e1.printStackTrace();
+					}
+		            allData.remove(map);
+		        }
+		        if (table.getItems().size() <= 0) {
+		        	try {
+						QuestionarioDAO.setTabellaCompletaNull(d.getRisposta().getId());
+					} catch (ClassNotFoundException | SQLException e1) {
+						e1.printStackTrace();
+					}
+		        }
+		    }
+		});
+		
+		vbox.getChildren().addAll(table, hbox, deleteButton);	
+	
+		return vbox;
+	}
+	
+	private ObservableList<Map> generateDataInMap() throws ClassNotFoundException, SQLException {
+
+    	ObservableList<Map> allData = FXCollections.observableArrayList();   	
+    	Domanda primaDomanda = domandeTabella.get(0);
+    	long idPrimaRisposta = primaDomanda.getRisposta().getId();    	
+    	ObservableList<Long> idRowList = QuestionarioDAO.searchIdRowList(idPrimaRisposta);
+    	
+    	for (long idRow: idRowList) {
+    		
+    		ObservableList<Domanda> risposteTabella = QuestionarioDAO.searchRisposteTabella(idRow);
+			Map<String, String> dataRow = new HashMap<>();
+			
+			for (Domanda domanda: risposteTabella) {
+            
+	    		Risposta rispostaTabella = domanda.getRisposta();
+
+	    		if (rispostaTabella.getTipo().equals(Risposta.RES_TEXT)) {
+        			String testoRisposta = rispostaTabella.getTestoRisposta();
+        			dataRow.put("A"+domanda.getId(), testoRisposta);
+
+	    		} else if (rispostaTabella.getTipo().equals(Risposta.RES_CHOICE)) {
+	    			for (Opzione opzioneTabella: rispostaTabella.getOpzioni()) {
+	    				if(opzioneTabella.isChecked()) {
+	    					dataRow.put("A"+domanda.getId(), opzioneTabella.getTesto());
+	    					break;
+	    				}	    				
+	    			}
+	    			
+	    		} else if (rispostaTabella.getTipo().equals(Risposta.RES_FORMULA)) {
+	    			String operatore = "";
+					if (rispostaTabella.getOperatore().equals(Risposta.SOMMA)) {
+						operatore = " + ";
+					} else if (rispostaTabella.getOperatore().equals(Risposta.MOLTIPLICAZIONE)) {
+						operatore = " X ";
+					} else if (rispostaTabella.getOperatore().equals(Risposta.SOTTRAZIONE)) {
+						operatore = " - ";
+					} else if (rispostaTabella.getOperatore().equals(Risposta.DIVISIONE)) {
+						operatore = " / ";
+					} else if (rispostaTabella.getOperatore().equals(Risposta.POTENZA)) {
+						operatore = " ^ ";
+					}	
+	    			
+	    			if (rispostaTabella.getRisultato() != null && !rispostaTabella.getRisultato().equals("")) {
+		    			dataRow.put("A"+domanda.getId(), rispostaTabella.getInput1()+operatore+rispostaTabella.getInput2()+" = "+rispostaTabella.getRisultato());
+	    			} else {
+	    				dataRow.put("A", "");
+	    			}    			
+	    		}
+	    		dataRow.put("ID", Long.toString(idRow));
+    		}
+    		allData.add(dataRow);
+    	}
+        return allData;
+    }
+	
+	
+	
 	//carica il questionario tutto insieme
 /*	public void showQuest() throws IOException {
 		reportBox.getChildren().clear();
@@ -585,7 +1027,7 @@ public class QuestionnaireController {
 	}*/
 	
 	// carica la domanda secondo l'indice
-	public void loadQuestion() throws IOException {
+	public void loadQuestion() throws IOException, ClassNotFoundException, SQLException {
 		try {
 			searchDomande();
 		} catch (ClassNotFoundException | SQLException e) {
@@ -603,6 +1045,13 @@ public class QuestionnaireController {
 			} else {
 				loadRadioButton(d, false);
 			}
+		} else if (risposta.getTipo().equals(Risposta.RES_TABLE)) {
+			try {
+				searchDomandeTabella(d.getRisposta().getId());
+			} catch (ClassNotFoundException | SQLException e) {
+				e.printStackTrace();
+			}
+			loadTabella(d, false);
 		}
 	}
 	
@@ -655,6 +1104,8 @@ public class QuestionnaireController {
 						}
 					}
 					if (!compl) return false;
+				} else if (r.getTipo().equals(Risposta.RES_TABLE)) {
+					if(r.getTabellaCompleta() != true) return false;
 				}
 			}
 			else if (r.getTipo().equals(Risposta.RES_CHOICE)) {
@@ -701,6 +1152,8 @@ public class QuestionnaireController {
 							}
 						}
 						if (!compl) return false;
+					} else if (r.getTipo().equals(Risposta.RES_TABLE)) {
+						if(r.getTabellaCompleta() != true) return false;
 					}
 				}
 				else if (r.getTipo().equals(Risposta.RES_CHOICE)) {
@@ -787,7 +1240,7 @@ public class QuestionnaireController {
 	}
 	
 	//combo box
-	public void selectDomanda(ActionEvent actionEvent) throws IOException {
+	public void selectDomanda(ActionEvent actionEvent) throws IOException, ClassNotFoundException, SQLException {
 		String s = comboBox.getValue().toString();
 		indice = Integer.parseInt(s) -1;
 		reportBox.getChildren().clear();
@@ -821,6 +1274,7 @@ public class QuestionnaireController {
 	}
 
 	public void completeReport(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
+		searchDomande();
 		if(isCompleto()) {
 			ReportDAO.changeState(2);
 			goBack(event);
@@ -932,7 +1386,7 @@ public class QuestionnaireController {
 	}
 */
 	public void logout(ActionEvent event) throws ClassNotFoundException, SQLException {
-		// se il verbale è completo e si cancella una risposta obbligatoria il verbale torna in lavorazione
+		// se il verbale ï¿½ completo e si cancella una risposta obbligatoria il verbale torna in lavorazione
 		try {
 			if(stato == 2 && !isCompleto()) {
 				ReportDAO.changeState(1);
