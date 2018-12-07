@@ -1093,6 +1093,17 @@ public class QuestionnaireController {
 				} else {
 					vbox.getChildren().add(loadRadioButton(d, true));
 				}
+			} else if (risposta.getTipo().equals(Risposta.RES_TABLE)) {
+				try {
+					searchDomandeTabella(d.getRisposta().getId());
+				} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
+				}
+				try {
+					vbox.getChildren().add(loadTabella(d, true));
+				} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		return vbox;
