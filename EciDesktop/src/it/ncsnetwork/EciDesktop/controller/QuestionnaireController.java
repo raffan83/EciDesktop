@@ -30,21 +30,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.MapValueFactory;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import javafx.scene.control.*;
 
 import javafx.util.Callback;
-import javafx.util.StringConverter;
 
 public class QuestionnaireController {
 
@@ -605,10 +602,10 @@ public class QuestionnaireController {
 		for(Domanda domanda : domandeTabella) {
 			TableColumn<Map, String> colonna = new TableColumn<>(domanda.getTesto());
 			colonna.setCellValueFactory(new MapValueFactory("A"+domanda.getId()));
-			colonna.setMinWidth(130); 
-
+			colonna.setMinWidth(150); 
+			setCellHeight(colonna);
 		    table.getColumns().add(colonna);
-		    
+				    
 		    Risposta r = domanda.getRisposta();
 			String nomeColonna;
 			if (domanda.isObbligatoria()) {
@@ -623,7 +620,7 @@ public class QuestionnaireController {
 			    TextField tf = new TextField();
 			    
 			    tf.setId("r"+r.getId());
-		        tf.setMaxWidth(colonna.getPrefWidth());
+			    tf.setMaxWidth(colonna.getWidth());
 		        Label lbl = new Label(nomeColonna);
 		        vb.getChildren().addAll(lbl, tf);
 			    hbox.getChildren().add(vb);    	
@@ -746,6 +743,7 @@ public class QuestionnaireController {
 		}
 		
 		table.setItems(generateDataInMap());
+
 
 		VBox vbBtn = new VBox();
 		vbBtn.setSpacing(5);
@@ -876,18 +874,20 @@ public class QuestionnaireController {
 				    				input2.getText() != null && 
 				    				!input2.getText().isEmpty() &&
 				    				!output.getText().equals("err")) {
-			    				risposta.setInput1(input1.getText());
-			    				risposta.setInput2(input2.getText());
-			    				risposta.setRisultato(output.getText());
-				    			try {
-									QuestionarioDAO.saveResFormulaTable(risposta, id_row, domanda.getId());
-								} catch (ClassNotFoundException | SQLException e1) {
-									e1.printStackTrace();
-								}
+				    			
 				    			dataRow.put("A"+domanda.getId(), input1.getText()+operatore+input2.getText()+" = "+output.getText());
 			    			} else {
 			    				dataRow.put("A", "");
-			    			}    			
+			    			}
+			    			
+			    			risposta.setInput1(input1.getText());
+		    				risposta.setInput2(input2.getText());
+		    				risposta.setRisultato(output.getText());
+			    			try {
+								QuestionarioDAO.saveResFormulaTable(risposta, id_row, domanda.getId());
+							} catch (ClassNotFoundException | SQLException e1) {
+								e1.printStackTrace();
+							}
 			    			input1.clear();
 			    			input2.clear();
 			    			output.clear();
@@ -1006,6 +1006,23 @@ public class QuestionnaireController {
         return allData;
     }
 	
+	// imposta il testo a capo nelle righe della tabella
+	public void setCellHeight (TableColumn<Map, String> col) {
+		   col.setCellFactory(new Callback<TableColumn<Map, String>, TableCell<Map, String>>() {
+		        @Override
+		        public TableCell<Map, String> call(
+		                TableColumn<Map, String> param) {
+		            TableCell<Map, String> cell = new TableCell<>();
+		            Text text = new Text();
+		            cell.setGraphic(text);
+		            cell.setPrefHeight(Control.USE_COMPUTED_SIZE);
+		            text.wrappingWidthProperty().bind(cell.widthProperty());
+		            text.textProperty().bind(cell.itemProperty());
+		            return cell ;
+		        }
+		    });
+	}
+	
 	
 	
 	//carica il questionario tutto insieme
@@ -1075,6 +1092,17 @@ public class QuestionnaireController {
 					vbox.getChildren().add(loadCheckBox(d, true));
 				} else {
 					vbox.getChildren().add(loadRadioButton(d, true));
+				}
+			} else if (risposta.getTipo().equals(Risposta.RES_TABLE)) {
+				try {
+					searchDomandeTabella(d.getRisposta().getId());
+				} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
+				}
+				try {
+					vbox.getChildren().add(loadTabella(d, true));
+				} catch (ClassNotFoundException | SQLException e) {
+					e.printStackTrace();
 				}
 			}
 		}
