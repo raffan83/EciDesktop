@@ -480,7 +480,66 @@ public class InterventionController {
 					QuestionarioDAO.saveJSONOpzioni(o, idRisposta);					
 				}
         	}	
+        	// RES_TABLE
+        	else if (tipoRisposta.equals(Risposta.RES_TABLE)) {
+        		QuestionarioDAO.saveJSONResText(risp, idDomanda);
+        		JSONArray colonne = (JSONArray) risposta.get("colonne");
+        		for (Object col: colonne) {
+        			JSONObject colonna = (JSONObject) col;
+        			long idColonna = (long) colonna.get("id");
+        			QuestionarioDAO.saveJSONColonne(idColonna, idRisposta);
+        			JSONObject domandaColonna = (JSONObject) colonna.get("domanda");
+        			parseDomandeTabella(domandaColonna, idColonna, idVerb);
+        		}
+        	}
 		}
+	}
+	
+	private void parseDomandeTabella(JSONObject domanda, long idColonna, long idVerbale) throws ClassNotFoundException, SQLException {
+    	Domanda d = new Domanda();
+    	long idDomanda = (long) domanda.get("id");
+    	d.setId(idDomanda);
+		d.setTesto((String) domanda.get("testo"));
+		d.setObbligatoria((boolean) domanda.get("obbligatoria"));
+		d.setPosizione((long) domanda.get("posizione"));
+		QuestionarioDAO.saveJSONDomandeCol(d, idColonna, idVerbale);
+		
+		// risposte
+		Risposta risp = new Risposta();	                	
+    	JSONObject risposta = (JSONObject) domanda.get("risposta");
+    	long idRisposta = (long) risposta.get("id");
+    	risp.setId(idRisposta);
+    	String tipoRisposta = (String) risposta.get("tipo");
+    	risp.setTipo(tipoRisposta);
+    	//RES_TEXT
+    	if (tipoRisposta.equals(Risposta.RES_TEXT)){
+    		QuestionarioDAO.saveJSONResText(risp, idDomanda);
+    	}
+    	// RES_FORMULA
+    	else if (tipoRisposta.equals(Risposta.RES_FORMULA)) {
+    		risp.setLabel1((String) risposta.get("label1"));
+    		risp.setLabel2((String) risposta.get("label2"));
+    		risp.setOperatore((String) risposta.get("operatore"));
+    		risp.setLabelRisultato((String) risposta.get("label_risultato"));
+    		QuestionarioDAO.saveJSONResFormula(risp, idDomanda);		
+    	}
+		// RES_CHOICE
+    	else if (tipoRisposta.equals(Risposta.RES_CHOICE)) {
+    		risp.setMultipla((boolean) risposta.get("multipla"));
+    		QuestionarioDAO.saveJSONResChoice(risp, idDomanda);
+    		
+    		JSONArray opzioni = (JSONArray) risposta.get("opzioni");
+			for (Object op : opzioni) {
+				JSONObject opzione = (JSONObject) op;
+				Opzione o = new Opzione();
+				long idOpzione = (long) opzione.get("id");
+				o.setId(idOpzione);
+				o.setTesto((String) opzione.get("testo"));
+				o.setPosizione((long) opzione.get("posizione"));
+				
+				QuestionarioDAO.saveJSONOpzioni(o, idRisposta);					
+			}
+    	}
 	}
 
 	public void logout() throws ClassNotFoundException {

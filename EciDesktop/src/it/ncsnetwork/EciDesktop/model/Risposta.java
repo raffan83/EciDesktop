@@ -7,6 +7,7 @@ public class Risposta {
 	public static final String RES_TEXT = "RES_TEXT";
 	public static final String RES_FORMULA = "RES_FORMULA";
 	public static final String RES_CHOICE = "RES_CHOICE";
+	public static final String RES_TABLE = "RES_TABLE";
 	public static final String SOMMA = "Somma";
 	public static final String MOLTIPLICAZIONE = "Moltiplicazione";
 	public static final String DIVISIONE = "Divisione";
@@ -28,6 +29,11 @@ public class Risposta {
 	//RES_CHOICE
 	private Boolean multipla;
 	private ArrayList<Opzione> scelte;
+	//RES_TABLE
+	private ArrayList<Colonna> colonne;
+	private Integer row;
+	private Boolean tabellaCompleta;
+	//private long idRow;
 	
 	public Risposta() {
 		
@@ -175,5 +181,37 @@ public class Risposta {
 	public void setValore(String valore) {
 		this.valore = valore;
 	}
+
+	public ArrayList<Colonna> getColonne() {
+		return colonne;
+	}
+
+	public void setColonne(ArrayList<Colonna> colonne) {
+		this.colonne = colonne;
+	}
+
+	public int getRow() {
+		return row;
+	}
+
+	public void setRow(int row) {
+		this.row = row;
+	}
+
+	public Boolean getTabellaCompleta() {
+		return tabellaCompleta;
+	}
+
+	public void setTabellaCompleta(Boolean tabellaCompleta) {
+		this.tabellaCompleta = tabellaCompleta;
+	}
+
+	
+/*	public long getIdRow() {
+		return idRow;
+	}
+	public void setIdRow(long idRow) {
+		this.idRow = idRow;
+	}*/
 
 }

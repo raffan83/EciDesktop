@@ -117,5 +117,39 @@ public class DBUtil {
 			dbDisconnect();
 		}
 	}
+	
+	// DB Execute Update (For Update/Insert/Delete) Operation
+	public static long dbExecuteUpdateGetId(String sqlStmt) throws SQLException, ClassNotFoundException {
+		// Declare statement as null
+		Statement stmt = null;
+		long id = 0;
+		try {
+			// Connect to DB (Establish Oracle Connection)
+			dbConnect();
+			//System.out.println("Query: " + sqlStmt + "\n");
+			// Create Statement
+			stmt = conn.createStatement();
+			// Run executeUpdate operation with given sql statement
+			stmt.executeUpdate(sqlStmt);
+			
+			try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+				if (generatedKeys.next()) {
+					id = generatedKeys.getLong(1);
+				}
+			}
+		} catch (SQLException e) {
+			System.out.println("Problem occurred at executeUpdate operation : " + e);
+			throw e;
+		} finally {
+			if (stmt != null) {
+				// Close statement
+				stmt.close();
+			}
+			// Close connection
+			dbDisconnect();
+		}
+		
+		return id;
+	}
 
 }

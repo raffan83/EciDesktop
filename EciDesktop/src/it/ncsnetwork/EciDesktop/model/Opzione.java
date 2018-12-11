@@ -12,8 +12,17 @@ public class Opzione {
 	private boolean choice;
 	private ArrayList<Risposta> risposte;
 	
+    @Override
+    public String toString() {
+        return testo;
+    }
+	
 	public Opzione() {
 		//this.testo = new SimpleStringProperty();		
+	}
+	
+	public Opzione(long id) {
+		this.id = id;;
 	}
 
 	public long getId() {
