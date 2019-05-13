@@ -67,6 +67,7 @@ public class ReportController {
 	@FXML private TableColumn<Report, String> codVerificaCol;
 	@FXML private TableColumn<Report, String> codCategoriaCol;
 	@FXML private TableColumn<Report, String> statoCol;
+	@FXML private TableColumn<Report, String> noteCol;
 	@FXML private TableColumn<Report, String> completeCol;
 	@FXML private TableColumn<Report, String> inviaCol;
 	@FXML private TableColumn<Report, String> docCol;
@@ -178,6 +179,7 @@ public class ReportController {
 		codVerificaCol.setCellValueFactory(cellData -> cellData.getValue().codVerificaProperty());
 		codCategoriaCol.setCellValueFactory(cellData -> cellData.getValue().codCategoriaProperty());
 		statoCol.setCellValueFactory(new PropertyValueFactory<Report, String>("statoLbl"));
+		noteCol.setCellValueFactory(cellData -> cellData.getValue().noteVerbaleProperty());
 		uploadDocCol.setCellValueFactory(new PropertyValueFactory<Report, String>("uploadDoc"));
 		showDocCol.setCellValueFactory(new PropertyValueFactory<Report, String>("showDoc"));
 		completeCol.setCellValueFactory(new PropertyValueFactory<Report, String>("completeRep"));
@@ -188,6 +190,7 @@ public class ReportController {
 		codVerificaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.11));
 		codCategoriaCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.11));
 		statoCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
+		noteCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.13));
 		docCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.12));
 		uploadDocCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.06));
 		showDocCol.prefWidthProperty().bind(reportTable.widthProperty().multiply(0.06));

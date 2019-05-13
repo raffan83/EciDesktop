@@ -18,6 +18,7 @@ public class Report {
 	private SimpleStringProperty descrVerifica;
 	private SimpleStringProperty codVerifica;
 	private SimpleStringProperty codCategoria;
+	private SimpleStringProperty noteVerbale;
 	private Label statoLbl;
 	private int stato;
 	private Button completeRep;
@@ -38,6 +39,7 @@ public class Report {
 		this.inviaRep = new Button("");
 		this.intervId = new SimpleLongProperty();
 		this.verbaleId = new SimpleLongProperty();
+		this.noteVerbale = new SimpleStringProperty();
 		this.uploadDoc = new Button("");
 		this.showDoc = new Button("");
 	}
@@ -208,4 +210,16 @@ public class Report {
 		this.showDoc = null;
 	}
 
+	public String getNoteVerbale() {
+		return noteVerbale.get();
+	}
+
+	public void setNoteVerbale(String noteVerbale) {
+		this.noteVerbale.set(noteVerbale);;
+	}
+	
+	public SimpleStringProperty noteVerbaleProperty() {
+		return noteVerbale;
+	}
+	
 }

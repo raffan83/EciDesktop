@@ -37,6 +37,7 @@ public class ReportDAO {
 			report.setDescrVerifica(rs.getString("descrizione_verifica"));
 			report.setCodVerifica(rs.getString("codice_verifica"));
 			report.setCodCategoria(rs.getString("codice_categoria"));
+			report.setNoteVerbale(rs.getString("note"));
 			report.setStatoLbl(rs.getInt("stato"));
 			report.setStato(rs.getInt("stato"));
 			boolean isSchedaTecnica = Boolean.parseBoolean(rs.getString("scheda_tecnica"));
@@ -79,8 +80,8 @@ public class ReportDAO {
 	// salva sul db i verbali dal JSON
 	public static void saveJSON(Report r, long intervId) throws ClassNotFoundException, SQLException {
 		String stmt = "INSERT INTO report "
-				+ "(id, descrizione_verifica, intervention_id, codice_categoria, codice_verifica, scheda_tecnica, verbale_id) VALUES"
-				+ " ("+ r.getId() + ",'" + r.getDescrVerifica()+"',"+intervId+",'"+r.getCodCategoria()+"','"+r.getCodVerifica()+"','"+r.isScheda_tecnica()+"',"+r.getVerbaleId()+")";
+				+ "(id, descrizione_verifica, intervention_id, codice_categoria, codice_verifica, scheda_tecnica, verbale_id,note) VALUES"
+				+ " ("+ r.getId() + ",'" + r.getDescrVerifica()+"',"+intervId+",'"+r.getCodCategoria()+"','"+r.getCodVerifica()+"','"+r.isScheda_tecnica()+"','"+r.getVerbaleId()+"','"+r.getNoteVerbale()+"')";
 		DBUtil.dbExecuteUpdate(stmt);
 	}
 	

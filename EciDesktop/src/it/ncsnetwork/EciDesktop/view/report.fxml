@@ -19,7 +19,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="/it/ncsnetwork/EciDesktop/css/style.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.ncsnetwork.EciDesktop.controller.ReportController">
+<AnchorPane prefHeight="600.0" prefWidth="900.0" stylesheets="/it/ncsnetwork/EciDesktop/css/style.css" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.ncsnetwork.EciDesktop.controller.ReportController">
    <children>
       <AnchorPane prefHeight="40.0" style="-fx-background-color: #9d201d;" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -177,7 +177,8 @@
                 <TableColumn fx:id="codVerificaCol" prefWidth="141.0" text="Codice &#10;Verifica" />
                 <TableColumn fx:id="descrVerificaCol" prefWidth="241.0" text="Descrizione Verifica" />
                 <TableColumn fx:id="statoCol" prefWidth="97.0" text="Stato" />
-                <TableColumn fx:id="docCol" prefWidth="92.0" text="Documenti" >      
+                  <TableColumn fx:id="noteCol" prefWidth="97.0" text="Note" />
+                <TableColumn fx:id="docCol" prefWidth="92.0" text="Documenti">      
             		<columns>
                   		<TableColumn fx:id="uploadDocCol" prefWidth="75.0" text="Carica" />
                   		<TableColumn fx:id="showDocCol" prefWidth="75.0" text="Lista" />

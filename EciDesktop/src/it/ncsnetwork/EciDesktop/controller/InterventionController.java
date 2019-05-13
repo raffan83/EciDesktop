@@ -356,6 +356,8 @@ public class InterventionController {
 	    			JSONObject catVer = (JSONObject) tipoVer.get("categoria");
 	    			String descrCat = (String) catVer.get("descrizione");
 	    			String codCat = (String) catVer.get("codice");
+	    			String note =(String)tipoVer.get("note");
+	    			
 	    			
 	    			if (count == 0) {
 		    			descrizioneTipo = descrTipo;
@@ -393,6 +395,15 @@ public class InterventionController {
 					r.setCodVerifica((String) verb.get("codiceVerifica"));
 					r.setCodCategoria((String) verb.get("codiceCategoria"));
 					r.setDescrVerifica((String) verb.get("descrizioneVerifica"));
+					
+					if(verb.get("note")!=null) 
+					{
+						r.setNoteVerbale((String) verb.get("note"));
+					}
+					else
+					{
+						r.setNoteVerbale("");
+					}
 					r.setScheda_tecnica(false);
 					r.setVerbaleId(idVerb);
 					ReportDAO.saveJSON(r, id);
