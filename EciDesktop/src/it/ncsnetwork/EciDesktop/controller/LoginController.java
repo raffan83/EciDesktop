@@ -127,6 +127,13 @@ public class LoginController implements Initializable {
 		txtPassword.setOnKeyPressed(keypress);
 		loadImg.setVisible(false);
 		
+		try {
+			Login();
+		} catch (ClassNotFoundException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	public void Login() throws ClassNotFoundException, UnknownHostException, IOException {

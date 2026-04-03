@@ -87,7 +87,9 @@ public class SplashController implements Initializable {
 		});
 
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(100);
+			
+			
 			// Parent login =
 			// FXMLLoader.load(getClass().getResource("/it/ncsnetwork/EciDesktop/view/login.fxml"));
 			// Scene sceneLogin = new Scene(login);
